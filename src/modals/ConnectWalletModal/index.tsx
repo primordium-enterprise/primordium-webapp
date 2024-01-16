@@ -1,9 +1,12 @@
 'use client'
 
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Button } from "@nextui-org/react";
 import { createContext } from "react";
+import { useConnect } from "wagmi";
 
-export const ConnectWalletModalContext = createContext<ReturnType<typeof useDisclosure> | any>({})
+// export enum WalletType
+
+export const ConnectWalletModalContext = createContext<ReturnType<typeof useDisclosure> | any>({});
 
 export default function ConnectWalletModal({
   children
@@ -15,6 +18,10 @@ export default function ConnectWalletModal({
 
   const { isOpen, onOpen, onOpenChange } = disclosure;
 
+  const { connectors } = useConnect();
+
+  console.log(connectors);
+
   return (
     <>
       <ConnectWalletModalContext.Provider value={disclosure}>
@@ -25,7 +32,9 @@ export default function ConnectWalletModal({
         <ModalContent>
           <ModalHeader>Connect a Wallet</ModalHeader>
           <ModalBody>
-            Testing Testing 123
+            {connectors.map(connector => (
+              <Button key={connector.uid}>{connector.name}</Button>
+            ))}
           </ModalBody>
         </ModalContent>
       </Modal>

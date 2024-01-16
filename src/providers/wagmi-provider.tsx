@@ -1,28 +1,20 @@
 'use client'
 
-import { WagmiProvider } from "wagmi";
-import { http, createConfig } from 'wagmi';
-import { mainnet, sepolia, foundry } from 'wagmi/chains';
+import { State, WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-export const config = createConfig({
-  chains: [mainnet, sepolia],
-  transports: {
-    [mainnet.id]: http(process.env.NEXT_PUBLIC_JSON_RPC_MAINNET),
-    [sepolia.id]: http(),
-    [foundry.id]: http(process.env.NEXT_PUBLIC_JSON_RPC_LOCAL)
-  },
-});
+import wagmiConfig from "@/config/wagmi-config";
 
 export const queryClient = new QueryClient();
 
 export default function AppWagmiProvider({
-  children
+  children,
+  initialState
 }: {
-  children: React.ReactNode
+  children: React.ReactNode,
+  initialState: State | undefined
 }) {
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={wagmiConfig} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
         {children}
       </QueryClientProvider>

@@ -2,15 +2,18 @@
 
 import { NextUIProvider } from "@nextui-org/react";
 import AppWagmiProvider from "../providers/wagmi-provider";
+import { State } from "wagmi";
 
 export default function Providers({
-  children
+  children,
+  initialState
 }: {
-  children: React.ReactNode
+  children: React.ReactNode,
+  initialState: State | undefined
 }) {
   return (
     <NextUIProvider>
-      <AppWagmiProvider>
+      <AppWagmiProvider initialState={initialState}>
         {children}
       </AppWagmiProvider>
     </NextUIProvider>

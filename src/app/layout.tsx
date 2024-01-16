@@ -4,6 +4,9 @@ import './globals.css'
 import Providers from './providers'
 import Navigation from '@/components/Navigation'
 import Modals from './modals'
+import { cookieToInitialState } from 'wagmi'
+import wagmiConfig from '@/config/wagmi-config'
+import { headers } from 'next/headers';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,10 +20,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const initialState = cookieToInitialState(
+    wagmiConfig,
+    headers().get('cookie')
+  );
+
   return (
     <html lang="en">
       <body className={`${inter.className} light text-foreground bg-background`}>
-        <Providers>
+        <Providers initialState={initialState}>
           <Modals>
             <Navigation />
             {children}
