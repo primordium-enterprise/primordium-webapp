@@ -1,6 +1,6 @@
-import { createConfig, http, createStorage, cookieStorage } from "wagmi";
+import { createConfig, http, createStorage, cookieStorage, CreateConnectorFn } from "wagmi";
 import { Chain, mainnet, sepolia, foundry } from "wagmi/chains";
-import { injected } from "wagmi/connectors";
+import { injected, walletConnect } from "wagmi/connectors";
 
 const transports = {
   [mainnet.id]: http(process.env.NEXT_PUBLIC_JSON_RPC_MAINNET),
@@ -14,13 +14,20 @@ if (process.env.NODE_ENV == 'development') {
   chains.push(foundry);
 }
 
+const connectors: CreateConnectorFn[] = [];
+const walletConnectProjectId: string = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '';
+if (walletConnectProjectId) {
+  connectors.push(walletConnect({ projectId: walletConnectProjectId }));
+}
+
+
 const wagmiConfig = createConfig({
-  chains: chains,
+  chains,
   ssr: true,
   storage: createStorage({ storage: cookieStorage }),
   multiInjectedProviderDiscovery: true,
-  connectors: [],
-  transports: transports
+  connectors,
+  transports
 });
 
 export default wagmiConfig;

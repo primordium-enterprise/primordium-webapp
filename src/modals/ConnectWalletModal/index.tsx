@@ -1,12 +1,28 @@
 'use client'
 
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Button } from "@nextui-org/react";
+import Image from "next/image";
 import { createContext } from "react";
-import { useConnect } from "wagmi";
+import { useChainId, useConnect } from "wagmi";
+import walletConnectLogo from "public/wallet-brand-assets/walletconnect-logo.svg";
+import braveLogo from "public/wallet-brand-assets/brave.svg";
 
-// export enum WalletType
+export enum WALLET_TYPE {
+  walletconnect = 'walletConnect'
+}
 
 export const ConnectWalletModalContext = createContext<ReturnType<typeof useDisclosure> | any>({});
+
+const logo = (walletType: string) => {
+  switch (walletType) {
+    case 'walletConnect':
+      return walletConnectLogo;
+    case 'com.brave.wallet':
+      return braveLogo;
+    default:
+      return '';
+  }
+}
 
 export default function ConnectWalletModal({
   children
@@ -18,7 +34,9 @@ export default function ConnectWalletModal({
 
   const { isOpen, onOpen, onOpenChange } = disclosure;
 
-  const { connectors } = useConnect();
+  const { connectors, connect } = useConnect();
+  const chainId = useChainId();
+
 
   console.log(connectors);
 
@@ -32,9 +50,19 @@ export default function ConnectWalletModal({
         <ModalContent>
           <ModalHeader>Connect a Wallet</ModalHeader>
           <ModalBody>
-            {connectors.map(connector => (
-              <Button key={connector.uid}>{connector.name}</Button>
-            ))}
+            {connectors.map(connector => {
+              const icon = logo(connector.id) || connector.icon;
+              return (
+                <Button
+                  key={connector.uid}
+                  className="flex justify-start content-center"
+                  onClick={() => connect({ connector })}
+                >
+                  {icon && <Image className="w-6" src={icon} alt="Wallet icon" width="64" height="64" />}
+                  {connector.name}
+                </Button>
+              )
+            })}
           </ModalBody>
         </ModalContent>
       </Modal>
