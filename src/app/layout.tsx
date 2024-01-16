@@ -20,10 +20,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const initialState = cookieToInitialState(
-    wagmiConfig,
-    headers().get('cookie')
-  );
+  // Load wagmi state from cookie for SSR rendering
+  let initialState = undefined;
+  try {
+    initialState = cookieToInitialState(
+      wagmiConfig,
+      headers().get('cookie')
+    );
+  } catch {}
 
   return (
     <html lang="en">

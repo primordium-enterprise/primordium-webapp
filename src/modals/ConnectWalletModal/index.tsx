@@ -3,7 +3,7 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Button } from "@nextui-org/react";
 import Image from "next/image";
 import { createContext } from "react";
-import { useChainId, useConnect } from "wagmi";
+import { useChainId, useConnect, useConnections } from "wagmi";
 import walletConnectLogo from "public/wallet-brand-assets/walletconnect-logo.svg";
 import braveLogo from "public/wallet-brand-assets/brave.svg";
 
@@ -35,10 +35,10 @@ export default function ConnectWalletModal({
   const { isOpen, onOpen, onOpenChange } = disclosure;
 
   const { connectors, connect } = useConnect();
+  const connections = useConnections();
   const chainId = useChainId();
 
-
-  console.log(connectors);
+  console.log(connections);
 
   return (
     <>

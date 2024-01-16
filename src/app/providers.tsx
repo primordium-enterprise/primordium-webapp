@@ -1,8 +1,11 @@
 'use client'
 
 import { NextUIProvider } from "@nextui-org/react";
-import AppWagmiProvider from "../providers/wagmi-provider";
-import { State } from "wagmi";
+import { WagmiProvider, State } from "wagmi";
+import wagmiConfig from "@/config/wagmi-config";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+export const queryClient = new QueryClient();
 
 export default function Providers({
   children,
@@ -13,9 +16,11 @@ export default function Providers({
 }) {
   return (
     <NextUIProvider>
-      <AppWagmiProvider initialState={initialState}>
-        {children}
-      </AppWagmiProvider>
+      <WagmiProvider config={wagmiConfig} initialState={initialState}>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </WagmiProvider>
     </NextUIProvider>
   );
 }

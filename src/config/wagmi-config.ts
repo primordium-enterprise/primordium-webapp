@@ -1,4 +1,4 @@
-import { createConfig, http, createStorage, cookieStorage, CreateConnectorFn } from "wagmi";
+import { createConfig, http, createStorage, cookieStorage, parseCookie, CreateConnectorFn, Config, State, deserialize, serialize } from "wagmi";
 import { Chain, mainnet, sepolia, foundry } from "wagmi/chains";
 import { injected, walletConnect } from "wagmi/connectors";
 
@@ -21,10 +21,23 @@ if (walletConnectProjectId) {
 }
 
 
+const pruneKeysReplacer = (keys: string[]) => (key: string, value: any) => {
+  if (keys.find(k => k == key)) {
+    return '';
+  }
+  return value;
+}
+
+// We prune the 'icon' key (from injected wallet connectors), because this overflows the max size of the cookie
+const keysToPrune: string[] = ['icon'];
+
 const wagmiConfig = createConfig({
   chains,
   ssr: true,
-  storage: createStorage({ storage: cookieStorage }),
+  storage: createStorage({
+    storage: cookieStorage,
+    serialize: (value) => serialize(value, pruneKeysReplacer(keysToPrune))
+  }),
   multiInjectedProviderDiscovery: true,
   connectors,
   transports
