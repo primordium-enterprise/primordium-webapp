@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import Providers from '@/providers/providers'
+import Providers from './providers'
 import Navigation from '@/components/Navigation'
+import Modals from './modals'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,10 +19,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} light text-foreground bg-background`}>
         <Providers>
-          <Navigation />
-          {children}
+          <Modals>
+            <Navigation />
+            {children}
+          </Modals>
         </Providers>
       </body>
     </html>
