@@ -1,4 +1,4 @@
-import ConnectWalletModal from "../modals/ConnectWalletModal";
+import ChooseWalletModal from "../modals/ChooseWalletModal";
 
 export default function Modals({
   children
@@ -6,8 +6,8 @@ export default function Modals({
   children: React.ReactNode
 }) {
   return (
-    <ConnectWalletModal>
+    <ChooseWalletModal>
       {children}
-    </ConnectWalletModal>
+    </ChooseWalletModal>
   );
 }

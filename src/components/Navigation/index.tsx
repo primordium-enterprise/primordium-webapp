@@ -1,23 +1,16 @@
 "use client";
 
-import { ConnectWalletModalContext } from "@/modals/ConnectWalletModal";
-import {
-  Button,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-} from "@nextui-org/react";
+import { ChooseWalletModalContext } from "@/modals/ChooseWalletModal";
+import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
 import { useContext, useState } from "react";
 import { serialize, useAccount, useConnect, useDisconnect } from "wagmi";
 import DisplayAddress from "../DisplayAddress";
 import { CaretDownIcon, CaretUpIcon } from "@radix-ui/react-icons";
 
 export default function Navigation() {
-  const connectWalletModal = useContext(ConnectWalletModalContext);
+  const ChooseWalletModal = useContext(ChooseWalletModalContext);
 
-  const { address, connector, isConnected, isConnecting, status } =
-    useAccount();
+  const { address, connector, isConnected, isConnecting, status } = useAccount();
   const { disconnect } = useDisconnect();
 
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
@@ -38,7 +31,7 @@ export default function Navigation() {
                 key="disconnect"
                 className="text-danger"
                 color="danger"
-                onClick={() => disconnect()}
+                onPress={() => disconnect()}
               >
                 Disconnect
               </DropdownItem>
@@ -50,8 +43,8 @@ export default function Navigation() {
           <Button
             variant="ghost"
             color="default"
-            isLoading={isConnecting}
-            onClick={connectWalletModal.onOpen}
+            // isLoading={isConnecting}
+            onPress={ChooseWalletModal.onOpen}
           >
             Connect Wallet
           </Button>
