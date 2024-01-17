@@ -37,7 +37,6 @@ export default function Navigation() {
 
   return (
     <nav className="flex justify-between items-center px-2 py-4">
-      {/* <div className="flex content-center"> */}
       <Link href="https://primordiumdao.xyz" target="_blank">
         <Image
           className="pixelated w-12"
@@ -47,7 +46,6 @@ export default function Navigation() {
           priority
         />
       </Link>
-      {/* </div> */}
       <div>
         {isConnected ? (
           <>
