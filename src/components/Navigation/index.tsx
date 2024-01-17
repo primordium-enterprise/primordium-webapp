@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import logo from "public/logo.png";
 import { ChooseWalletModalContext } from "@/modals/ChooseWalletModal";
 import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
 import { useContext, useEffect, useState } from "react";
@@ -8,6 +10,7 @@ import DisplayAddress from "../DisplayAddress";
 import { CaretDownIcon, CaretUpIcon } from "@radix-ui/react-icons";
 import { formatEther, formatUnits } from "viem";
 import { abbreviateETHBalance } from "@/utils/abbreviateETHBalance";
+import Link from "next/link";
 
 export default function Navigation() {
   const ChooseWalletModal = useContext(ChooseWalletModalContext);
@@ -33,42 +36,55 @@ export default function Navigation() {
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
 
   return (
-    <nav className="flex justify-end content-center px-2 py-4">
-      {isConnected ? (
-        <>
-          <Dropdown onOpenChange={(isOpen) => setDropdownIsOpen(isOpen)}>
-            <DropdownTrigger>
-              <Button variant="bordered">
-                {formattedBalance && <span>{formattedBalance}</span>}
-                <DisplayAddress address={address} className="font-bold" />
-                {dropdownIsOpen ? <CaretUpIcon /> : <CaretDownIcon />}
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Account Actions">
-              <DropdownItem onPress={ChooseWalletModal.onOpen}>Switch Wallet</DropdownItem>
-              <DropdownItem
-                key="disconnect"
-                className="text-danger"
-                color="danger"
-                onPress={() => disconnect()}
-              >
-                Disconnect
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </>
-      ) : (
-        <>
-          <Button
-            variant="ghost"
-            color="default"
-            // isLoading={isConnecting}
-            onPress={ChooseWalletModal.onOpen}
-          >
-            Connect Wallet
-          </Button>
-        </>
-      )}
+    <nav className="flex justify-between items-center px-2 py-4">
+      {/* <div className="flex content-center"> */}
+      <Link href="https://primordiumdao.xyz" target="_blank">
+        <Image
+          className="pixelated w-12"
+          src={logo}
+          alt="Primordium logo."
+          unoptimized
+          priority
+        />
+      </Link>
+      {/* </div> */}
+      <div>
+        {isConnected ? (
+          <>
+            <Dropdown onOpenChange={(isOpen) => setDropdownIsOpen(isOpen)}>
+              <DropdownTrigger>
+                <Button variant="bordered">
+                  {formattedBalance && <span>{formattedBalance}</span>}
+                  <DisplayAddress address={address} className="font-bold" />
+                  {dropdownIsOpen ? <CaretUpIcon /> : <CaretDownIcon />}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Account Actions">
+                <DropdownItem onPress={ChooseWalletModal.onOpen}>Switch Wallet</DropdownItem>
+                <DropdownItem
+                  key="disconnect"
+                  className="text-danger"
+                  color="danger"
+                  onPress={() => disconnect()}
+                >
+                  Disconnect
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </>
+        ) : (
+          <>
+            <Button
+              variant="ghost"
+              color="default"
+              // isLoading={isConnecting}
+              onPress={ChooseWalletModal.onOpen}
+            >
+              Connect Wallet
+            </Button>
+          </>
+        )}
+      </div>
     </nav>
   );
 }
