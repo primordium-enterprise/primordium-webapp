@@ -15,13 +15,13 @@ const shortenAddress = (addr: Address | undefined): string => {
   return addr;
 };
 
-type Props = {
+export default function DisplayAddress({
+  address,
+  className,
+}: {
   address: Address | undefined;
-  // useAvatar: boolean,
-  // avatarWidth:
-};
-
-export default function DisplayAddress({ address }: Props) {
+  className?: string | undefined;
+}) {
   const [shortAddress, setShortAddress] = useState(shortenAddress(address));
   const { data: ensName } = useEnsName({
     address,
@@ -31,5 +31,5 @@ export default function DisplayAddress({ address }: Props) {
     setShortAddress(shortenAddress(address));
   }, [address]);
 
-  return <span>{ensName || shortAddress}</span>;
+  return <span className={className}>{ensName || shortAddress}</span>;
 }

@@ -22,11 +22,16 @@ export default function Navigation() {
           <Dropdown onOpenChange={(isOpen) => setDropdownIsOpen(isOpen)}>
             <DropdownTrigger>
               <Button variant="bordered">
-                <DisplayAddress address={address} />
+                <DisplayAddress address={address} className="font-bold"/>
                 {dropdownIsOpen ? <CaretUpIcon /> : <CaretDownIcon />}
               </Button>
             </DropdownTrigger>
             <DropdownMenu aria-label="Account Actions">
+              <DropdownItem
+                onPress={ChooseWalletModal.onOpen}
+              >
+                Switch Wallet
+              </DropdownItem>
               <DropdownItem
                 key="disconnect"
                 className="text-danger"

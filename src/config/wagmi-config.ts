@@ -11,7 +11,7 @@ import {
   serialize,
 } from "wagmi";
 import { Chain, mainnet, sepolia, foundry } from "wagmi/chains";
-import { injected, walletConnect } from "wagmi/connectors";
+import { injected, safe, walletConnect, coinbaseWallet } from "wagmi/connectors";
 
 const transports = {
   [mainnet.id]: http(process.env.NEXT_PUBLIC_JSON_RPC_MAINNET),
@@ -25,7 +25,13 @@ if (process.env.NODE_ENV == "development") {
   chains.push(foundry);
 }
 
-const connectors: CreateConnectorFn[] = [];
+const connectors: CreateConnectorFn[] = [
+  // safe(),
+  coinbaseWallet({
+    appName: "Primordium DAO"
+  })
+];
+
 const walletConnectProjectId: string =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "";
 if (walletConnectProjectId) {

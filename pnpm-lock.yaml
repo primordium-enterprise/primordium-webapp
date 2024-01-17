@@ -14,6 +14,12 @@ dependencies:
   '@tanstack/react-query':
     specifier: ^5.17.12
     version: 5.17.12(react@18.2.0)
+  '@walletconnect/modal':
+    specifier: ^2.6.2
+    version: 2.6.2(@types/react@18.2.47)(react@18.2.0)
+  classnames:
+    specifier: ^2.5.1
+    version: 2.5.1
   framer-motion:
     specifier: ^10.18.0
     version: 10.18.0(react-dom@18.2.0)(react@18.2.0)
@@ -6469,6 +6475,10 @@ packages:
     resolution: {integrity: sha512-AS7n5NSc0OQVMV9v6wt3ByujNIrne0/cTjiC2MYqhvao57VNfiuVksTSr2p17nVOhEr2KtqiAkGwHcgMC/qUuQ==}
     dependencies:
       consola: 3.2.3
+    dev: false
+
+  /classnames@2.5.1:
+    resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
     dev: false
 
   /cli-cursor@3.1.0:

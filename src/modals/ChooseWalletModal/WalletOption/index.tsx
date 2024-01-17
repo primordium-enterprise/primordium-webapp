@@ -1,17 +1,33 @@
-'use client'
+"use client";
 
+import {
+  Config,
+  Connector,
+  CreateConnectorFn,
+  UseAccountReturnType,
+  UseConnectReturnType,
+} from "wagmi";
 import { Button } from "@nextui-org/react";
 import Image from "next/image";
 import walletConnectLogo from "public/wallet-brand-assets/walletconnect-logo.svg";
 import braveLogo from "public/wallet-brand-assets/brave.svg";
-import { Config, Connector, CreateConnectorFn, UseConnectReturnType } from "wagmi";
+import safeLogo from "public/wallet-brand-assets/safe-logo.svg";
+import coinbaseWalletLogo from "public/wallet-brand-assets/coinbase-wallet-logo.svg";
+import { ConnectErrorType } from "wagmi/actions";
+import classNames from "classnames";
+import DisplayAddress from "@/components/DisplayAddress";
+import { ArrowRightIcon } from "@radix-ui/react-icons";
 
-const logo = (walletType: string) => {
-  switch (walletType) {
+const logo = (connectorId: string) => {
+  switch (connectorId) {
     case "walletConnect":
       return walletConnectLogo;
     case "com.brave.wallet":
       return braveLogo;
+    case "coinbaseWalletSDK":
+      return coinbaseWalletLogo;
+    case "safe":
+      return safeLogo;
     default:
       return "";
   }
@@ -23,40 +39,57 @@ function isConnector(connector: CreateConnectorFn | Connector | undefined): conn
 
 export default function WalletOption({
   connector,
-  currentConnector,
-  useConnectReturn
+  account,
+  useConnectReturn,
 }: {
-  connector: Connector,
-  currentConnector: Connector | undefined,
-  useConnectReturn: UseConnectReturnType<Config, unknown>
+  connector: Connector;
+  account: UseAccountReturnType<Config>;
+  useConnectReturn: UseConnectReturnType<Config, unknown>;
 }) {
   const { connect, variables, isPending, isSuccess } = useConnectReturn;
 
   const icon = logo(connector.id) || connector.icon;
 
-  const isLastSelected = isConnector(variables?.connector) && variables.connector.id == connector.id;
+  const isLastSelected =
+    isConnector(variables?.connector) && variables.connector.id == connector.id;
 
   const isConnecting = isLastSelected && isPending;
-  const isConnected = connector.id == currentConnector?.id;
+  const isConnected = connector.id == account.connector?.id;
 
   return (
-    <Button
-      className="flex justify-start content-center"
-      variant="flat"
-      color={isConnected ? 'success' : 'default'}
-      isLoading={isConnecting}
-      spinnerPlacement="end"
-      isDisabled={isPending || isConnected}
-      onPress={() => connect({ connector })}
-      startContent={icon && <Image
-        className="w-6"
-        src={icon}
-        alt="Wallet icon"
-        width="64"
-        height="64"
-      />}
-    >
-      {connector.name}
-    </Button>
-  )
+    <>
+      <Button
+        className="flex justify-start items-center data-[disabled=true]:opacity-75"
+        variant={isConnected ? "bordered" : "flat"}
+        color={isConnected ? "success" : "default"}
+        isLoading={isConnecting}
+        spinnerPlacement="end"
+        isDisabled={isPending || isConnected}
+        onPress={() =>
+          connect(
+            { connector },
+            {
+              onSettled: (data, error, variables) => {
+                console.log("settled");
+                console.log(data);
+                console.log(error);
+                console.log(variables);
+              },
+            },
+          )
+        }
+        startContent={
+          icon && <Image className="w-6" src={icon} alt="Wallet icon" width="64" height="64" />
+        }
+      >
+        {connector.name}
+      </Button>
+      {isConnected && (
+        <div className="text-sm pl-8 flex items-center">
+          <span className="opacity-50">Account:&nbsp;</span>
+          <DisplayAddress address={account.address} />
+        </div>
+      )}
+    </>
+  );
 }

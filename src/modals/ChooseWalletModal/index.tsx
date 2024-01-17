@@ -19,11 +19,13 @@ export const ChooseWalletModalContext = createContext<ReturnType<typeof useDiscl
 export default function ChooseWalletModal({ children }: { children: React.ReactNode }) {
   const disclosure = useDisclosure();
 
-  const { isOpen, onOpenChange } = disclosure;
+  const { isOpen, onOpenChange, onClose } = disclosure;
 
-  const { connector: currentConnector } = useAccount();
+  const account = useAccount();
   const useConnectReturn = useConnect();
   const { connectors, isPending, reset } = useConnectReturn;
+
+  console.log(connectors);
 
   return (
     <>
@@ -31,7 +33,13 @@ export default function ChooseWalletModal({ children }: { children: React.ReactN
         {children}
       </ChooseWalletModalContext.Provider>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        isDismissable={!isPending}
+        hideCloseButton={isPending}
+        backdrop={isPending ? "blur" : "opaque"}
+      >
         <ModalContent>
           <ModalHeader>Connect a Wallet</ModalHeader>
           <ModalBody>
@@ -39,20 +47,19 @@ export default function ChooseWalletModal({ children }: { children: React.ReactN
               <WalletOption
                 key={connector.uid}
                 connector={connector}
-                currentConnector={currentConnector}
+                account={account}
                 useConnectReturn={useConnectReturn}
               />
             ))}
           </ModalBody>
           <ModalFooter>
             <Button
-              variant="ghost"
-              isDisabled={!isPending}
-              onPress={() => reset()}
+              color="primary"
+              isDisabled={isPending || account.connector === undefined}
+              onPress={() => onClose()}
             >
-              Cancel
+              Continue
             </Button>
-            <Button color="primary">Continue</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
