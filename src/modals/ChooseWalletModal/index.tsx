@@ -25,7 +25,7 @@ export default function ChooseWalletModal({ children }: { children: React.ReactN
   const useConnectReturn = useConnect();
   const { connectors, isPending, reset } = useConnectReturn;
 
-  console.log(connectors);
+  // console.log(connectors);
 
   return (
     <>

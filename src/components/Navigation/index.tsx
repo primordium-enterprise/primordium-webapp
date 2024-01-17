@@ -2,16 +2,33 @@
 
 import { ChooseWalletModalContext } from "@/modals/ChooseWalletModal";
 import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
-import { useContext, useState } from "react";
-import { serialize, useAccount, useConnect, useDisconnect } from "wagmi";
+import { useContext, useEffect, useState } from "react";
+import { serialize, useAccount, useBalance, useConnect, useDisconnect } from "wagmi";
 import DisplayAddress from "../DisplayAddress";
 import { CaretDownIcon, CaretUpIcon } from "@radix-ui/react-icons";
+import { formatEther, formatUnits } from "viem";
+import { abbreviateETHBalance } from "@/utils/abbreviateETHBalance";
 
 export default function Navigation() {
   const ChooseWalletModal = useContext(ChooseWalletModalContext);
 
   const { address, connector, isConnected, isConnecting, status } = useAccount();
+  const { data: balanceData } = useBalance({ address: address });
   const { disconnect } = useDisconnect();
+
+  const [formattedBalance, setFormattedBalance] = useState("");
+  useEffect(() => {
+    if (balanceData === undefined) {
+      setFormattedBalance("");
+    } else {
+      setFormattedBalance(
+        abbreviateETHBalance(formatUnits(balanceData.value, balanceData.decimals)).concat(
+          " ",
+          balanceData.symbol,
+        ),
+      );
+    }
+  }, [balanceData]);
 
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
 
@@ -22,16 +39,13 @@ export default function Navigation() {
           <Dropdown onOpenChange={(isOpen) => setDropdownIsOpen(isOpen)}>
             <DropdownTrigger>
               <Button variant="bordered">
-                <DisplayAddress address={address} className="font-bold"/>
+                {formattedBalance && <span>{formattedBalance}</span>}
+                <DisplayAddress address={address} className="font-bold" />
                 {dropdownIsOpen ? <CaretUpIcon /> : <CaretDownIcon />}
               </Button>
             </DropdownTrigger>
             <DropdownMenu aria-label="Account Actions">
-              <DropdownItem
-                onPress={ChooseWalletModal.onOpen}
-              >
-                Switch Wallet
-              </DropdownItem>
+              <DropdownItem onPress={ChooseWalletModal.onOpen}>Switch Wallet</DropdownItem>
               <DropdownItem
                 key="disconnect"
                 className="text-danger"

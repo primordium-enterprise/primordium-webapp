@@ -70,10 +70,10 @@ export default function WalletOption({
             { connector },
             {
               onSettled: (data, error, variables) => {
-                console.log("settled");
-                console.log(data);
-                console.log(error);
-                console.log(variables);
+                // console.log("settled");
+                // console.log(data);
+                // console.log(error);
+                // console.log(variables);
               },
             },
           )
@@ -84,11 +84,13 @@ export default function WalletOption({
       >
         {connector.name}
       </Button>
-      {isConnected && (
-        <div className="text-sm pl-8 flex items-center">
-          <span className="opacity-50">Account:&nbsp;</span>
-          <DisplayAddress address={account.address} />
-        </div>
+      {isConnected && account.addresses && (
+        account.addresses.map(addr => (
+          <div key={addr} className="text-sm pl-8 flex items-center">
+            <span className="opacity-50">Account:&nbsp;</span>
+            <DisplayAddress address={addr} />
+          </div>
+        ))
       )}
     </>
   );
