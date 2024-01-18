@@ -29,14 +29,9 @@ const connectors: CreateConnectorFn[] = [
   // safe(),
   coinbaseWallet({
     appName: "Primordium DAO"
-  })
+  }),
+  walletConnect({ projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "" })
 ];
-
-const walletConnectProjectId: string =
-  process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "";
-if (walletConnectProjectId) {
-  connectors.push(walletConnect({ projectId: walletConnectProjectId }));
-}
 
 const pruneKeysReplacer = (keys: string[]) => (key: string, value: any) => {
   if (keys.find((k) => k == key)) {

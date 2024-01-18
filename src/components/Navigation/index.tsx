@@ -36,25 +36,23 @@ export default function Navigation() {
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
 
   return (
-    <nav className="flex justify-between items-center px-2 py-4">
+    <nav className="flex justify-between items-center p-4">
       <Link href="https://primordiumdao.xyz" target="_blank">
-        <Image
-          className="pixelated w-12"
-          src={logo}
-          alt="Primordium logo."
-          unoptimized
-          priority
-        />
+        <Image className="pixelated w-12" src={logo} alt="Primordium logo." unoptimized priority />
       </Link>
       <div>
         {isConnected ? (
           <>
             <Dropdown onOpenChange={(isOpen) => setDropdownIsOpen(isOpen)}>
               <DropdownTrigger>
-                <Button variant="bordered">
-                  {formattedBalance && <span className="hidden sm:block">{formattedBalance}</span>}
+                <Button
+                  variant="bordered"
+                  startContent={
+                    formattedBalance && <span className="hidden sm:block">{formattedBalance}</span>
+                  }
+                  endContent={dropdownIsOpen ? <CaretUpIcon /> : <CaretDownIcon />}
+                >
                   <DisplayAddress address={address} className="font-bold" />
-                  {dropdownIsOpen ? <CaretUpIcon /> : <CaretDownIcon />}
                 </Button>
               </DropdownTrigger>
               <DropdownMenu aria-label="Account Actions">

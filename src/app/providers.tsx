@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { NextUIProvider } from "@nextui-org/react";
 import { WagmiProvider, State } from "wagmi";
@@ -9,18 +9,16 @@ export const queryClient = new QueryClient();
 
 export default function Providers({
   children,
-  initialState
+  initialState,
 }: {
-  children: React.ReactNode,
-  initialState: State | undefined
+  children: React.ReactNode;
+  initialState: State | undefined;
 }) {
   return (
-    <NextUIProvider>
-      <WagmiProvider config={wagmiConfig} initialState={initialState}>
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      </WagmiProvider>
-    </NextUIProvider>
+    <WagmiProvider config={wagmiConfig} initialState={initialState}>
+      <QueryClientProvider client={queryClient}>
+        <NextUIProvider>{children}</NextUIProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
