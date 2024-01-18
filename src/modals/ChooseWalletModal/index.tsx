@@ -38,7 +38,7 @@ export default function ChooseWalletModal({ children }: { children: React.ReactN
         onOpenChange={onOpenChange}
         isDismissable={!isPending}
         hideCloseButton={isPending}
-        backdrop={isPending ? "blur" : "opaque"}
+        backdrop={"blur"}
       >
         <ModalContent>
           <ModalHeader>Connect a Wallet</ModalHeader>

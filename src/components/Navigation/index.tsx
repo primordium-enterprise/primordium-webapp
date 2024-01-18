@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import logo from "public/logo.png";
+import logo from "public/logo-white.png";
 import { ChooseWalletModalContext } from "@/modals/ChooseWalletModal";
 import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
 import { useContext, useEffect, useState } from "react";
@@ -52,7 +52,7 @@ export default function Navigation() {
             <Dropdown onOpenChange={(isOpen) => setDropdownIsOpen(isOpen)}>
               <DropdownTrigger>
                 <Button variant="bordered">
-                  {formattedBalance && <span>{formattedBalance}</span>}
+                  {formattedBalance && <span className="hidden sm:block">{formattedBalance}</span>}
                   <DisplayAddress address={address} className="font-bold" />
                   {dropdownIsOpen ? <CaretUpIcon /> : <CaretDownIcon />}
                 </Button>

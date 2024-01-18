@@ -31,7 +31,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${inter.className} light text-foreground bg-background`}>
+      <body className={`${inter.className} dark text-foreground bg-background min-h-screen`}>
         <Providers initialState={initialState}>
           <Modals>
             <Navigation />
