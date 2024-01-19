@@ -4,6 +4,7 @@ import { NextUIProvider } from "@nextui-org/react";
 import { WagmiProvider, State } from "wagmi";
 import wagmiConfig from "@/config/wagmi-config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ChooseWalletModal from "@/context/ChooseWalletModal";
 
 export const queryClient = new QueryClient();
 
@@ -17,7 +18,11 @@ export default function Providers({
   return (
     <WagmiProvider config={wagmiConfig} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
-        <NextUIProvider>{children}</NextUIProvider>
+        <NextUIProvider>
+          <ChooseWalletModal>
+            {children}
+          </ChooseWalletModal>
+        </NextUIProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

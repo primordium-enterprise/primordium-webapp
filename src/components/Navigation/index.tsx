@@ -2,36 +2,22 @@
 
 import Image from "next/image";
 import logo from "public/logo-white.png";
-import { ChooseWalletModalContext } from "@/modals/ChooseWalletModal";
+import { ChooseWalletModalContext } from "@/context/ChooseWalletModal";
 import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
 import { useContext, useEffect, useState } from "react";
 import { serialize, useAccount, useBalance, useConnect, useDisconnect } from "wagmi";
 import DisplayAddress from "../DisplayAddress";
 import { CaretDownIcon, CaretUpIcon } from "@radix-ui/react-icons";
-import { formatEther, formatUnits } from "viem";
-import { abbreviateETHBalance } from "@/utils/abbreviateETHBalance";
 import Link from "next/link";
+import useFormattedBalance from "@/hooks/useFormattedBalance";
 
 export default function Navigation() {
   const ChooseWalletModal = useContext(ChooseWalletModalContext);
 
-  const { address, connector, isConnected, isConnecting, status } = useAccount();
-  const { data: balanceData } = useBalance({ address: address });
+  const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
 
-  const [formattedBalance, setFormattedBalance] = useState("");
-  useEffect(() => {
-    if (balanceData === undefined) {
-      setFormattedBalance("");
-    } else {
-      setFormattedBalance(
-        abbreviateETHBalance(formatUnits(balanceData.value, balanceData.decimals)).concat(
-          " ",
-          balanceData.symbol,
-        ),
-      );
-    }
-  }, [balanceData]);
+  const { formatted: ethBalance, result: { isSuccess: isEthBalanceSuccess } } = useFormattedBalance({ address });
 
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
 
@@ -48,7 +34,7 @@ export default function Navigation() {
                 <Button
                   variant="bordered"
                   startContent={
-                    formattedBalance && <span className="hidden sm:block">{formattedBalance}</span>
+                    isEthBalanceSuccess && <span className="hidden sm:block">{ethBalance}</span>
                   }
                   endContent={dropdownIsOpen ? <CaretUpIcon /> : <CaretDownIcon />}
                 >

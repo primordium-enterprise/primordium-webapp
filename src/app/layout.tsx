@@ -3,7 +3,6 @@ import { Inter, Londrina_Shadow } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import Navigation from "@/components/Navigation";
-import Modals from "./modals";
 import { cookieToInitialState } from "wagmi";
 import wagmiConfig from "@/config/wagmi-config";
 import { headers } from "next/headers";
@@ -34,10 +33,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${inter.variable} ${londrina_shadow.variable}`}>
       <body className={`${inter.className} dark text-foreground bg-background min-h-screen`}>
         <Providers initialState={initialState}>
-          <Modals>
-            <Navigation />
-            {children}
-          </Modals>
+          <Navigation />
+          {children}
         </Providers>
       </body>
     </html>
