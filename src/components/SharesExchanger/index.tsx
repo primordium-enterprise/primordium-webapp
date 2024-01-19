@@ -13,9 +13,10 @@ import {
 } from "@nextui-org/react";
 import Image from "next/image";
 import { useState } from "react";
-import ethLogo from "public/asset-logos/eth-logo.png";
+import ethLogo from "public/img/asset-logos/0x.png";
 import { useAccount, useBalance } from "wagmi";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
+import AssetAmountInput from "../AssetAmountInput";
 
 const sharePrice = {
   quoteAmount: BigInt("1000"),
@@ -37,31 +38,14 @@ export default function SharesExchanger() {
   const [mintValue, setMintValue] = useState(1);
 
   return (
-    <Card className="my-8 mx-auto w-full max-w-[480px]">
+    <Card className="my-8 mx-auto w-full max-w-[460px]">
       <CardBody className="p-2">
         <Tabs variant="underlined" size="sm" className="pb-2">
           <Tab key="deposit" title="Deposit">
-            <Input
-              classNames={{
-                input: "text-xl font-medium grow",
-                inputWrapper: "py-1 h-auto",
-                innerWrapper: "items-center py-2",
-                label: "relative !translate-y-0 text-sm !text-default-400",
-                description: "text-end",
-              }}
-              placeholder="0"
-              label="Deposit amount"
-              labelPlacement="inside"
-              description={`Balance: ${isEthBalanceError ? "(error)" : ethBalance}`}
+            <AssetAmountInput
               value={depositValue}
-              onValueChange={onDepositChange}
-              variant="faded"
-              endContent={
-                <div className="flex items-center">
-                  <Image src={ethLogo} alt="ETH logo" className="size-5 mr-1" />
-                  <span className="text-lg text-default-400">ETH</span>
-                </div>
-              }
+              onValueChange={setDepositValue}
+              label="Deposit amount"
             />
           </Tab>
           <Tab key="withdraw" title="Withdraw"></Tab>

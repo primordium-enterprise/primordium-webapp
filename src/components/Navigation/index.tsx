@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import logo from "public/logo-white.png";
+import logo from "public/img/logo-white.png";
 import { ChooseWalletModalContext } from "@/context/ChooseWalletModal";
 import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
 import { useContext, useEffect, useState } from "react";

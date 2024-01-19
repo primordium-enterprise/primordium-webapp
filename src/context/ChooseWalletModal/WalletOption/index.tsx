@@ -9,10 +9,10 @@ import {
 } from "wagmi";
 import { Button } from "@nextui-org/react";
 import Image from "next/image";
-import walletConnectLogo from "public/wallet-brand-assets/walletconnect-logo.svg";
-import braveLogo from "public/wallet-brand-assets/brave.svg";
-import safeLogo from "public/wallet-brand-assets/safe-logo.svg";
-import coinbaseWalletLogo from "public/wallet-brand-assets/coinbase-wallet-logo.svg";
+import walletConnectLogo from "public/img/wallet-brand-assets/walletconnect-logo.svg";
+import braveLogo from "public/img/wallet-brand-assets/brave.svg";
+import safeLogo from "public/img/wallet-brand-assets/safe-logo.svg";
+import coinbaseWalletLogo from "public/img/wallet-brand-assets/coinbase-wallet-logo.svg";
 import { ConnectErrorType } from "wagmi/actions";
 import classNames from "classnames";
 import DisplayAddress from "@/components/DisplayAddress";
