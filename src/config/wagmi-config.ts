@@ -33,16 +33,6 @@ const connectors: CreateConnectorFn[] = [
   walletConnect({ projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "" })
 ];
 
-const pruneKeysReplacer = (keys: string[]) => (key: string, value: any) => {
-  if (keys.find((k) => k == key)) {
-    return "";
-  }
-  return value;
-};
-
-// We prune the 'icon' key (from injected wallet connectors), because this overflows the max size of the cookie
-const keysToPrune: string[] = ["icon"];
-
 const wagmiConfig = createConfig({
   chains,
   ssr: true,
