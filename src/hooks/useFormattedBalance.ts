@@ -8,6 +8,7 @@ import {
 } from "wagmi";
 import { format } from "dnum";
 import abbreviateBalance from "@/utils/abbreviateBalance";
+import primordiumContracts from "@/config/primordiumContracts";
 
 type BalanceData = {
   value: bigint;
@@ -22,21 +23,17 @@ export interface UseFormattedBalanceReturnType<Addr> extends BalanceData {
 
 export default function useFormattedBalance<TokenAddress extends Address | undefined>(
   params: {
+    address?: Address | undefined;
     token?: TokenAddress;
-    address?: Address;
   } = {},
 ): UseFormattedBalanceReturnType<TokenAddress> {
   let { token, address } = params;
-
-  if (!address) {
-    address = useAccount().address;
-  }
 
   let balanceData: BalanceData = {
     value: BigInt(0),
     decimals: 18,
     formatted: "0",
-    symbol: token ? "ERC20" : "ETH",
+    symbol: token ? token == primordiumContracts.token.address ? "MUSHI" : "(ERC20)" : "ETH",
   };
 
   if (token && address) {

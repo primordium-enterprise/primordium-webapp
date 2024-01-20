@@ -14,9 +14,8 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 import ethLogo from "public/img/asset-logos/0x.png";
-import { useAccount, useBalance } from "wagmi";
-import useFormattedBalance from "@/hooks/useFormattedBalance";
 import AssetAmountInput from "../AssetAmountInput";
+import primordiumContracts from "@/config/primordiumContracts";
 
 const sharePrice = {
   quoteAmount: BigInt("1000"),
@@ -24,18 +23,16 @@ const sharePrice = {
 };
 
 export default function SharesExchanger() {
-  const {
-    formatted: ethBalance,
-    result: { isError: isEthBalanceError },
-  } = useFormattedBalance();
 
   const [depositValue, setDepositValue] = useState("");
   const onDepositChange = (value: string) => {
-    if (validateStringIsNumber(value)) {
-      setDepositValue(value);
-    }
+    setDepositValue(value);
   };
-  const [mintValue, setMintValue] = useState(1);
+
+  const [mintValue, setMintValue] = useState("");
+  const onMintChange = (value: string) => {
+    setMintValue(value);
+  }
 
   return (
     <Card className="my-8 mx-auto w-full max-w-[460px]">
@@ -44,8 +41,14 @@ export default function SharesExchanger() {
           <Tab key="deposit" title="Deposit">
             <AssetAmountInput
               value={depositValue}
-              onValueChange={setDepositValue}
+              onValueChange={onDepositChange}
               label="Deposit amount"
+            />
+            <AssetAmountInput
+              value={mintValue}
+              onValueChange={onMintChange}
+              label="Mint amount"
+              token={primordiumContracts.token.address}
             />
           </Tab>
           <Tab key="withdraw" title="Withdraw"></Tab>
