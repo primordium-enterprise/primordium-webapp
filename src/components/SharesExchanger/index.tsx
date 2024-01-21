@@ -1,25 +1,19 @@
 "use client";
 
-import validateStringIsNumber from "@/utils/validateStringIsNumber";
 import {
   Card,
-  CardHeader,
   CardBody,
-  CardFooter,
   Tabs,
   Tab,
-  Input,
-  Spinner,
 } from "@nextui-org/react";
-import Image from "next/image";
 import { useState } from "react";
-import ethLogo from "public/img/asset-logos/0x.png";
 import AssetAmountInput from "../AssetAmountInput";
 import primordiumContracts from "@/config/primordiumContracts";
+import * as dn from "dnum";
 
 const sharePrice = {
-  quoteAmount: BigInt("1000"),
-  mintAmount: BigInt("10"),
+  quoteAmount: BigInt(1),
+  mintAmount: BigInt(200),
 };
 
 export default function SharesExchanger() {
@@ -27,6 +21,7 @@ export default function SharesExchanger() {
   const [depositValue, setDepositValue] = useState("");
   const onDepositChange = (value: string) => {
     setDepositValue(value);
+
   };
 
   const [mintValue, setMintValue] = useState("");

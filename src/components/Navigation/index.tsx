@@ -5,7 +5,7 @@ import logo from "public/img/logo-white.png";
 import { ChooseWalletModalContext } from "@/context/ChooseWalletModal";
 import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
 import { useContext, useEffect, useState } from "react";
-import { serialize, useAccount, useBalance, useConnect, useDisconnect } from "wagmi";
+import { serialize, useAccount, useBalance, useConfig, useConnect, useDisconnect } from "wagmi";
 import DisplayAddress from "../DisplayAddress";
 import { CaretDownIcon, CaretUpIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
@@ -34,7 +34,7 @@ export default function Navigation() {
                 <Button
                   variant="bordered"
                   startContent={
-                    isEthBalanceSuccess && <span className="hidden sm:block">{ethBalance}</span>
+                    isEthBalanceSuccess && <span className="hidden sm:block">{ethBalance} ETH</span>
                   }
                   endContent={dropdownIsOpen ? <CaretUpIcon /> : <CaretDownIcon />}
                 >

@@ -1,4 +1,4 @@
-import { Address, erc20Abi } from "viem";
+import { Address, erc20Abi, pad } from "viem";
 import {
   UseBalanceReturnType,
   UseReadContractsReturnType,
@@ -36,7 +36,7 @@ export default function useFormattedBalance<TokenAddress extends Address | undef
     symbol: token ? token == primordiumContracts.token.address ? "MUSHI" : "(ERC20)" : "ETH",
   };
 
-  if (token && address) {
+  if (token) {
     const contractData = {
       address: token,
       abi: erc20Abi,
@@ -47,7 +47,7 @@ export default function useFormattedBalance<TokenAddress extends Address | undef
         {
           ...contractData,
           functionName: "balanceOf",
-          args: [address],
+          args: [address || pad('0x', { size: 20 })],
         },
         {
           ...contractData,

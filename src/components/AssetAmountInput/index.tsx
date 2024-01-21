@@ -16,9 +16,9 @@ const getAssetLogoSrc = (token: Address | undefined): StaticImageData | string =
   } else if (token === primordiumContracts.token.address) {
     return mushiLogo;
   } else {
-    return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${token}/logo.png`
+    return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${token}/logo.png`;
   }
-}
+};
 
 export default function AssetAmountInput({
   value,
@@ -66,9 +66,9 @@ export default function AssetAmountInput({
             alt="ETH logo"
             width={128}
             height={128}
-            className="size-6 mr-2 rounded-full"
+            className="mr-1 size-5 rounded-full"
           />
-          <span className="text-lg text-default-400">{symbol}</span>
+          <span className="text-md text-default-400">{symbol}</span>
         </div>
       }
     />

@@ -38,7 +38,6 @@ const wagmiConfig = createConfig({
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,
-    // serialize: (value) => serialize(value, pruneKeysReplacer(keysToPrune)),
   }),
   multiInjectedProviderDiscovery: true,
   connectors,
