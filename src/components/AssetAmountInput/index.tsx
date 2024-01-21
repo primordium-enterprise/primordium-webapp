@@ -34,6 +34,7 @@ export default function AssetAmountInput({
   const { address } = useAccount();
   const {
     formatted: balance,
+    decimals,
     symbol,
     result: { isError: isBalanceError },
   } = useFormattedBalance({ token, address });
@@ -49,8 +50,11 @@ export default function AssetAmountInput({
       }}
       value={value}
       onValueChange={(v) => {
-        if (validateStringIsNumber(v)) {
-          onValueChange(v);
+        let decimalIndex = v.indexOf('.');
+        if (decimalIndex == -1 || v.length - 1 - decimalIndex <= decimals) {
+          if (validateStringIsNumber(v)) {
+            onValueChange(v);
+          }
         }
       }}
       placeholder="0"

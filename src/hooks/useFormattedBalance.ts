@@ -62,7 +62,7 @@ export default function useFormattedBalance<TokenAddress extends Address | undef
 
     const { data } = result;
     balanceData.value = data?.[0].result || balanceData.value;
-    balanceData.decimals = data?.[1].result || balanceData.decimals;
+    balanceData.decimals = (typeof data?.[1].result == 'number' && data?.[1].result) || balanceData.decimals;
     balanceData.symbol = data?.[2].result || balanceData.symbol;
     balanceData.formatted = abbreviateBalance(balanceData.value, balanceData.decimals);
 
