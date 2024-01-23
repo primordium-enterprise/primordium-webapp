@@ -30,14 +30,16 @@ export default function useFormattedBalance<TokenAddress extends Address | undef
 ): UseFormattedBalanceReturnType<TokenAddress> {
   let { token, address } = params;
 
+  const isERC20Token = token && token !== ADDRESS_ZERO;
+
   let balanceData: BalanceData = {
     value: BigInt(0),
     decimals: 18,
     formatted: "0",
-    symbol: token ? token == primordiumContracts.token.address ? "MUSHI" : "(ERC20)" : "ETH",
+    symbol: isERC20Token ? token == primordiumContracts.token.address ? "MUSHI" : "(ERC20)" : "ETH",
   };
 
-  if (token) {
+  if (isERC20Token) {
     const contractData = {
       address: token,
       abi: erc20Abi,

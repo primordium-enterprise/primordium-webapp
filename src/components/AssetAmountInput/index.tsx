@@ -6,19 +6,7 @@ import { Address } from "viem";
 import Image, { StaticImageData } from "next/image";
 import validateStringIsNumber from "@/utils/validateStringIsNumber";
 import { useAccount } from "wagmi";
-import ethLogo from "public/img/asset-logos/ethLogo.png";
-import mushiLogo from "public/img/asset-logos/mushiLogo.png";
-import primordiumContracts from "@/config/primordiumContracts";
-
-const getAssetLogoSrc = (token: Address | undefined): StaticImageData | string => {
-  if (token === undefined || token == `0x0000000000000000000000000000000000000000`) {
-    return ethLogo;
-  } else if (token === primordiumContracts.token.address) {
-    return mushiLogo;
-  } else {
-    return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${token}/logo.png`;
-  }
-};
+import getAssetLogoSrc from "@/utils/getAssetLogoSrc";
 
 export default function AssetAmountInput({
   value,

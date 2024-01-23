@@ -4,15 +4,19 @@ import { ChooseWalletModalContext } from "@/context/ChooseWalletModal";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import parseDnumFromString from "@/utils/parseDnumFromString";
 import { Button, ButtonGroup, Input, Slider, Spacer, input, slider } from "@nextui-org/react";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import { format as dnFormat } from "dnum";
-import { Address, isAddress } from "viem";
+import { Address, isAddress, keccak256, toHex } from "viem";
 import { ADDRESS_ZERO } from "@/utils/constants";
 import WithdrawAsset from "./components/WithdrawAsset";
+import useTotalSupply from "@/hooks/useTotalSupply";
 
 const token = primordiumContracts.token.address;
 const MULT = 1000;
+
+const ASSETS_STORAGE_KEY = keccak256(toHex("WITHDRAWAL ASSETS"));
+const defaultAssetsJSON = JSON.stringify([ADDRESS_ZERO]);
 
 export default function WithdrawTabContent() {
   const { address, isConnected } = useAccount();
@@ -65,11 +69,18 @@ export default function WithdrawTabContent() {
     return true;
   }, [newAssetAddress]);
 
-  const [assets, setAssets] = useState<Address[]>([ADDRESS_ZERO]); // Defaults to address(0) for ETH
+  const [assets, setAssets] = useState<Address[]>(
+    JSON.parse(window?.localStorage.getItem(ASSETS_STORAGE_KEY) || defaultAssetsJSON),
+  );
+
   const addNewAssetAddress = () => {
     if (isNewAssetAddressValid) {
       if (!assets.find((asset) => asset === newAssetAddress)) {
-        setAssets([...assets, newAssetAddress as Address]);
+        const newAssets: Address[] = [...assets, newAssetAddress as Address];
+        setAssets(newAssets);
+        if (window) {
+          window.localStorage.setItem(ASSETS_STORAGE_KEY, JSON.stringify(newAssets));
+        }
       }
       setNewAssetAddress("");
       setIsAddingAsset(false);
@@ -77,8 +88,8 @@ export default function WithdrawTabContent() {
   };
 
   const removeAsset = (asset: Address) => {
-    setAssets(assets.filter(a => a !== asset))
-  }
+    setAssets(assets.filter((a) => a !== asset));
+  };
 
   return isConnected ? (
     <>
@@ -110,7 +121,12 @@ export default function WithdrawTabContent() {
       <p className="my-4 text-sm text-foreground">Treasury assets to withdraw:</p>
 
       {assets.map((asset) => (
-        <WithdrawAsset asset={asset} removeAsset={removeAsset} />
+        <WithdrawAsset
+          key={asset}
+          asset={asset}
+          removeAsset={removeAsset}
+          mushiBalance={mushiBalance}
+        />
       ))}
 
       {isAddingAsset && (

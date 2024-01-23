@@ -15,6 +15,10 @@ const primordiumContracts: {
   sharesOnboarder: {
     address: process.env.NEXT_PUBLIC_PRIMORDIUM_SHARES_ONBOARDER_ADDRESS as Address,
     abi: PrimordiumSharesOnboarderV1Abi
+  },
+  executor: {
+    address: process.env.NEXT_PUBLIC_PRIMORDIUM_EXECUTOR_ADDRESS as Address,
+    abi: [],
   }
 }
 
