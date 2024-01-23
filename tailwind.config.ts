@@ -17,6 +17,9 @@ const config: Config = {
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
+      flex: {
+        '1rem': '0 0 1rem'
+      }
     },
   },
   darkMode: "class",
