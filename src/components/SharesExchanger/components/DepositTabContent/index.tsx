@@ -1,24 +1,18 @@
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { Button, Checkbox, Input, Tab } from "@nextui-org/react";
 import AssetAmountInput from "@/components/AssetAmountInput";
 import primordiumContracts from "@/config/primordiumContracts";
 import { sharePrice } from "@/config/primordiumSettings";
 import parseDnumFromString from "@/utils/parseDnumFromString";
 import { Dnum, format as dnFormat } from "dnum";
-import { Hash, isAddress } from "viem";
+import { isAddress } from "viem";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
-import {
-  useAccount,
-  useChainId,
-  useConfig,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from "wagmi";
+import { useAccount, useChainId, useConfig, useWriteContract } from "wagmi";
 import toast from "react-hot-toast";
-import { getChainId, waitForTransactionReceipt } from "wagmi/actions";
+import { waitForTransactionReceipt } from "wagmi/actions";
 import { Link } from "@nextui-org/react";
-import { Cross2Icon } from "@radix-ui/react-icons";
 import { sepolia } from "viem/chains";
+import { ChooseWalletModalContext } from "@/context/ChooseWalletModal";
 
 const roundRemainderDown = (value: Dnum, divisor: number | bigint): Dnum => {
   divisor = BigInt(divisor);
@@ -32,7 +26,7 @@ const roundRemainderDown = (value: Dnum, divisor: number | bigint): Dnum => {
 export default function DepositTabContent() {
   const chainId = useChainId();
   const config = useConfig();
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const {
     value: balance,
     result: { refetch: refetchEthBalance },
@@ -41,7 +35,9 @@ export default function DepositTabContent() {
     result: { refetch: refetchMushiBalance },
   } = useFormattedBalance({ address, token: primordiumContracts.token.address });
 
-  const [depositValue, setDepositValue] = useState("");
+  const { onOpen } = useContext(ChooseWalletModalContext);
+
+  const [depositValue, setDepositValue] = useState(sharePrice.quoteAmount.toString());
   const onDepositChange = (value: string) => {
     if (value) {
       let v = parseDnumFromString(value);
@@ -56,7 +52,7 @@ export default function DepositTabContent() {
     setDepositValue(value);
   };
 
-  const [mintValue, setMintValue] = useState("");
+  const [mintValue, setMintValue] = useState(sharePrice.mintAmount.toString());
   const onMintChange = (value: string) => {
     if (value) {
       let v = parseDnumFromString(value);
@@ -92,21 +88,20 @@ export default function DepositTabContent() {
     return isMintToReady && isDepositAmount && isSufficientBalance;
   }, [isMintToReady, isDepositAmount, isSufficientBalance]);
 
-  const [txHash, setTxHash] = useState<Hash | undefined>();
-  const { writeContractAsync, isPending, isError, data, error } = useWriteContract();
+  const { writeContractAsync, isPending: isWriteContractPending } = useWriteContract();
 
   const mint = () => {
     const toastId = toast.loading("Sending transaction...");
 
     let depositAmount = parseDnumFromString(depositValue)[0];
-    let tx = writeContractAsync({
+    writeContractAsync({
       ...primordiumContracts.sharesOnboarder,
       functionName: isMintToSelected ? "depositFor" : "deposit",
       args: isMintToSelected ? [mintTo, depositAmount] : [depositAmount],
       value: depositAmount,
     })
       .then((hash) => {
-        toast.loading("Waiting for transaction receipt...", { id: toastId });
+        toast.loading("Waiting for transaction receipt yo...", { id: toastId });
         return waitForTransactionReceipt(config, { hash });
       })
       .then((receipt) => {
@@ -174,16 +169,18 @@ export default function DepositTabContent() {
         <Button
           className="w-full"
           size="lg"
-          color={isReady ? "primary" : "default"}
-          isDisabled={!isReady}
-          onPress={mint}
-          isLoading={isPending}
+          color="primary"
+          isDisabled={isConnected && !isReady}
+          onPress={isConnected ? mint : onOpen}
+          isLoading={isWriteContractPending}
         >
-          {!isDepositAmount
-            ? "Enter deposit amount"
-            : !isSufficientBalance
-              ? "Insufficient ETH balance"
-              : "Mint shares"}
+          {!isConnected
+            ? "Connect Wallet"
+            : !isDepositAmount
+              ? "Enter deposit amount"
+              : !isSufficientBalance
+                ? "Insufficient ETH balance"
+                : "Mint shares"}
         </Button>
       </div>
     </>

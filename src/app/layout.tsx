@@ -9,7 +9,7 @@ import wagmiConfig from "@/config/wagmi-config";
 import { headers } from "next/headers";
 import { Button } from "@nextui-org/react";
 import { Cross2Icon } from "@radix-ui/react-icons";
-import ToastWrapper from "./toast";
+import ToastWrapper from "../components/ToastWrapper";
 
 export const inter = Inter({
   subsets: ["latin"],

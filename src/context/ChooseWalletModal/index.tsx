@@ -9,23 +9,22 @@ import {
   useDisclosure,
   Button,
 } from "@nextui-org/react";
-import Image from "next/image";
 import { createContext } from "react";
-import { useAccount, useChainId, useConnect, useConnections } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import WalletOption from "./WalletOption";
 
-export const ChooseWalletModalContext = createContext<ReturnType<typeof useDisclosure> | any>({});
+export const ChooseWalletModalContext = createContext<ReturnType<typeof useDisclosure>>(
+  {} as ReturnType<typeof useDisclosure>,
+);
 
 export default function ChooseWalletModal({ children }: { children: React.ReactNode }) {
   const disclosure = useDisclosure();
 
   const { isOpen, onOpenChange, onClose } = disclosure;
 
-  const account = useAccount();
+  const { connector } = useAccount();
   const useConnectReturn = useConnect();
-  const { connectors, isPending, reset } = useConnectReturn;
-
-  // console.log(connectors);
+  const { connectors, isPending } = useConnectReturn;
 
   return (
     <>
@@ -47,7 +46,6 @@ export default function ChooseWalletModal({ children }: { children: React.ReactN
               <WalletOption
                 key={connector.uid}
                 connector={connector}
-                account={account}
                 useConnectReturn={useConnectReturn}
               />
             ))}
@@ -55,7 +53,7 @@ export default function ChooseWalletModal({ children }: { children: React.ReactN
           <ModalFooter>
             <Button
               color="primary"
-              isDisabled={isPending || account.connector === undefined}
+              isDisabled={isPending || connector === undefined}
               onPress={() => onClose()}
             >
               Continue

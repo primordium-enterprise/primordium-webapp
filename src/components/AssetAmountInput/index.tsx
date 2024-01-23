@@ -25,11 +25,13 @@ export default function AssetAmountInput({
   onValueChange,
   label = "",
   token,
+  isDisabled
 }: {
   value: string;
   onValueChange: (value: string) => void;
   label?: string;
   token?: Address;
+  isDisabled?: boolean;
 }) {
   const { address } = useAccount();
   const {
@@ -57,6 +59,7 @@ export default function AssetAmountInput({
           }
         }
       }}
+      isDisabled={isDisabled}
       placeholder="0"
       label={label}
       labelPlacement="inside"

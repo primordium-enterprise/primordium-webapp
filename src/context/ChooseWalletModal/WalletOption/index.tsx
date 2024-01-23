@@ -6,6 +6,7 @@ import {
   CreateConnectorFn,
   UseAccountReturnType,
   UseConnectReturnType,
+  useAccount,
 } from "wagmi";
 import { Button } from "@nextui-org/react";
 import Image from "next/image";
@@ -39,13 +40,12 @@ function isConnector(connector: CreateConnectorFn | Connector | undefined): conn
 
 export default function WalletOption({
   connector,
-  account,
   useConnectReturn,
 }: {
   connector: Connector;
-  account: UseAccountReturnType<Config>;
   useConnectReturn: UseConnectReturnType<Config, unknown>;
 }) {
+  const { connector: currentConnector, addresses } = useAccount();
   const { connect, variables, isPending, isSuccess } = useConnectReturn;
 
   const icon = logo(connector.id) || connector.icon;
@@ -54,7 +54,7 @@ export default function WalletOption({
     isConnector(variables?.connector) && variables.connector.id == connector.id;
 
   const isConnecting = isLastSelected && isPending;
-  const isConnected = connector.id == account.connector?.id;
+  const isConnected = connector.id === currentConnector?.id;
 
   return (
     <>
@@ -84,8 +84,8 @@ export default function WalletOption({
       >
         {connector.name}
       </Button>
-      {isConnected && account.addresses && (
-        account.addresses.map(addr => (
+      {isConnected && addresses && (
+        addresses.map(addr => (
           <div key={addr} className="text-sm pl-8 flex items-center">
             <span className="opacity-50">Account:&nbsp;</span>
             <DisplayAddress address={addr} />

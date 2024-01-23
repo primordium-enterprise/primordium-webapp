@@ -1,12 +1,15 @@
 "use client";
 
-import { Button, Divider } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import toast, { Toaster, ToastBar } from "react-hot-toast";
 
 export default function ToastWrapper() {
   return (
-    <Toaster position="bottom-right" toastOptions={{ duration: Infinity }}>
+    <Toaster
+      position="bottom-right"
+      toastOptions={{ duration: Infinity, style: { maxWidth: "400px" } }}
+    >
       {(t) => (
         <ToastBar toast={t}>
           {({ icon, message }) => (
