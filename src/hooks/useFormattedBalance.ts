@@ -9,6 +9,7 @@ import {
 import { format } from "dnum";
 import abbreviateBalance from "@/utils/abbreviateBalance";
 import primordiumContracts from "@/config/primordiumContracts";
+import { ADDRESS_ZERO } from "@/utils/constants";
 
 type BalanceData = {
   value: bigint;
@@ -47,7 +48,7 @@ export default function useFormattedBalance<TokenAddress extends Address | undef
         {
           ...contractData,
           functionName: "balanceOf",
-          args: [address || pad('0x', { size: 20 })],
+          args: [address || ADDRESS_ZERO],
         },
         {
           ...contractData,
