@@ -7,10 +7,10 @@ const config: Config = {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
-    screens: {
-      'xs': '380px'
-    },
     extend: {
+      screens: {
+        'xs': '380px'
+      },
       fontFamily: {
         "inter": "var(--font-inter)",
         "londrina-shadow": "var(--font-londrina-shadow)",

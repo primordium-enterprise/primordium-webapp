@@ -22,7 +22,6 @@ import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Address } from "viem";
 import { format } from "dnum";
-import fallbackLogo from "public/img/asset-logos/fallbackLogo.svg";
 
 export default function WithdrawAsset({
   asset,
@@ -56,18 +55,31 @@ export default function WithdrawAsset({
       <PopoverTrigger>
         <Card className="mt-2 bg-content2 hover:cursor-pointer hover:bg-content3">
           <CardBody>
-            <div className="flex flex-col xs:flex-row justify-between items-center">
-              <div className="flex xs:flex-col">
-                <div className="flex items-center">
-                  <Image
-                    src={logoSrc}
-                    unoptimized
-                    alt="ERC20 asset logo"
-                    width={128}
-                    height={128}
-                    className="mr-2 size-5 rounded-full"
-                    onError={() => setLogoSrc(fallbackLogo)}
-                  />
+            <div className="xs:flex-row flex flex-col items-center justify-between">
+              <div className="xs:flex-col flex">
+                <div className="xs:mr-0 mr-2 flex items-center">
+                  {logoSrc ? (
+                    <Image
+                      src={logoSrc}
+                      unoptimized
+                      alt="ERC20 asset logo"
+                      width={128}
+                      height={128}
+                      className="mr-2 size-5 rounded-full"
+                      onError={() => setLogoSrc("")}
+                    />
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill={`#${asset.slice(asset.length - 6)}`}
+                      className="bi bi-circle-fill mr-2 size-5"
+                      viewBox="0 0 16 16"
+                    >
+                      <circle cx="8" cy="8" r="8" />
+                    </svg>
+                  )}
                   <span className="text-md text-foreground">{symbol}</span>
                 </div>
                 <Spacer />
@@ -89,12 +101,11 @@ export default function WithdrawAsset({
                 >
                   {shortenedAsset}
                 </Button>
-
               </div>
-              <div className="flex flex-col text-right">
-                <span className="text-sm text-right">Estimated Payout: {estPayoutFormatted}</span>
+              <div className="xs:mt-0 xs:text-right mt-2 flex flex-col text-center">
+                <span className="text-sm">Estimated Payout: {estPayoutFormatted}</span>
                 <Spacer />
-                <span className="text-xs text-default-500 text-right">Treasury Balance: {formatted}</span>
+                <span className="text-xs text-default-500">Treasury Balance: {formatted}</span>
               </div>
             </div>
           </CardBody>
