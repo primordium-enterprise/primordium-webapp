@@ -18,7 +18,7 @@ import {
 } from "@nextui-org/react";
 import { CopyIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Address } from "viem";
 import { format } from "dnum";
@@ -26,18 +26,21 @@ import { format } from "dnum";
 export default function WithdrawAsset({
   asset,
   removeAsset,
-  mushiBalance,
+  withdrawValue,
+  refetchCount
 }: {
   asset: Address;
   removeAsset: (asset: Address) => void;
-  mushiBalance: bigint;
+  withdrawValue: bigint;
+  refetchCount: number
 }) {
-  const { totalSupply } = useTotalSupply();
+  const { totalSupply, refetch: refetchTotalSupply } = useTotalSupply();
   const {
     value: assetBalance,
     symbol,
     decimals,
     formatted,
+    result: { refetch: refetchAssetBalance }
   } = useFormattedBalance({
     address: primordiumContracts.executor.address,
     token: asset,
@@ -45,10 +48,15 @@ export default function WithdrawAsset({
   const [logoSrc, setLogoSrc] = useState(getAssetLogoSrc(asset));
   const shortenedAsset = useMemo(() => shortenAddress(asset), [asset]);
 
+  useEffect(() => {
+    refetchAssetBalance({ cancelRefetch: false });
+    refetchTotalSupply({ cancelRefetch: false });
+  }, [refetchCount]);
+
   const estPayoutFormatted = useMemo(() => {
     if (!totalSupply) return "0";
-    return format([(assetBalance * mushiBalance) / totalSupply, decimals]);
-  }, [mushiBalance, totalSupply, assetBalance, decimals]);
+    return format([(assetBalance * withdrawValue) / totalSupply, decimals]);
+  }, [withdrawValue, totalSupply, assetBalance, decimals]);
 
   return (
     <Popover backdrop="opaque">

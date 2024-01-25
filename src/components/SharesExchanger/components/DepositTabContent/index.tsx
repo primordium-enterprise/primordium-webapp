@@ -1,11 +1,11 @@
 import { useContext, useMemo, useState } from "react";
-import { Button, Checkbox, Input, Tab } from "@nextui-org/react";
+import { Button, Checkbox, Input, Switch, Tab } from "@nextui-org/react";
 import AssetAmountInput from "@/components/AssetAmountInput";
 import primordiumContracts from "@/config/primordiumContracts";
 import { sharePrice } from "@/config/primordiumSettings";
 import parseDnumFromString from "@/utils/parseDnumFromString";
 import { Dnum, format as dnFormat } from "dnum";
-import { isAddress } from "viem";
+import { isAddress, isAddressEqual } from "viem";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import { useAccount, useChainId, useConfig, useWriteContract } from "wagmi";
 import toast from "react-hot-toast";
@@ -13,6 +13,7 @@ import { waitForTransactionReceipt } from "wagmi/actions";
 import { Link } from "@nextui-org/react";
 import { sepolia } from "viem/chains";
 import { ChooseWalletModalContext } from "@/context/ChooseWalletModal";
+import { ADDRESS_ZERO } from "@/utils/constants";
 
 const roundRemainderDown = (value: Dnum, divisor: number | bigint): Dnum => {
   divisor = BigInt(divisor);
@@ -72,7 +73,7 @@ export default function DepositTabContent() {
 
   const isMintToValid = useMemo(() => {
     if (mintTo === "") return true;
-    return isAddress(mintTo);
+    return isAddress(mintTo) && !isAddressEqual(mintTo, ADDRESS_ZERO);
   }, [mintTo]);
 
   const isMintToReady = useMemo(() => {
@@ -91,7 +92,7 @@ export default function DepositTabContent() {
   const { writeContractAsync, isPending: isWriteContractPending } = useWriteContract();
 
   const mint = () => {
-    const toastId = toast.loading("Sending transaction...");
+    const toastId = toast.loading("Sending deposit transaction...");
 
     let depositAmount = parseDnumFromString(depositValue)[0];
     writeContractAsync({
@@ -101,7 +102,7 @@ export default function DepositTabContent() {
       value: depositAmount,
     })
       .then((hash) => {
-        toast.loading("Waiting for transaction receipt yo...", { id: toastId });
+        toast.loading("Waiting for transaction receipt...", { id: toastId });
         return waitForTransactionReceipt(config, { hash });
       })
       .then((receipt) => {
@@ -129,7 +130,7 @@ export default function DepositTabContent() {
       })
       .catch((error) => {
         console.log(error);
-        toast.error("Failed to submit the transaction.", { id: toastId });
+        toast.error("Failed to submit the deposit transaction.", { id: toastId });
       });
   };
 
@@ -146,15 +147,16 @@ export default function DepositTabContent() {
         label="Mint amount"
         token={primordiumContracts.token.address}
       />
-      <Checkbox
+      <Switch
         isSelected={isMintToSelected}
         onValueChange={setIsMintToSelected}
+        className="mt-2"
         classNames={{
           label: `text-sm ${isMintToSelected ? "text-foreground" : "text-default-400"}`,
         }}
       >
         Mint shares to a different address
-      </Checkbox>
+      </Switch>
       {isMintToSelected && (
         <Input
           value={mintTo}
