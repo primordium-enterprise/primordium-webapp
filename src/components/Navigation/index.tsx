@@ -23,7 +23,7 @@ export default function Navigation() {
 
   return (
     <nav className="flex justify-between items-center p-4">
-      <Link href="https://primordiumdao.xyz" target="_blank">
+      <Link href="/">
         <Image className="pixelated w-12" src={logo} alt="Primordium logo." unoptimized priority />
       </Link>
       <div>
