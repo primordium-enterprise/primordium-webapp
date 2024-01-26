@@ -190,11 +190,11 @@ export default function WithdrawTabContent() {
   return isConnected ? (
     <>
       <p className="mb-4 text-sm text-default-400">
-        <div className="mb-1 text-warning-400 underline">NOTE:</div>
-        <div className="pl-2">
+        <span className="mb-1 text-warning-400 underline block">NOTE:</span>
+        <span className="pl-2 block">
           Withdrawing burns your MUSHI share tokens. Only proceed if you wish to dissolve some or
           all of your membership.
-        </div>
+        </span>
       </p>
 
       <AssetAmountInput

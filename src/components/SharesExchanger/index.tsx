@@ -9,7 +9,7 @@ export default function SharesExchanger() {
   return (
     <Card className="mx-auto my-8 w-full max-w-[380px]">
       <CardBody className="p-2">
-        <Tabs variant="underlined" size="sm" className="pb-2" defaultSelectedKey="withdraw">
+        <Tabs variant="underlined" size="sm" className="pb-2" defaultSelectedKey="deposit">
           <Tab key="deposit" title="Deposit">
             <DepositTabContent />
           </Tab>

@@ -3,12 +3,9 @@
 import primordiumContracts from "@/config/primordiumContracts";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import useTotalSupply from "@/hooks/useTotalSupply";
-import getAssetLogoSrc from "@/utils/getAssetLogoSrc";
 import shortenAddress from "@/utils/shortenAddress";
 import {
-  Avatar,
   Button,
-  ButtonGroup,
   Card,
   CardBody,
   Popover,
@@ -17,11 +14,11 @@ import {
   Spacer,
 } from "@nextui-org/react";
 import { CopyIcon } from "@radix-ui/react-icons";
-import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import { Address } from "viem";
 import { format } from "dnum";
+import ERC20AssetLogo from "@/components/ERC20AssetLogo";
 
 export default function WithdrawAsset({
   asset,
@@ -45,7 +42,7 @@ export default function WithdrawAsset({
     address: primordiumContracts.executor.address,
     token: asset,
   });
-  const [logoSrc, setLogoSrc] = useState(getAssetLogoSrc(asset));
+
   const shortenedAsset = useMemo(() => shortenAddress(asset), [asset]);
 
   useEffect(() => {
@@ -66,28 +63,7 @@ export default function WithdrawAsset({
             <div className="xs:flex-row flex flex-col items-center justify-between">
               <div className="xs:flex-col flex">
                 <div className="xs:mr-0 mr-2 flex items-center">
-                  {logoSrc ? (
-                    <Image
-                      src={logoSrc}
-                      unoptimized
-                      alt="ERC20 asset logo"
-                      width={128}
-                      height={128}
-                      className="mr-2 size-5 rounded-full"
-                      onError={() => setLogoSrc("")}
-                    />
-                  ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill={`#${asset.slice(asset.length - 6)}`}
-                      className="bi bi-circle-fill mr-2 size-5"
-                      viewBox="0 0 16 16"
-                    >
-                      <circle cx="8" cy="8" r="8" />
-                    </svg>
-                  )}
+                  <ERC20AssetLogo asset={asset} className="mr-2 size-5 rounded-full" />
                   <span className="text-md text-foreground">{symbol}</span>
                 </div>
                 <Spacer />

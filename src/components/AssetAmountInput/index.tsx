@@ -3,10 +3,9 @@
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import { Input } from "@nextui-org/react";
 import { Address } from "viem";
-import Image, { StaticImageData } from "next/image";
 import validateStringIsNumber from "@/utils/validateStringIsNumber";
 import { useAccount } from "wagmi";
-import getAssetLogoSrc from "@/utils/getAssetLogoSrc";
+import ERC20AssetLogo from "../ERC20AssetLogo";
 
 export default function AssetAmountInput({
   value,
@@ -55,14 +54,15 @@ export default function AssetAmountInput({
       variant="faded"
       endContent={
         <div className="flex items-center">
-          <Image
+          <ERC20AssetLogo asset={token} className="mr-1 size-5 rounded-full" />
+          {/* <Image
             src={getAssetLogoSrc(token)}
             unoptimized
             alt="ETH logo"
             width={128}
             height={128}
             className="mr-1 size-5 rounded-full"
-          />
+          /> */}
           <span className="text-md text-default-400">{symbol}</span>
         </div>
       }

@@ -12,10 +12,13 @@ export default function ToastWrapper() {
     >
       {(t) => (
         <ToastBar toast={t}>
-          {({ icon, message }) => (
+          {({ icon, message }) => {
+            return (
             <>
               {icon}
-              {message}
+              <div className="whitespace-nowrap">
+                {message}
+              </div>
               {t.type !== "loading" && (
                 <Button
                   className="h-full min-w-0 px-4 light"
@@ -28,7 +31,7 @@ export default function ToastWrapper() {
                 </Button>
               )}
             </>
-          )}
+          )}}
         </ToastBar>
       )}
     </Toaster>
