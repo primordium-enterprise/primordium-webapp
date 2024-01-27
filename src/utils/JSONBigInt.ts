@@ -6,7 +6,7 @@ export const bigintReplacer = (key: string, value: any): any => {
   return value;
 }
 
-export const toJSON = (value: any): string => {
+export const toJSON = <T = any>(value: T): string => {
   return JSON.stringify(value, bigintReplacer);
 }
 
