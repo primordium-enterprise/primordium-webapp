@@ -1,9 +1,9 @@
 import SharesExchanger from "@/components/SharesExchanger";
 
-export default function HomePage() {
+export default function ExchangePage() {
   return (
     <div className="sm:container mx-auto">
-      {/* <main className="px-4 py-8">
+      <main className="px-4 py-8">
         <section className="text-center">
           <h1 className="font-londrina-shadow my-2 text-5xl">Join the Primordium DAO</h1>
           <p className="my-2 text-sm text-foreground-500">
@@ -12,7 +12,7 @@ export default function HomePage() {
           </p>
         </section>
         <SharesExchanger />
-      </main> */}
+      </main>
     </div>
   );
 }
