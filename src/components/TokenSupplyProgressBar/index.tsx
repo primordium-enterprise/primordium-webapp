@@ -35,16 +35,37 @@ export default function TokenSupplyProgressBar() {
   const formattedTotalSupply = useMemo(() => formatSupplyValue(totalSupply), [totalSupply]);
   const formattedMaxSupply = useMemo(() => formatSupplyValue(maxSupply), [maxSupply]);
 
+  const governanceThresholdIsMet = useMemo(
+    () =>
+      totalSupply &&
+      maxSupply &&
+      totalSupply > (maxSupply * BigInt(governanceThresholdBps)) / BigInt(10000),
+    [totalSupply, maxSupply],
+  );
+
   return (
     <div className="mx-auto !max-w-screen-md px-2 md:container">
       <h1 className="py-6 text-2xl font-bold text-foreground">MUSHI Token Supply:</h1>
-      <div className="px-2">
-        <div className="relative"></div>
-        <div className="relative z-0 h-4 overflow-hidden rounded-full bg-default-300/50">
+      <div className="px-2 sm:px-6 md:px-8">
+        <div className="relative mb-0.5 h-4 md:mb-1 md:h-5">
+          <LabelWithPopover
+            style={{
+              // left: `${percentageOfMaxSupply}%`,
+              right: 0,
+              bottom: 0,
+              // transform: "translateX(-50%)",
+            }}
+            label={formattedTotalSupply}
+            placement="top"
+            titleText="Total Supply"
+            content="The total minted supply of MUSHI tokens in circulation."
+          />
+        </div>
+        <div className="relative z-0 h-8 overflow-hidden rounded-full bg-default-300/50">
           <div
-            className="h-full rounded-full bg-primary transition-transform"
+            className={`h-full ${governanceThresholdIsMet ? "bg-success" : "bg-primary"} transition-transform !duration-500`}
             style={{ transform: `translateX(-${100 - percentageOfMaxSupply}%)` }}
-          ></div>
+          />
           <div
             className="z-2 absolute h-full w-1 bg-slate-100"
             style={{
@@ -52,21 +73,23 @@ export default function TokenSupplyProgressBar() {
               top: 0,
               transform: "translateX(-50%)",
             }}
-          ></div>
+          />
         </div>
-        <div className="relative flex justify-end">
+        <div className="relative mt-0.5 h-4 md:mt-1 md:h-5">
           <LabelWithPopover
             style={{
-              position: "absolute",
               left: `${governanceThresholdPercentage}%`,
-              top: '50%',
-              transform: "translate(-50%, -50%)",
+              top: 0,
+              transform: "translateX(-50%)",
             }}
             placement="bottom"
             titleText="Governance Threshold"
             content={`Governance cannot begin until at least ${governanceThresholdPercentage}% of the max supply of tokens have been minted.`}
           />
           <LabelWithPopover
+            style={{
+              right: 0,
+            }}
             label={formattedMaxSupply}
             placement="bottom"
             titleText="Max Supply"

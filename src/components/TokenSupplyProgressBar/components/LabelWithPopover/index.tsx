@@ -12,6 +12,7 @@ interface Props extends Omit<PopoverProps, "children"> {
   label?: string;
   titleText?: string;
   content?: string;
+  hide?: boolean;
 }
 
 export default function LabelWithPopover({
@@ -20,17 +21,18 @@ export default function LabelWithPopover({
   label,
   titleText,
   content,
+  hide,
   ...popoverProps
 }: Props) {
   return (
-    <div className={`${className} flex items-center text-sm md:text-base`} style={style}>
-      {label !== "" && (
+    <div className={`${className} absolute flex items-center text-sm md:text-base`} style={style}>
+      {!hide && label !== "" && (
         <>
           {label}
           <Popover offset={10} {...popoverProps}>
             <PopoverTrigger>
               <InfoCircledIcon
-                className={`${label !== undefined ? "ml-1" : ""} inline hover:cursor-pointer`}
+                className={`inline size-5 p-0.5 hover:cursor-pointer md:size-6 md:p-1 text-primary-700`}
               />
             </PopoverTrigger>
             <PopoverContent className="max-w-[200px] items-start">
