@@ -19,6 +19,10 @@ const primordiumContracts: {
   executor: {
     address: process.env.NEXT_PUBLIC_PRIMORDIUM_EXECUTOR_ADDRESS as Address,
     abi: [],
+  },
+  governor: {
+    address: process.env.NEXT_PUBLIC_PRIMORDIUM_GOVERNOR_ADDRESS as Address,
+    abi: [],
   }
 }
 

@@ -7,7 +7,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ChooseWalletModal from "@/context/ChooseWalletModal";
 import { useRouter } from "next/navigation";
 
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+  defaultOptions: { queries: { staleTime: Infinity } },
+});
 
 export default function Providers({
   children,
@@ -22,9 +24,7 @@ export default function Providers({
     <WagmiProvider config={wagmiConfig} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
         <NextUIProvider navigate={router.push}>
-          <ChooseWalletModal>
-            {children}
-          </ChooseWalletModal>
+          <ChooseWalletModal>{children}</ChooseWalletModal>
         </NextUIProvider>
       </QueryClientProvider>
     </WagmiProvider>
