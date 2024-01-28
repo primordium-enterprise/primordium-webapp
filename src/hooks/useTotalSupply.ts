@@ -3,9 +3,10 @@ import { erc20Abi } from "viem";
 import { useReadContract } from "wagmi";
 import { Address } from "viem";
 
-export default function useTotalSupply(
-  { token }: { token?: Address } = { token: primordiumContracts.token.address },
-) {
+/**
+ * Reads the total supply of the provided ERC20 token (uses MUSHI token address by default)
+ */
+export default function useTotalSupply(token: Address = primordiumContracts.token.address) {
   const result = useReadContract({
     address: token,
     abi: erc20Abi,

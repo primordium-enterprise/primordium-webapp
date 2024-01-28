@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { Button, Checkbox, Input, Switch, Tab } from "@nextui-org/react";
 import AssetAmountInput from "@/components/AssetAmountInput";
 import primordiumContracts from "@/config/primordiumContracts";
@@ -14,6 +14,10 @@ import { Link } from "@nextui-org/react";
 import { sepolia } from "viem/chains";
 import { ChooseWalletModalContext } from "@/context/ChooseWalletModal";
 import { ADDRESS_ZERO } from "@/utils/constants";
+
+const pruneCommas = (value: string): string => {
+  return value.replaceAll(",", "");
+};
 
 const roundRemainderDown = (value: Dnum, divisor: number | bigint): Dnum => {
   divisor = BigInt(divisor);
@@ -38,7 +42,11 @@ export default function DepositTabContent() {
 
   const { onOpen } = useContext(ChooseWalletModalContext);
 
-  const [depositValue, setDepositValue] = useState(sharePrice.quoteAmount.toString());
+  const [depositValue, _setDepositValue] = useState(sharePrice.quoteAmount.toString());
+  const setDepositValue = useCallback(
+    (value: string) => _setDepositValue(pruneCommas(value)),
+    [_setDepositValue],
+  );
   const onDepositChange = (value: string) => {
     if (value) {
       let v = parseDnumFromString(value);
@@ -53,7 +61,11 @@ export default function DepositTabContent() {
     setDepositValue(value);
   };
 
-  const [mintValue, setMintValue] = useState(sharePrice.mintAmount.toString());
+  const [mintValue, _setMintValue] = useState(sharePrice.mintAmount.toString());
+  const setMintValue = useCallback(
+    (value: string) => _setMintValue(pruneCommas(value)),
+    [_setMintValue],
+  );
   const onMintChange = (value: string) => {
     if (value) {
       let v = parseDnumFromString(value);
