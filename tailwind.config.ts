@@ -14,6 +14,7 @@ const config: Config = {
       fontFamily: {
         "inter": "var(--font-inter)",
         "londrina-shadow": "var(--font-londrina-shadow)",
+        "roboto-mono": "var(--font-roboto-mono)",
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

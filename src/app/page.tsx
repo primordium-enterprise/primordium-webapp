@@ -1,6 +1,6 @@
 import GovernanceCountdown from "@/components/GovernanceCountdown";
 import TokenSupplyProgressBar from "@/components/TokenSupplyProgressBar";
-import { londrina_shadow } from "./layout";
+import { londrina_shadow } from "./fonts";
 
 export default function HomePage() {
   return (

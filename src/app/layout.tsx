@@ -1,25 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Londrina_Shadow } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import Navigation from "@/components/Navigation";
-import toast, { ToastBar, Toaster } from "react-hot-toast";
 import { cookieToInitialState } from "wagmi";
 import wagmiConfig from "@/config/wagmi-config";
 import { headers } from "next/headers";
-import { Button } from "@nextui-org/react";
-import { Cross2Icon } from "@radix-ui/react-icons";
 import ToastWrapper from "../components/ToastWrapper";
-
-export const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-export const londrina_shadow = Londrina_Shadow({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-londrina-shadow",
-});
+import { inter, londrina_shadow, roboto_mono } from "./fonts";
 
 export const metadata: Metadata = {
   title: "Primordium DAO App",
@@ -36,12 +23,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${londrina_shadow.variable} bg-background text-foreground dark`}
+      className={`${inter.variable} ${londrina_shadow.variable} ${roboto_mono.variable} bg-background text-foreground dark`}
     >
       <body className={`${inter.className} min-h-screen bg-background text-foreground dark`}>
         <Providers initialState={initialState}>
           <Navigation />
-          {children}
+            {children}
           <ToastWrapper />
         </Providers>
       </body>

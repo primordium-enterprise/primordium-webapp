@@ -1,5 +1,6 @@
 "use client";
 
+import { roboto_mono } from "@/app/fonts";
 import useGovernanceCanBeginAt from "@/hooks/useGovernanceCanBeginAt";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useBlock } from "wagmi";
@@ -16,6 +17,10 @@ const defaultTimeLeft: TimeLeft = {
   hours: 0,
   minutes: 0,
   seconds: 0,
+};
+
+const padZero = (value: number, minDigits: number = 2) => {
+  return value.toString().padStart(minDigits, "0");
 };
 
 export default function GovernanceCountdown() {
@@ -57,17 +62,20 @@ export default function GovernanceCountdown() {
   });
 
   const isReady = useMemo(() => {
+    setTimeLeft(getTimeLeft());
     return governanceCanBeginAt && data;
   }, [governanceCanBeginAt, data]);
 
   return (
     <div className="container mx-auto">
       <h2 className="text-center">Governance Can Begin In:</h2>
-      <div className="flex justify-between">
+      <div
+        className={`mx-auto flex max-w-[700px] justify-around ${!isReady ? "text-foreground-200" : ""} ${!isMounted ? "" : ""}`}
+      >
         {Object.entries(timeLeft).map(([key, value]) => (
-          <div key={key} className="flex flex-col items-center">
-            <div>{value}</div>
-            <div className="uppercase">{key}</div>
+          <div key={key} className="flex flex-col items-center grow basis-0">
+            <div className={`text-6xl font-roboto-mono`}>{padZero(value)}</div>
+            <div className="uppercase text-foreground-500">{key}</div>
           </div>
         ))}
       </div>
