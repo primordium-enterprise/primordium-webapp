@@ -1,7 +1,7 @@
 "use client";
 
 import useGovernanceCanBeginAt from "@/hooks/useGovernanceCanBeginAt";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useBlock } from "wagmi";
 
 type TimeLeft = {
@@ -11,14 +11,24 @@ type TimeLeft = {
   seconds: number;
 };
 
+const defaultTimeLeft: TimeLeft = {
+  days: 0,
+  hours: 0,
+  minutes: 0,
+  seconds: 0,
+};
+
 export default function GovernanceCountdown() {
   const { governanceCanBeginAt } = useGovernanceCanBeginAt();
-  const { data, dataUpdatedAt } = useBlock({ watch: false, query: { refetchOnWindowFocus: false } });
+  const { data, dataUpdatedAt } = useBlock({
+    watch: false,
+    query: { refetchOnWindowFocus: false },
+  });
 
   const [isMounted, setIsMounted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState<TimeLeft | undefined>(undefined);
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>(defaultTimeLeft);
 
-  const getTimeLeft = (): TimeLeft | undefined => {
+  const getTimeLeft = (): TimeLeft => {
     if (governanceCanBeginAt && data) {
       let elapsedSeconds = Math.floor((Date.now() - dataUpdatedAt) / 1000);
       let differenceSeconds =
@@ -30,7 +40,7 @@ export default function GovernanceCountdown() {
         seconds: Math.max(0, Math.floor(differenceSeconds % 60)),
       };
     }
-    return undefined;
+    return defaultTimeLeft;
   };
 
   useEffect(() => {
@@ -46,5 +56,21 @@ export default function GovernanceCountdown() {
     }
   });
 
-  return <div>{timeLeft && JSON.stringify(timeLeft)}</div>;
+  const isReady = useMemo(() => {
+    return governanceCanBeginAt && data;
+  }, [governanceCanBeginAt, data]);
+
+  return (
+    <div className="container mx-auto">
+      <h2 className="text-center">Governance Can Begin In:</h2>
+      <div className="flex justify-between">
+        {Object.entries(timeLeft).map(([key, value]) => (
+          <div key={key} className="flex flex-col items-center">
+            <div>{value}</div>
+            <div className="uppercase">{key}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
