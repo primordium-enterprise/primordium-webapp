@@ -9,7 +9,7 @@ type PopoverProps = React.ComponentProps<typeof Popover>;
 interface Props extends Omit<PopoverProps, "children"> {
   style?: CSSProperties;
   className?: string;
-  label?: string;
+  label?: string | React.ReactNode;
   titleText?: string;
   content?: string;
   hide?: boolean;
@@ -29,6 +29,7 @@ export default function LabelWithPopover({
       {!hide && label !== "" && (
         <>
           {label}
+          {content && (
           <Popover offset={10} {...popoverProps}>
             <PopoverTrigger>
               <InfoCircledIcon
@@ -40,6 +41,7 @@ export default function LabelWithPopover({
               <p className="text-tiny">{content}</p>
             </PopoverContent>
           </Popover>
+          )}
         </>
       )}
     </div>

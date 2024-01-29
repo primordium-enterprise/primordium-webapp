@@ -45,23 +45,30 @@ export default function TokenSupplyProgressBar() {
 
   return (
     <div className="mx-auto my-8 !max-w-screen-md px-2 md:container">
-      <h1 className="pb-4 text-lg xs:text-xl sm:text-2xl font-500 text-foreground-600">MUSHI Token Supply:</h1>
+      {/* <h1 className="pb-4 text-lg xs:text-xl sm:text-2xl font-500 text-foreground-600">MUSHI Token Supply:</h1> */}
       <div className="px-2 sm:px-6 md:px-8">
         <div className="relative mb-0.5 h-4 md:mb-1 md:h-5">
           <LabelWithPopover
             style={{
-              // left: `${percentageOfMaxSupply}%`,
+              left: 0,
+              bottom: 0,
+            }}
+            label={<span>
+              <span>MUSHI <span className="text-foreground-500 text-xs">erc20</span></span>
+            </span>}
+          />
+          <LabelWithPopover
+            style={{
               right: 0,
               bottom: 0,
-              // transform: "translateX(-50%)",
             }}
             label={formattedTotalSupply}
             placement="top"
             titleText="Total Supply"
-            content="The total minted supply of MUSHI tokens in circulation."
+            content="The total supply of MUSHI tokens in circulation."
           />
         </div>
-        <div className="relative z-0 h-8 overflow-hidden rounded-full bg-default-300/50">
+        <div className="relative z-0 h-4 xs:h-6 sm:h-8 overflow-hidden rounded-full bg-default-300/50">
           <div
             className={`h-full ${governanceThresholdIsMet ? "bg-success" : "bg-primary"} rounded-full transition-transform !duration-700`}
             style={{ transform: `translateX(-${100 - percentageOfMaxSupply}%)` }}
