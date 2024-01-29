@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${inter.variable} ${londrina_shadow.variable} ${roboto_mono.variable} bg-background text-foreground dark`}
     >
-      <body className={`${inter.className} min-h-screen bg-background text-foreground dark`}>
+      <body className="font-inter min-h-screen bg-background text-foreground dark">
         <Providers initialState={initialState}>
           <Navigation />
             {children}

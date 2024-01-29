@@ -17,5 +17,5 @@ export default function DisplayAddress({
     address,
   });
 
-  return <span className={className}>{ensName || shortAddress}</span>;
+  return <span className={`${className ? className : ''} font-roboto-mono`}>{ensName || shortAddress}</span>;
 }

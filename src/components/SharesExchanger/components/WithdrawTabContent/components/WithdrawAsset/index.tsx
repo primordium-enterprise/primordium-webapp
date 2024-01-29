@@ -69,7 +69,7 @@ export default function WithdrawAsset({
                 <Spacer />
                 <Button
                   size="sm"
-                  className="m-0 px-unit-2 text-xs text-default-500"
+                  className="m-0 px-unit-2 text-xs text-default-500 font-roboto-mono"
                   variant="faded"
                   endContent={<CopyIcon />}
                   onPress={() => {

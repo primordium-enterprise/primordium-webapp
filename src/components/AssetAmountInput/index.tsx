@@ -31,7 +31,7 @@ export default function AssetAmountInput({
   return (
     <Input
       classNames={{
-        input: "text-xl font-medium grow basis-0",
+        input: "text-xl font-medium grow basis-0 font-roboto-mono",
         inputWrapper: "py-1 h-auto",
         innerWrapper: "items-center py-2",
         label: "relative !translate-y-0 text-sm !text-default-400",

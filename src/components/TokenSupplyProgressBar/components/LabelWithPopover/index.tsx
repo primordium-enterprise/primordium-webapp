@@ -25,7 +25,7 @@ export default function LabelWithPopover({
   ...popoverProps
 }: Props) {
   return (
-    <div className={`${className} absolute flex items-center text-sm md:text-base`} style={style}>
+    <div className={`${className} absolute flex items-center text-sm md:text-base font-roboto-mono`} style={style}>
       {!hide && label !== "" && (
         <>
           {label}
