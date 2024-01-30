@@ -15,7 +15,7 @@ export default function HomePage() {
       <GovernanceCountdown />
       <TokenSupplyProgressBar />
       <div className="flex justify-center my-16">
-        <Link href="/exchange" target="_blank">
+        <Link href="/exchange">
           <Button
             color="primary"
             size="lg"

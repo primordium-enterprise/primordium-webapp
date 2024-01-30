@@ -73,7 +73,7 @@ export default function TokenSupplyProgressBar() {
         </div>
         <div className="xs:h-6 relative z-0 h-4 overflow-hidden rounded-full bg-default-300/50 sm:h-8">
           <div
-            className={`h-full ${governanceThresholdIsMet ? "bg-success" : "bg-primary"} rounded-full transition-transform !duration-700`}
+            className={`h-full ${governanceThresholdIsMet ? "bg-success" : "bg-primary"} transition-transform !duration-700`}
             style={{ transform: `translateX(-${100 - percentageOfMaxSupply}%)` }}
           />
           <div
