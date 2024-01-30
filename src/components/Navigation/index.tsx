@@ -2,17 +2,18 @@
 
 import Image from "next/image";
 import logo from "public/img/logo-white.png";
-import { ChooseWalletModalContext } from "@/context/ChooseWalletModal";
 import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
 import { useContext, useEffect, useState } from "react";
-import { serialize, useAccount, useBalance, useConfig, useConnect, useDisconnect } from "wagmi";
+import { useAccount,useDisconnect } from "wagmi";
 import DisplayAddress from "../DisplayAddress";
 import { CaretDownIcon, CaretUpIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
+import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 
 export default function Navigation() {
-  const ChooseWalletModal = useContext(ChooseWalletModalContext);
+  const { open } = useWeb3Modal();
+  const { open: isWeb3ModalOpen } = useWeb3ModalState();
 
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
@@ -42,7 +43,8 @@ export default function Navigation() {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu aria-label="Account Actions">
-                <DropdownItem onPress={ChooseWalletModal.onOpen}>Switch Wallet</DropdownItem>
+                <DropdownItem onPress={() => open({ view: "Networks" })}>Switch Network</DropdownItem>
+                <DropdownItem onPress={() => open()}>Switch Wallet</DropdownItem>
                 <DropdownItem
                   key="disconnect"
                   className="text-danger"
@@ -59,8 +61,8 @@ export default function Navigation() {
             <Button
               variant="ghost"
               color="default"
-              // isLoading={isConnecting}
-              onPress={ChooseWalletModal.onOpen}
+              isLoading={isWeb3ModalOpen}
+              onPress={() => open()}
             >
               Connect Wallet
             </Button>

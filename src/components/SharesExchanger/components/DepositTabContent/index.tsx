@@ -12,8 +12,8 @@ import toast from "react-hot-toast";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { Link } from "@nextui-org/react";
 import { sepolia } from "viem/chains";
-import { ChooseWalletModalContext } from "@/context/ChooseWalletModal";
 import { ADDRESS_ZERO } from "@/utils/constants";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 
 const pruneCommas = (value: string): string => {
   return value.replaceAll(",", "");
@@ -40,7 +40,7 @@ export default function DepositTabContent() {
     result: { refetch: refetchMushiBalance },
   } = useFormattedBalance({ address, token: primordiumContracts.token.address });
 
-  const { onOpen } = useContext(ChooseWalletModalContext);
+  const { open } = useWeb3Modal();
 
   const [depositValue, _setDepositValue] = useState(sharePrice.quoteAmount.toString());
   const setDepositValue = useCallback(
@@ -185,7 +185,7 @@ export default function DepositTabContent() {
           size="lg"
           color="primary"
           isDisabled={isConnected && !isReady}
-          onPress={isConnected ? mint : onOpen}
+          onPress={isConnected ? mint : () => open()}
           isLoading={isWriteContractPending}
         >
           {!isConnected

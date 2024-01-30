@@ -1,6 +1,5 @@
 import AssetAmountInput from "@/components/AssetAmountInput";
 import primordiumContracts from "@/config/primordiumContracts";
-import { ChooseWalletModalContext } from "@/context/ChooseWalletModal";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import parseDnumFromString from "@/utils/parseDnumFromString";
 import {
@@ -24,6 +23,7 @@ import useTotalSupply from "@/hooks/useTotalSupply";
 import toast from "react-hot-toast";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { sepolia } from "viem/chains";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 
 const token = primordiumContracts.token.address;
 const MULT = 1000;
@@ -46,7 +46,7 @@ export default function WithdrawTabContent() {
     result: { refetch: refetchMushiBalance },
   } = useFormattedBalance({ address, token });
 
-  const { onOpen } = useContext(ChooseWalletModalContext);
+  const { open } = useWeb3Modal();
 
   const [withdrawInputValue, setWithdrawInputValue] = useState("");
   const [withdrawValue, setWithdrawValue] = useState(BigInt(0));
@@ -302,7 +302,7 @@ export default function WithdrawTabContent() {
       <p className="text-sm text-default-400">
         Connect your wallet to view your membership shares:
       </p>
-      <Button className="my-2" fullWidth onPress={onOpen} size="lg" color="primary">
+      <Button className="my-2" fullWidth onPress={() => open()} size="lg" color="primary">
         Connect Wallet
       </Button>
     </>
