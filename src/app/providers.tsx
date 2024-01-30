@@ -26,12 +26,12 @@ function InitialChainSelector({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (process.env.NODE_ENV === "production") {
       if (window.location.hostname.includes('app.primordiumdao')) {
-        switchChain(mainnet);
+        switchChain({ chainId: mainnet.id });
       } else {
-        switchChain(sepolia);
+        switchChain({ chainId: sepolia.id });
       }
     } else {
-      switchChain(foundry);
+      switchChain({ chainId: foundry.id });
     }
   }, []);
 

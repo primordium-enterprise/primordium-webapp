@@ -44,7 +44,7 @@ export default function Navigation() {
               </DropdownTrigger>
               <DropdownMenu aria-label="Account Actions">
                 <DropdownItem onPress={() => open({ view: "Networks" })}>Switch Network</DropdownItem>
-                <DropdownItem onPress={() => open()}>Switch Wallet</DropdownItem>
+                <DropdownItem onPress={() => open()}>View Account</DropdownItem>
                 <DropdownItem
                   key="disconnect"
                   className="text-danger"
