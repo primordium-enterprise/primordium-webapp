@@ -7,3 +7,27 @@
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
 }
+
+@layer components {
+  ul {
+    list-style-type: disc;
+    list-style-position: outside;
+    font-size: theme(fontSize.xs);
+    padding-left: theme(padding.4);
+
+    li {
+      padding-bottom: theme(padding.2);
+
+      a {
+        font-size: inherit !important;
+      }
+    }
+  }
+
+  @media screen(xs) {
+    ul {
+      font-size: theme(fontSize.sm);
+      padding-left: theme(padding.6);
+    }
+  }
+}
