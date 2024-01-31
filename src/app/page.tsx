@@ -4,8 +4,6 @@ import TokenSupplyProgressBar from "@/components/TokenSupplyProgressBar";
 import { Button } from "@nextui-org/react";
 import Link from "next/link";
 
-
-
 export default function HomePage() {
   return (
     <div className="mx-auto sm:container">
@@ -17,7 +15,7 @@ export default function HomePage() {
       </div>
       <GovernanceCountdown />
       <TokenSupplyProgressBar />
-      <div className="my-16 flex justify-center">
+      <div className="my-8 flex justify-center xs:my-12 sm:my-16">
         <Link href="/exchange">
           <Button
             color="primary"
@@ -28,8 +26,19 @@ export default function HomePage() {
           </Button>
         </Link>
       </div>
-      <div className="md:container !max-w-screen-md mx-auto my-16">
+      <div className="mx-auto my-2 !max-w-screen-md md:container xs:my-4 ">
         <HowItWorks />
+      </div>
+      <div className="my-2 flex justify-center xs:my-4 mb-4 xs:mb-8">
+        <Link href="/exchange">
+          <Button
+            color="primary"
+            size="lg"
+            className="border border-foreground px-8 py-4 text-lg font-medium sm:px-16 sm:py-8 sm:text-2xl"
+          >
+            Join Now
+          </Button>
+        </Link>
       </div>
     </div>
   );
