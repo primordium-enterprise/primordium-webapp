@@ -14,6 +14,7 @@ const config: Config = {
       fontFamily: {
         "inter": "var(--font-inter)",
         "londrina-shadow": "var(--font-londrina-shadow)",
+        "londrina-solid": "var(--font-londrina-solid)",
         "roboto-mono": "var(--font-roboto-mono)",
       },
       backgroundImage: {

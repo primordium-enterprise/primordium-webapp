@@ -35,7 +35,7 @@ a {
     }
   }
 
-  ul {
+  ul.list {
     list-style-type: disc;
     list-style-position: outside;
     font-size: var(--list-font-size);

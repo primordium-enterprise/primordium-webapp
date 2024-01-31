@@ -6,7 +6,7 @@ import { cookieToInitialState } from "wagmi";
 import wagmiConfig from "@/config/wagmi-config";
 import { headers } from "next/headers";
 import ToastWrapper from "../components/ToastWrapper";
-import { inter, londrina_shadow, roboto_mono } from "./fonts";
+import { inter, londrina_solid, londrina_shadow, roboto_mono } from "./fonts";
 
 export const metadata: Metadata = {
   title: "Primordium DAO App",
@@ -23,12 +23,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${londrina_shadow.variable} ${roboto_mono.variable} bg-background text-foreground dark`}
+      className={`${inter.variable} ${londrina_shadow.variable} ${roboto_mono.variable} ${londrina_solid.variable} bg-background text-foreground dark`}
     >
-      <body className="font-inter min-h-screen bg-background text-foreground dark">
+      <body className="min-h-screen bg-background font-roboto-mono text-foreground dark">
         <Providers initialState={initialState}>
           <Navigation />
-            {children}
+          {children}
           <ToastWrapper />
         </Providers>
       </body>
