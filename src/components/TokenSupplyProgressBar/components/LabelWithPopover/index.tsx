@@ -30,7 +30,7 @@ export default function LabelWithPopover({
         <>
           {label}
           {content && (
-          <Popover offset={10} {...popoverProps}>
+          <Popover offset={10} {...popoverProps} showArrow>
             <PopoverTrigger>
               <InfoCircledIcon
                 className={`inline size-5 p-0.5 hover:cursor-pointer md:size-6 md:p-1 text-primary-700`}
