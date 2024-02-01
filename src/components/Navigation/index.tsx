@@ -2,48 +2,84 @@
 
 import Image from "next/image";
 import logo from "public/img/logo-white.png";
-import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
-import { useContext, useEffect, useState } from "react";
-import { useAccount,useDisconnect } from "wagmi";
+import {
+  Button,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Card,
+  DropdownSection,
+} from "@nextui-org/react";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { useAccount, useDisconnect } from "wagmi";
 import DisplayAddress from "../DisplayAddress";
-import { CaretDownIcon, CaretUpIcon } from "@radix-ui/react-icons";
+import { CaretDownIcon, CaretUpIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
+import { usePathname } from "next/navigation";
+
+const routes: {
+  route: string;
+  title: string;
+}[] = [
+  {
+    route: "/",
+    title: "Home",
+  },
+  {
+    route: "/exchange",
+    title: "Exchange",
+  },
+];
 
 export default function Navigation() {
+  const pathname = usePathname();
   const { open } = useWeb3Modal();
   const { open: isWeb3ModalOpen } = useWeb3ModalState();
 
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
 
-  const { formatted: ethBalance, result: { isSuccess: isEthBalanceSuccess } } = useFormattedBalance({ address });
+  const {
+    formatted: ethBalance,
+    result: { isSuccess: isEthBalanceSuccess },
+  } = useFormattedBalance({ address });
 
-  const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
+  const [accountDropdownIsOpen, setAccountDropdownIsOpen] = useState(false);
+  const [menuDropdownIsOpen, setMenuDropdownIsOpen] = useState(false);
 
   return (
-    <nav className="flex justify-between items-center p-4">
+    <nav className="flex items-center justify-between p-2 xs:p-2 sm:p-4">
       <Link href="/">
         <Image className="pixelated w-12" src={logo} alt="Primordium logo." unoptimized priority />
       </Link>
-      <div>
+      <div className="flex">
         {isConnected ? (
           <>
-            <Dropdown onOpenChange={(isOpen) => setDropdownIsOpen(isOpen)}>
+            <Dropdown onOpenChange={(isOpen) => setAccountDropdownIsOpen(isOpen)} backdrop="blur">
               <DropdownTrigger>
                 <Button
                   variant="bordered"
+                  className="text-xs xs:text-base"
                   startContent={
                     isEthBalanceSuccess && <span className="hidden sm:block">{ethBalance} ETH</span>
                   }
-                  endContent={dropdownIsOpen ? <CaretUpIcon /> : <CaretDownIcon />}
+                  endContent={accountDropdownIsOpen ? <CaretUpIcon /> : <CaretDownIcon />}
                 >
                   <DisplayAddress address={address} className="font-bold" />
                 </Button>
               </DropdownTrigger>
-              <DropdownMenu aria-label="Account Actions">
-                <DropdownItem onPress={() => open({ view: "Networks" })}>Switch Network</DropdownItem>
+              <DropdownMenu
+                aria-label="Account Actions"
+                itemClasses={{
+                  title: "text-xs sm:text-sm",
+                }}
+              >
+                <DropdownItem onPress={() => open({ view: "Networks" })}>
+                  Switch Network
+                </DropdownItem>
                 <DropdownItem onPress={() => open()}>View Account</DropdownItem>
                 <DropdownItem
                   key="disconnect"
@@ -68,6 +104,34 @@ export default function Navigation() {
             </Button>
           </>
         )}
+
+        <Dropdown onOpenChange={(isOpen) => setMenuDropdownIsOpen(isOpen)} backdrop="blur">
+          <DropdownTrigger>
+            <Button variant="solid" className="ml-2 min-w-0">
+              <HamburgerMenuIcon />
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu
+            aria-label="Menu"
+            itemClasses={{
+              title: "text-xs sm:text-sm",
+            }}
+          >
+            <DropdownSection title="Pages" showDivider>
+              {routes.map(({ route, title }) => (
+                <DropdownItem
+                  href={route}
+                  className={route === pathname ? "bg-default-100" : ""}
+                >
+                  {title}
+                </DropdownItem>
+              ))}
+            </DropdownSection>
+            <DropdownSection title="Links">
+              <DropdownItem>Testing another item</DropdownItem>
+            </DropdownSection>
+          </DropdownMenu>
+        </Dropdown>
       </div>
     </nav>
   );
