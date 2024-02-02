@@ -9,7 +9,7 @@ import ToastWrapper from "../components/ToastWrapper";
 import { inter, londrina_solid, londrina_shadow, roboto_mono } from "./fonts";
 
 export const metadata: Metadata = {
-  title: "Primordium DAO App",
+  title: "PrimordiumDAO",
   description: "Front-end app interface for the Primordium DAO",
 };
 

@@ -14,11 +14,19 @@ import {
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 import DisplayAddress from "../DisplayAddress";
-import { CaretDownIcon, CaretUpIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
+import {
+  CaretDownIcon,
+  CaretUpIcon,
+  DiscordLogoIcon,
+  GitHubLogoIcon,
+  HamburgerMenuIcon,
+  ReaderIcon,
+} from "@radix-ui/react-icons";
 import Link from "next/link";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { usePathname } from "next/navigation";
+import MushiIcon from "../MushiIcon";
 
 const routes: {
   route: string;
@@ -119,16 +127,40 @@ export default function Navigation() {
           >
             <DropdownSection title="Pages" showDivider>
               {routes.map(({ route, title }) => (
-                <DropdownItem
-                  href={route}
-                  className={route === pathname ? "bg-default-100" : ""}
-                >
+                <DropdownItem href={route} className={route === pathname ? "bg-default-100" : ""}>
                   {title}
                 </DropdownItem>
               ))}
             </DropdownSection>
             <DropdownSection title="Links">
-              <DropdownItem>Testing another item</DropdownItem>
+              <DropdownItem
+                href="https://primordiumdao.xyz"
+                target="_blank"
+                startContent={<MushiIcon />}
+              >
+                Primordium Website
+              </DropdownItem>
+              <DropdownItem
+                href="https://primordiumdao.xyz/whitepaper.pdf"
+                target="_blank"
+                startContent={<ReaderIcon />}
+              >
+                Whitepaper
+              </DropdownItem>
+              <DropdownItem
+                href="https://github.com/PrimordiumDAO/primordium-contracts"
+                target="_blank"
+                startContent={<GitHubLogoIcon />}
+              >
+                GitHub
+              </DropdownItem>
+              <DropdownItem
+                href="https://discord.gg/H9AyEuggyP"
+                target="_blank"
+                startContent={<DiscordLogoIcon />}
+              >
+                Discord
+              </DropdownItem>
             </DropdownSection>
           </DropdownMenu>
         </Dropdown>
