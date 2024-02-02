@@ -127,7 +127,11 @@ export default function Navigation() {
           >
             <DropdownSection title="Pages" showDivider>
               {routes.map(({ route, title }) => (
-                <DropdownItem href={route} className={route === pathname ? "bg-default-100" : ""}>
+                <DropdownItem
+                  key={route}
+                  href={route}
+                  className={route === pathname ? "bg-default-100" : ""}
+                >
                   {title}
                 </DropdownItem>
               ))}

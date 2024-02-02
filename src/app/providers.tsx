@@ -1,8 +1,8 @@
 "use client";
 
 import { NextUIProvider } from "@nextui-org/react";
-import { WagmiProvider, State, useSwitchChain, useChainId } from "wagmi";
-import wagmiConfig, { projectId } from "@/config/wagmi-config";
+import { WagmiProvider, State } from "wagmi";
+import wagmiConfig, { defaultChain, projectId } from "@/config/wagmi-config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { createWeb3Modal } from "@web3modal/wagmi/react";
@@ -18,25 +18,8 @@ createWeb3Modal({
   wagmiConfig,
   projectId,
   enableAnalytics: process.env.NODE_ENV === "production",
+  defaultChain
 });
-
-function InitialChainSelector({ children }: { children: React.ReactNode }) {
-  const { switchChain } = useSwitchChain();
-
-  useEffect(() => {
-    if (process.env.NODE_ENV === "production") {
-      if (window.location.hostname.includes('app.primordiumdao')) {
-        switchChain({ chainId: mainnet.id });
-      } else {
-        switchChain({ chainId: sepolia.id });
-      }
-    } else {
-      switchChain({ chainId: foundry.id });
-    }
-  }, []);
-
-  return children;
-}
 
 export default function Providers({
   children,
@@ -51,9 +34,7 @@ export default function Providers({
     <WagmiProvider config={wagmiConfig} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
         <NextUIProvider navigate={router.push}>
-          <InitialChainSelector>
-            {children}
-          </InitialChainSelector>
+          {children}
         </NextUIProvider>
       </QueryClientProvider>
     </WagmiProvider>

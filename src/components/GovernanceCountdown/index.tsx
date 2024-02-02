@@ -35,14 +35,17 @@ export default function GovernanceCountdown() {
   const getTimeLeft = (): TimeLeft => {
     if (governanceCanBeginAt && data) {
       let elapsedSeconds = Math.floor((Date.now() - dataUpdatedAt) / 1000);
+      // console.log(governanceCanBeginAt, data.timestamp, elapsedSeconds);
       let differenceSeconds =
         Number(governanceCanBeginAt) - (Number(data.timestamp) + elapsedSeconds);
-      return {
-        days: Math.floor(differenceSeconds / (60 * 60 * 24)),
-        hours: Math.max(0, Math.floor((differenceSeconds / (60 * 60)) % 24)),
-        minutes: Math.max(0, Math.floor((differenceSeconds / 60) % 60)),
-        seconds: Math.max(0, Math.floor(differenceSeconds % 60)),
-      };
+      if (differenceSeconds > 0) {
+        return {
+          days: Math.floor(differenceSeconds / (60 * 60 * 24)),
+          hours: Math.max(0, Math.floor((differenceSeconds / (60 * 60)) % 24)),
+          minutes: Math.max(0, Math.floor((differenceSeconds / 60) % 60)),
+          seconds: Math.max(0, Math.floor(differenceSeconds % 60)),
+        };
+      }
     }
     return defaultTimeLeft;
   };

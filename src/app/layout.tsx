@@ -7,6 +7,7 @@ import wagmiConfig from "@/config/wagmi-config";
 import { headers } from "next/headers";
 import ToastWrapper from "../components/ToastWrapper";
 import { inter, londrina_solid, londrina_shadow, roboto_mono } from "./fonts";
+import RequireChainIdModal from "@/components/RequireChainIdModal";
 
 export const metadata: Metadata = {
   title: "PrimordiumDAO",
@@ -27,8 +28,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="min-h-screen bg-background font-roboto-mono text-foreground dark">
         <Providers initialState={initialState}>
-          <Navigation />
-          {children}
+            <RequireChainIdModal />
+            <Navigation />
+            {children}
           <ToastWrapper />
         </Providers>
       </body>

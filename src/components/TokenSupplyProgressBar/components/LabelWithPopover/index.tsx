@@ -29,7 +29,7 @@ export default function LabelWithPopover({
       {!hide && label !== "" && (
         <>
           {label}
-          {content && (
+          {content !== undefined && (
           <Popover offset={10} {...popoverProps} showArrow>
             <PopoverTrigger>
               <InfoCircledIcon

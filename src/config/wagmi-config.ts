@@ -27,6 +27,12 @@ if (process.env.NODE_ENV === "development") {
   chains.unshift(foundry);
 }
 
+export const defaultChain: Chain = process.env.NODE_ENV === "development"
+? foundry
+: process.env.NEXT_PUBLIC_CHAIN === "sepolia"
+  ? sepolia
+  : mainnet;
+
 const transports = {
   [mainnet.id]: http(process.env.NEXT_PUBLIC_JSON_RPC_MAINNET),
   [sepolia.id]: http(process.env.NEXT_PUBLIC_JSON_RPC_SEPOLIA),
@@ -50,6 +56,8 @@ const transports = {
 //   connectors,
 //   transports,
 // });
+
+
 
 const wagmiConfig = defaultWagmiConfig({
   chains,
