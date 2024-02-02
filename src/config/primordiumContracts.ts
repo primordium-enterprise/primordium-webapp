@@ -2,8 +2,15 @@ import { Abi, Address } from "viem";
 import PrimordiumTokenV1Abi from "../abi/PrimordiumTokenV1.abi";
 import PrimordiumSharesOnboarderV1Abi from "@/abi/PrimordiumSharesOnboarderV1.abi";
 
+type PrimordiumContractNames = {
+  readonly "token": string;
+  readonly "sharesOnboarder": string;
+  readonly "executor": string;
+  readonly "governor": string;
+}
+
 const primordiumContracts: {
-  [contractName: string]: {
+  [ContractName in keyof PrimordiumContractNames]: {
     address: Address,
     abi: Abi
   }

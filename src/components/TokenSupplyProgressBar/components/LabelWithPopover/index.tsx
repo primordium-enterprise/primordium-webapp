@@ -9,9 +9,9 @@ type PopoverProps = React.ComponentProps<typeof Popover>;
 interface Props extends Omit<PopoverProps, "children"> {
   style?: CSSProperties;
   className?: string;
-  label?: string | React.ReactNode;
+  label?: React.ReactNode;
   titleText?: string;
-  content?: string;
+  contentItems?: React.ReactNode;
   hide?: boolean;
 }
 
@@ -20,7 +20,7 @@ export default function LabelWithPopover({
   className,
   label,
   titleText,
-  content,
+  contentItems,
   hide,
   ...popoverProps
 }: Props) {
@@ -29,16 +29,16 @@ export default function LabelWithPopover({
       {!hide && label !== "" && (
         <>
           {label}
-          {content !== undefined && (
+          {contentItems && (
           <Popover offset={10} {...popoverProps} showArrow>
             <PopoverTrigger>
               <InfoCircledIcon
                 className={`inline size-5 p-0.5 hover:cursor-pointer md:size-6 md:p-1 text-primary-700`}
               />
             </PopoverTrigger>
-            <PopoverContent className="max-w-[200px] items-start">
+            <PopoverContent className="max-w-[220px] items-start">
               {titleText && <h6 className="text-small font-bold">{titleText}</h6>}
-              <p className="text-tiny">{content}</p>
+              <p className="text-tiny">{contentItems}</p>
             </PopoverContent>
           </Popover>
           )}
