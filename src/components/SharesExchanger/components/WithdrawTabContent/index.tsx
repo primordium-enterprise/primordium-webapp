@@ -1,5 +1,5 @@
 import AssetAmountInput from "@/components/AssetAmountInput";
-import primordiumContracts from "@/config/primordiumContracts";
+import {primordiumAddresses} from "@/config/addresses";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import parseDnumFromString from "@/utils/parseDnumFromString";
 import {
@@ -19,13 +19,12 @@ import { format as dnFormat } from "dnum";
 import { Address, isAddress, isAddressEqual, keccak256, toHex } from "viem";
 import { ADDRESS_ZERO } from "@/utils/constants";
 import WithdrawAsset from "./components/WithdrawAsset";
-import useTotalSupply from "@/hooks/useTotalSupply";
 import toast from "react-hot-toast";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { sepolia } from "viem/chains";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
+import PrimordiumTokenV1Abi from "@/abi/PrimordiumTokenV1.abi";
 
-const token = primordiumContracts.token.address;
 const MULT = 1000;
 
 const ASSETS_STORAGE_KEY = keccak256(toHex("WITHDRAWAL ASSETS"));
@@ -38,6 +37,9 @@ const pruneCommas = (value: string) => {
 export default function WithdrawTabContent() {
   const config = useConfig();
   const chainId = useChainId();
+
+  const token = primordiumAddresses[chainId].token;
+
   const { address, isConnected } = useAccount();
   const { refetch: refetchEthBalance } = useBalance({ address });
   const {
@@ -145,7 +147,8 @@ export default function WithdrawTabContent() {
     }
 
     writeContractAsync({
-      ...primordiumContracts.token,
+      address: primordiumAddresses[chainId].token,
+      abi: PrimordiumTokenV1Abi,
       functionName: isWithdrawToSelected ? "withdrawTo" : "withdraw",
       args,
     })

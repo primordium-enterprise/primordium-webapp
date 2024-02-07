@@ -1,8 +1,9 @@
 "use client";
 
+import {primordiumAddresses} from "@/config/addresses";
 import useGovernanceCanBeginAt from "@/hooks/useGovernanceCanBeginAt";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useBlock } from "wagmi";
+import { useBlock, useChainId } from "wagmi";
 
 type TimeLeft = {
   days: number;
@@ -23,7 +24,8 @@ const padZero = (value: number, minDigits: number = 2) => {
 };
 
 export default function GovernanceCountdown() {
-  const { governanceCanBeginAt } = useGovernanceCanBeginAt();
+  const chainId = useChainId();
+  const { governanceCanBeginAt } = useGovernanceCanBeginAt(primordiumAddresses[chainId].governor);
   const { data, dataUpdatedAt } = useBlock({
     watch: false,
     query: { refetchOnWindowFocus: false },

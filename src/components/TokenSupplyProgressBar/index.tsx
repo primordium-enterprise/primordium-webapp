@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 import { format as dnFormat } from "dnum";
 import LabelWithPopover from "./components/LabelWithPopover";
 import { governanceThresholdBps, maxSupply } from "@/utils/constants";
+import { useChainId } from "wagmi";
+import {primordiumAddresses} from "@/config/addresses";
 
 const governanceThresholdPercentage = Number(governanceThresholdBps) / 100;
 
@@ -23,11 +25,14 @@ const calculateBpsOfMaxSupply = (
 };
 
 export default function TokenSupplyProgressBar() {
-  const { totalSupply, isLoading, isError } = useTotalSupply();
+  const chainId = useChainId();
+  const { totalSupply, isLoading, isError } = useTotalSupply(
+    primordiumAddresses[chainId].token,
+  );
 
   const percentageOfMaxSupply = useMemo(
     () => calculateBpsOfMaxSupply(totalSupply, maxSupply) / 100,
-    [totalSupply, maxSupply],
+    [totalSupply],
   );
 
   const formattedTotalSupply = useMemo(() => formatSupplyValue(totalSupply), [totalSupply]);
@@ -39,7 +44,7 @@ export default function TokenSupplyProgressBar() {
   );
 
   return (
-    <div className="mx-auto my-8 !max-w-screen-md px-2 md:container">
+    <div className="mx-auto my-8 !max-w-screen-md px-2 md:container" suppressHydrationWarning>
       <div className="px-2 sm:px-6 md:px-8">
         <div className="relative mb-0.5 h-4 md:mb-1 md:h-5">
           <LabelWithPopover

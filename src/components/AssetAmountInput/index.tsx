@@ -55,14 +55,6 @@ export default function AssetAmountInput({
       endContent={
         <div className="flex items-center">
           <ERC20AssetLogo asset={token} className="mr-1 size-5 rounded-full" />
-          {/* <Image
-            src={getAssetLogoSrc(token)}
-            unoptimized
-            alt="ETH logo"
-            width={128}
-            height={128}
-            className="mr-1 size-5 rounded-full"
-          /> */}
           <span className="text-md text-default-400">{symbol}</span>
         </div>
       }

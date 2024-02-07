@@ -1,8 +1,9 @@
-import primordiumContracts from "@/config/primordiumContracts";
 import { Address } from "viem";
-import { useReadContract } from "wagmi";
+import { useChainId, useReadContract } from "wagmi";
 
-export default function useGovernanceCanBeginAt(governor: Address = primordiumContracts.governor.address) {
+export default function useGovernanceCanBeginAt(
+  governor: Address
+) {
   const result = useReadContract({
     address: governor,
     abi: [
@@ -17,5 +18,5 @@ export default function useGovernanceCanBeginAt(governor: Address = primordiumCo
     functionName: "governanceCanBeginAt",
   });
 
-  return { governanceCanBeginAt: result.data, ...result }
+  return { governanceCanBeginAt: result.data, ...result };
 }

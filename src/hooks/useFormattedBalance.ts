@@ -4,11 +4,12 @@ import {
   UseReadContractsReturnType,
   useAccount,
   useBalance,
+  useChainId,
   useReadContracts,
 } from "wagmi";
 import { format } from "dnum";
 import abbreviateBalance from "@/utils/abbreviateBalance";
-import primordiumContracts from "@/config/primordiumContracts";
+import {primordiumAddresses} from "@/config/addresses";
 import { ADDRESS_ZERO } from "@/utils/constants";
 
 type BalanceData = {
@@ -29,6 +30,7 @@ export default function useFormattedBalance<TokenAddress extends Address | undef
   } = {},
 ): UseFormattedBalanceReturnType<TokenAddress> {
   let { token, address } = params;
+  const chainId = useChainId();
 
   const isERC20Token = token && token !== ADDRESS_ZERO;
 
@@ -36,7 +38,7 @@ export default function useFormattedBalance<TokenAddress extends Address | undef
     value: BigInt(0),
     decimals: 18,
     formatted: "0",
-    symbol: isERC20Token ? token == primordiumContracts.token.address ? "MUSHI" : "(ERC20)" : "ETH",
+    symbol: isERC20Token ? token == primordiumAddresses[chainId].token ? "MUSHI" : "(ERC20)" : "ETH",
   };
 
   if (isERC20Token) {

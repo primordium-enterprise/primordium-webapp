@@ -1,22 +1,25 @@
 'use client'
 
 import { Address } from "viem";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image, { StaticImageData } from "next/image";
 import ethLogo from "public/img/asset-logos/ethLogo.png";
 import mushiLogo from "public/img/asset-logos/mushiLogo.png";
 import { ADDRESS_ZERO } from "@/utils/constants";
-import primordiumContracts from "@/config/primordiumContracts";
+import {primordiumAddresses} from "@/config/addresses";
+import { useChainId } from "wagmi";
 
-export function getAssetLogoSrc(token: Address | undefined): StaticImageData | string {
+function getAssetLogoSrc(token: Address | undefined, chainId: number): StaticImageData | string {
   if (token === undefined || token === ADDRESS_ZERO) {
     return ethLogo;
-  } else if (token === primordiumContracts.token.address) {
+  } else if (token === primordiumAddresses[chainId].token) {
     return mushiLogo;
   } else {
     return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${token}/logo.png`;
   }
 };
+
+const BLANK = "BLANK";
 
 export default function ERC20AssetLogo({
   asset,
@@ -29,14 +32,19 @@ export default function ERC20AssetLogo({
   height?: number,
   className?: string
 }) {
-  const [logoSrc, setLogoSrc] = useState(getAssetLogoSrc(asset));
+  const chainId = useChainId();
+  const [logoSrc, setLogoSrc] = useState<string | StaticImageData>(getAssetLogoSrc(asset, chainId));
+
+  useEffect(() => {
+    setLogoSrc(getAssetLogoSrc(asset, chainId));
+  }, [asset, chainId]);
 
   const alt = useMemo(() => {
     return !asset || asset === ADDRESS_ZERO ? "ETH asset logo" : "ERC20 asset logo";
   }, [asset]);
 
   return (
-    logoSrc ? (
+    logoSrc !== BLANK ? (
       <Image
         src={logoSrc}
         unoptimized
@@ -44,7 +52,7 @@ export default function ERC20AssetLogo({
         width={width}
         height={height}
         className={className}
-        onError={() => setLogoSrc("")}
+        onError={() => setLogoSrc(BLANK)}
       />
     ) : (
       <svg

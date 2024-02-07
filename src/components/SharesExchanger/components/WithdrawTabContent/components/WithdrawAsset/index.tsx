@@ -1,6 +1,6 @@
 "use client";
 
-import primordiumContracts from "@/config/primordiumContracts";
+import { primordiumAddresses } from "@/config/addresses";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import useTotalSupply from "@/hooks/useTotalSupply";
 import shortenAddress from "@/utils/shortenAddress";
@@ -19,27 +19,31 @@ import toast from "react-hot-toast";
 import { Address } from "viem";
 import { format } from "dnum";
 import ERC20AssetLogo from "@/components/ERC20AssetLogo";
+import { useChainId } from "wagmi";
 
 export default function WithdrawAsset({
   asset,
   removeAsset,
   withdrawValue,
-  refetchCount
+  refetchCount,
 }: {
   asset: Address;
   removeAsset: (asset: Address) => void;
   withdrawValue: bigint;
-  refetchCount: number
+  refetchCount: number;
 }) {
-  const { totalSupply, refetch: refetchTotalSupply } = useTotalSupply();
+  const chainId = useChainId();
+  const { totalSupply, refetch: refetchTotalSupply } = useTotalSupply(
+    primordiumAddresses[chainId].token,
+  );
   const {
     value: assetBalance,
     symbol,
     decimals,
     formatted,
-    result: { refetch: refetchAssetBalance }
+    result: { refetch: refetchAssetBalance },
   } = useFormattedBalance({
-    address: primordiumContracts.executor.address,
+    address: primordiumAddresses[chainId].executor,
     token: asset,
   });
 
@@ -60,16 +64,16 @@ export default function WithdrawAsset({
       <PopoverTrigger>
         <Card className="mt-2 bg-content2 hover:cursor-pointer hover:bg-content3">
           <CardBody>
-            <div className="xs:flex-row flex flex-col items-center justify-between">
-              <div className="xs:flex-col flex">
-                <div className="xs:mr-0 mr-2 flex items-center">
+            <div className="flex flex-col items-center justify-between xs:flex-row">
+              <div className="flex xs:flex-col">
+                <div className="mr-2 flex items-center xs:mr-0">
                   <ERC20AssetLogo asset={asset} className="mr-2 size-5 rounded-full" />
                   <span className="text-md text-foreground">{symbol}</span>
                 </div>
                 <Spacer />
                 <Button
                   size="sm"
-                  className="m-0 px-unit-2 text-xs text-default-500 font-roboto-mono"
+                  className="m-0 px-unit-2 font-roboto-mono text-xs text-default-500"
                   variant="faded"
                   endContent={<CopyIcon />}
                   onPress={() => {
@@ -86,7 +90,7 @@ export default function WithdrawAsset({
                   {shortenedAsset}
                 </Button>
               </div>
-              <div className="xs:mt-0 xs:text-right mt-2 flex flex-col text-center">
+              <div className="mt-2 flex flex-col text-center xs:mt-0 xs:text-right">
                 <span className="text-sm">Estimated Payout: {estPayoutFormatted}</span>
                 <Spacer />
                 <span className="text-xs text-default-500">Treasury Balance: {formatted}</span>

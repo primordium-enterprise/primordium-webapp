@@ -1,7 +1,7 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { Button, Checkbox, Input, Switch, Tab } from "@nextui-org/react";
 import AssetAmountInput from "@/components/AssetAmountInput";
-import primordiumContracts from "@/config/primordiumContracts";
+import {primordiumAddresses} from "@/config/addresses";
 import { sharePrice } from "@/config/primordiumSettings";
 import parseDnumFromString from "@/utils/parseDnumFromString";
 import { Dnum, format as dnFormat } from "dnum";
@@ -14,6 +14,7 @@ import { Link } from "@nextui-org/react";
 import { sepolia } from "viem/chains";
 import { ADDRESS_ZERO } from "@/utils/constants";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
+import PrimordiumSharesOnboarderV1Abi from "@/abi/PrimordiumSharesOnboarderV1.abi";
 
 const pruneCommas = (value: string): string => {
   return value.replaceAll(",", "");
@@ -38,7 +39,7 @@ export default function DepositTabContent() {
   } = useFormattedBalance({ address });
   const {
     result: { refetch: refetchMushiBalance },
-  } = useFormattedBalance({ address, token: primordiumContracts.token.address });
+  } = useFormattedBalance({ address, token: primordiumAddresses[chainId].token });
 
   const { open } = useWeb3Modal();
 
@@ -108,7 +109,8 @@ export default function DepositTabContent() {
 
     let depositAmount = parseDnumFromString(depositValue)[0];
     writeContractAsync({
-      ...primordiumContracts.sharesOnboarder,
+      address: primordiumAddresses[chainId].sharesOnboarder,
+      abi: PrimordiumSharesOnboarderV1Abi,
       functionName: isMintToSelected ? "depositFor" : "deposit",
       args: isMintToSelected ? [mintTo, depositAmount] : [depositAmount],
       value: depositAmount,
@@ -157,7 +159,7 @@ export default function DepositTabContent() {
         value={mintValue}
         onValueChange={onMintChange}
         label="Mint amount"
-        token={primordiumContracts.token.address}
+        token={primordiumAddresses[chainId].token}
       />
       <Switch
         isSelected={isMintToSelected}
