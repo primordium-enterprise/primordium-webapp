@@ -1,4 +1,4 @@
-export default [
+const PrimordiumTokenV1Abi = [
   {
     "type": "constructor",
     "inputs": [],
@@ -1516,3 +1516,5 @@ export default [
     "inputs": []
   }
 ] as const;
+
+export default PrimordiumTokenV1Abi;

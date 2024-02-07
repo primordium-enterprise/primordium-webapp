@@ -69,6 +69,10 @@ export default function GovernanceCountdown() {
     return governanceCanBeginAt && data;
   }, [governanceCanBeginAt, data]);
 
+  const isZero = useMemo(() => {
+    return Object.values(timeLeft).every(v => v === 0);
+  }, [timeLeft]);
+
   return (
     <div className="container mx-auto my-8">
       <h2 className="mb-0 text-center font-roboto-mono text-sm text-foreground-500 xs:mb-1 xs:text-base sm:mb-2 sm:text-lg">
@@ -80,7 +84,7 @@ export default function GovernanceCountdown() {
         {Object.entries(timeLeft).map(([key, value]) => (
           <div key={key} className="flex grow basis-0 flex-col items-center">
             <div
-              className={`font-roboto-mono text-4xl xs:text-5xl sm:text-6xl ${isReady && value === 0 ? "text-success-700" : ""}`}
+              className={`font-roboto-mono text-4xl xs:text-5xl sm:text-6xl ${isReady && isZero ? "text-success-700" : ""}`}
             >
               {padZero(value)}
             </div>

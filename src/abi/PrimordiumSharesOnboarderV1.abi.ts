@@ -1,4 +1,4 @@
-export default [
+const PrimordiumSharesOnboarderV1Abi = [
   {
     "type": "constructor",
     "inputs": [],
@@ -847,3 +847,5 @@ export default [
     ]
   }
 ] as const;
+
+export default PrimordiumSharesOnboarderV1Abi;
