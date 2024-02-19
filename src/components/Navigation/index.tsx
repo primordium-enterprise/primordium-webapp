@@ -52,7 +52,7 @@ export default function Navigation() {
 
   const {
     formatted: ethBalance,
-    result: { isSuccess: isEthBalanceSuccess },
+    queryResult: { isSuccess: isEthBalanceSuccess },
   } = useFormattedBalance({ address });
 
   const [accountDropdownIsOpen, setAccountDropdownIsOpen] = useState(false);

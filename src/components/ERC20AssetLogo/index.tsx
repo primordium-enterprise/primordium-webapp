@@ -12,7 +12,7 @@ import { useChainId } from "wagmi";
 function getAssetLogoSrc(token: Address | undefined, chainId: number): StaticImageData | string {
   if (token === undefined || token === ADDRESS_ZERO) {
     return ethLogo;
-  } else if (token === primordiumAddresses[chainId].token) {
+  } else if (token === primordiumAddresses[chainId]?.token) {
     return mushiLogo;
   } else {
     return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${token}/logo.png`;

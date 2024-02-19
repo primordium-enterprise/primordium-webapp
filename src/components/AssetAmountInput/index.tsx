@@ -25,7 +25,7 @@ export default function AssetAmountInput({
     formatted: balance,
     decimals,
     symbol,
-    result: { isError: isBalanceError },
+    queryResult: { isError: isBalanceError },
   } = useFormattedBalance({ token, address });
 
   return (

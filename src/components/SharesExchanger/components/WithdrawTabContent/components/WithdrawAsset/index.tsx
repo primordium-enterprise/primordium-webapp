@@ -34,16 +34,16 @@ export default function WithdrawAsset({
 }) {
   const chainId = useChainId();
   const { totalSupply, refetch: refetchTotalSupply } = useTotalSupply(
-    primordiumAddresses[chainId].token,
+    primordiumAddresses[chainId]?.token,
   );
   const {
     value: assetBalance,
     symbol,
     decimals,
     formatted,
-    result: { refetch: refetchAssetBalance },
+    queryResult: { refetch: refetchAssetBalance },
   } = useFormattedBalance({
-    address: primordiumAddresses[chainId].executor,
+    address: primordiumAddresses[chainId]?.executor,
     token: asset,
   });
 

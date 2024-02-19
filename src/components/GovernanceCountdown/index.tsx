@@ -25,7 +25,7 @@ const padZero = (value: number, minDigits: number = 2) => {
 
 export default function GovernanceCountdown() {
   const chainId = useChainId();
-  const { governanceCanBeginAt } = useGovernanceCanBeginAt(primordiumAddresses[chainId].governor);
+  const { governanceCanBeginAt } = useGovernanceCanBeginAt(primordiumAddresses[chainId]?.governor);
   const { data, dataUpdatedAt } = useBlock({
     watch: false,
     query: { refetchOnWindowFocus: false },

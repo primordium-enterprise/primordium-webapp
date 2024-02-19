@@ -27,7 +27,7 @@ const calculateBpsOfMaxSupply = (
 export default function TokenSupplyProgressBar() {
   const chainId = useChainId();
   const { totalSupply, isLoading, isError } = useTotalSupply(
-    primordiumAddresses[chainId].token,
+    primordiumAddresses[chainId]?.token,
   );
 
   const percentageOfMaxSupply = useMemo(

@@ -1,5 +1,5 @@
 import AssetAmountInput from "@/components/AssetAmountInput";
-import {primordiumAddresses} from "@/config/addresses";
+import { primordiumAddresses } from "@/config/addresses";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import parseDnumFromString from "@/utils/parseDnumFromString";
 import {
@@ -38,14 +38,14 @@ export default function WithdrawTabContent() {
   const config = useConfig();
   const chainId = useChainId();
 
-  const token = primordiumAddresses[chainId].token;
+  const token = primordiumAddresses[chainId]?.token;
 
   const { address, isConnected } = useAccount();
   const { refetch: refetchEthBalance } = useBalance({ address });
   const {
     value: mushiBalance,
     decimals,
-    result: { refetch: refetchMushiBalance },
+    queryResult: { refetch: refetchMushiBalance },
   } = useFormattedBalance({ address, token });
 
   const { open } = useWeb3Modal();
@@ -140,17 +140,13 @@ export default function WithdrawTabContent() {
   const withdraw = () => {
     const toastId = toast.loading("Sending withdraw transaction...");
 
-    let args: (bigint | Address | Address[])[] = [withdrawValue, assets];
-
-    if (isWithdrawToSelected) {
-      args.unshift(withdrawTo as Address);
-    }
-
     writeContractAsync({
       address: primordiumAddresses[chainId].token,
       abi: PrimordiumTokenV1Abi,
       functionName: isWithdrawToSelected ? "withdrawTo" : "withdraw",
-      args,
+      args: isWithdrawToSelected
+        ? [withdrawTo as Address, withdrawValue, assets]
+        : [withdrawValue, assets],
     })
       .then((hash) => {
         toast.loading("Waiting for transaction receipt...", { id: toastId });
@@ -193,8 +189,8 @@ export default function WithdrawTabContent() {
   return isConnected ? (
     <>
       <p className="mb-4 text-sm text-default-400">
-        <span className="mb-1 text-warning-400 underline block">NOTE:</span>
-        <span className="pl-2 block">
+        <span className="mb-1 block text-warning-400 underline">NOTE:</span>
+        <span className="block pl-2">
           Withdrawing burns your MUSHI share tokens. Only proceed if you wish to dissolve some or
           all of your membership.
         </span>

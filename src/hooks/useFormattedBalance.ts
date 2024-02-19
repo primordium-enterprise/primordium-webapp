@@ -20,12 +20,12 @@ type BalanceData = {
 };
 
 export interface UseFormattedBalanceReturnType<Addr> extends BalanceData {
-  result: Addr extends Address ? UseReadContractsReturnType : UseBalanceReturnType;
+  queryResult: Addr extends Address ? UseReadContractsReturnType : UseBalanceReturnType;
 }
 
 export default function useFormattedBalance<TokenAddress extends Address | undefined>(
   params: {
-    address?: Address | undefined;
+    address?: Address;
     token?: TokenAddress;
   } = {},
 ): UseFormattedBalanceReturnType<TokenAddress> {
@@ -38,16 +38,15 @@ export default function useFormattedBalance<TokenAddress extends Address | undef
     value: BigInt(0),
     decimals: 18,
     formatted: "0",
-    symbol: isERC20Token ? token == primordiumAddresses[chainId].token ? "MUSHI" : "(ERC20)" : "ETH",
+    symbol: isERC20Token ? token == primordiumAddresses[chainId]?.token ? "MUSHI" : "(ERC20)" : "ETH",
   };
 
-  if (isERC20Token) {
     const contractData = {
       address: token,
       abi: erc20Abi,
     };
 
-    const result = useReadContracts({
+    const erc20Result = useReadContracts({
       contracts: [
         {
           ...contractData,
@@ -63,29 +62,31 @@ export default function useFormattedBalance<TokenAddress extends Address | undef
           functionName: "symbol",
         },
       ],
+      query: {
+        enabled: isERC20Token
+      }
     });
 
-    const { data } = result;
-    balanceData.value = data?.[0].result || balanceData.value;
-    balanceData.decimals = (typeof data?.[1].result == 'number' && data?.[1].result) || balanceData.decimals;
-    balanceData.symbol = data?.[2].result || balanceData.symbol;
-    balanceData.formatted = abbreviateBalance(balanceData.value, balanceData.decimals);
+    const nativeResult = useBalance({ address });
+
+    let queryResult;
+    if (isERC20Token) {
+      queryResult = erc20Result;
+      const { data } = queryResult;
+      balanceData.value = data?.[0].result || balanceData.value;
+      balanceData.decimals = (typeof data?.[1].result == 'number' && data?.[1].result) || balanceData.decimals;
+      balanceData.symbol = data?.[2].result || balanceData.symbol;
+      balanceData.formatted = abbreviateBalance(balanceData.value, balanceData.decimals);
+    } else {
+      queryResult = nativeResult;
+      const { data } = queryResult;
+      balanceData.value = data?.value || balanceData.value;
+      balanceData.decimals = data?.decimals || balanceData.decimals;
+      balanceData.formatted = abbreviateBalance(balanceData.value, balanceData.decimals);
+    }
 
     return {
       ...balanceData,
-      result,
+      queryResult,
     } as UseFormattedBalanceReturnType<TokenAddress>;
-  } else {
-    const result = useBalance({ address });
-
-    const { data } = result;
-    balanceData.value = data?.value || balanceData.value;
-    balanceData.decimals = data?.decimals || balanceData.decimals;
-    balanceData.formatted = abbreviateBalance(balanceData.value, balanceData.decimals);
-
-    return {
-      ...balanceData,
-      result,
-    } as UseFormattedBalanceReturnType<TokenAddress>;
-  }
 }

@@ -5,7 +5,7 @@ import {primordiumAddresses} from "@/config/addresses";
 import { sharePrice } from "@/config/primordiumSettings";
 import parseDnumFromString from "@/utils/parseDnumFromString";
 import { Dnum, format as dnFormat } from "dnum";
-import { isAddress, isAddressEqual } from "viem";
+import { Address, isAddress, isAddressEqual } from "viem";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import { useAccount, useChainId, useConfig, useWriteContract } from "wagmi";
 import toast from "react-hot-toast";
@@ -15,6 +15,7 @@ import { sepolia } from "viem/chains";
 import { ADDRESS_ZERO } from "@/utils/constants";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import PrimordiumSharesOnboarderV1Abi from "@/abi/PrimordiumSharesOnboarderV1.abi";
+import { defaultChain } from "@/config/wagmi-config";
 
 const pruneCommas = (value: string): string => {
   return value.replaceAll(",", "");
@@ -35,11 +36,11 @@ export default function DepositTabContent() {
   const { address, isConnected } = useAccount();
   const {
     value: balance,
-    result: { refetch: refetchEthBalance },
+    queryResult: { refetch: refetchEthBalance },
   } = useFormattedBalance({ address });
   const {
-    result: { refetch: refetchMushiBalance },
-  } = useFormattedBalance({ address, token: primordiumAddresses[chainId].token });
+    queryResult: { refetch: refetchMushiBalance },
+  } = useFormattedBalance({ address, token: primordiumAddresses[defaultChain.id]?.token });
 
   const { open } = useWeb3Modal();
 
@@ -112,7 +113,7 @@ export default function DepositTabContent() {
       address: primordiumAddresses[chainId].sharesOnboarder,
       abi: PrimordiumSharesOnboarderV1Abi,
       functionName: isMintToSelected ? "depositFor" : "deposit",
-      args: isMintToSelected ? [mintTo, depositAmount] : [depositAmount],
+      args: isMintToSelected ? [mintTo as Address, depositAmount] : [depositAmount],
       value: depositAmount,
     })
       .then((hash) => {
@@ -159,7 +160,7 @@ export default function DepositTabContent() {
         value={mintValue}
         onValueChange={onMintChange}
         label="Mint amount"
-        token={primordiumAddresses[chainId].token}
+        token={primordiumAddresses[chainId]?.token}
       />
       <Switch
         isSelected={isMintToSelected}
