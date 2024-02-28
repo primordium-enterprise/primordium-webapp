@@ -2,19 +2,13 @@
 
 import { defaultChain } from "@/config/wagmi-config";
 import { Button, Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
-import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useEffect, useMemo } from "react";
-import { useAccount, useChainId, useSwitchChain } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
 
 export default function RequireChainIdModal() {
-  const { isConnected } = useAccount();
+  const { isConnected, chainId } = useAccount();
   const { open } = useWeb3Modal();
-  const wagmiChainId = useChainId();
-  const { selectedNetworkId } = useWeb3ModalState();
-
-  const chainId = useMemo(() => {
-    return selectedNetworkId || wagmiChainId;
-  }, [wagmiChainId, selectedNetworkId]);
 
   const { switchChain, error, isError, isPending } = useSwitchChain();
 
