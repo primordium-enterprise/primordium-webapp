@@ -1,3 +1,7 @@
+.inputGroup {
+  margin-bottom: 1.5rem;
+}
+
 .inputGroup > * {
   margin-top: 0.5rem;
 }
