@@ -8,7 +8,7 @@ import { Address, createTestClient, http, parseEther } from "viem";
 import { foundry } from "viem/chains";
 import styles from "./dev.module.css";
 import { useBlock, useBlockNumber } from "wagmi";
-import { CheckIcon, Cross2Icon, TrashIcon } from "@radix-ui/react-icons";
+import { CheckIcon, CopyIcon, Cross2Icon, TrashIcon } from "@radix-ui/react-icons";
 
 const handleTestClientError = (handler: string) => (error: any) => {
   console.log(error);
@@ -98,6 +98,7 @@ export default function DevPage() {
       let newStates = [...anvilStates, { name: dumpStateName, state }];
       updateAnvilStates(newStates);
       window.localStorage.setItem(ANVIL_STATES_KEY, JSON.stringify(newStates));
+      updateDumpStateName('');
     });
   };
 
@@ -182,7 +183,15 @@ export default function DevPage() {
               ) : (
                 <>
                   <Button onPress={() => loadState(stateItem)} color="primary">
-                    Load State
+                    Load
+                  </Button>
+                  <Button
+                    onPress={() => {
+                      navigator.clipboard.writeText(stateItem.state);
+                      toast.success("Copied state!");
+                    }}
+                  >
+                    <CopyIcon />
                   </Button>
                   <Button
                     variant="ghost"
