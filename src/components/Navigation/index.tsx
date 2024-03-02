@@ -40,7 +40,15 @@ const routes: {
     route: "/exchange",
     title: "Exchange",
   },
+  {
+    route: "/vote",
+    title: "Proposals",
+  },
 ];
+
+if (process.env.NODE_ENV === "development") {
+  routes.push({ route: "/dev", title: "(dev) Configure Anvil" });
+}
 
 export default function Navigation() {
   const pathname = usePathname();

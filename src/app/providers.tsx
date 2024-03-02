@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { createWeb3Modal } from "@web3modal/wagmi/react";
 import { foundry, mainnet, sepolia } from "viem/chains";
 import { useEffect } from "react";
+import ModalManagerProvider from "@/components/_modals/ModalManagerProvider";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: Infinity } },
@@ -18,7 +19,7 @@ createWeb3Modal({
   wagmiConfig,
   projectId,
   enableAnalytics: process.env.NODE_ENV === "production",
-  defaultChain
+  defaultChain,
 });
 
 export default function Providers({
@@ -34,7 +35,7 @@ export default function Providers({
     <WagmiProvider config={wagmiConfig} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
         <NextUIProvider navigate={router.push}>
-          {children}
+          <ModalManagerProvider>{children}</ModalManagerProvider>
         </NextUIProvider>
       </QueryClientProvider>
     </WagmiProvider>
