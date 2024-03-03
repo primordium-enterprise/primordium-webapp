@@ -1,7 +1,7 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { Button, Checkbox, Input, Switch, Tab } from "@nextui-org/react";
 import AssetAmountInput from "@/components/AssetAmountInput";
-import {primordiumAddresses} from "@/config/addresses";
+import {chainConfig} from "@/config/chainConfig";
 import { sharePrice } from "@/config/primordiumSettings";
 import parseDnumFromString from "@/utils/parseDnumFromString";
 import { Dnum, format as dnFormat } from "dnum";
@@ -40,7 +40,7 @@ export default function DepositTabContent() {
   } = useFormattedBalance({ address });
   const {
     queryResult: { refetch: refetchMushiBalance },
-  } = useFormattedBalance({ address, token: primordiumAddresses[defaultChain.id]?.token });
+  } = useFormattedBalance({ address, token: chainConfig[defaultChain.id]?.addresses.token });
 
   const { open } = useWeb3Modal();
 
@@ -110,7 +110,7 @@ export default function DepositTabContent() {
 
     let depositAmount = parseDnumFromString(depositValue)[0];
     writeContractAsync({
-      address: primordiumAddresses[chainId].sharesOnboarder,
+      address: chainConfig[chainId].addresses.sharesOnboarder,
       abi: PrimordiumSharesOnboarderV1Abi,
       functionName: isMintToSelected ? "depositFor" : "deposit",
       args: isMintToSelected ? [mintTo as Address, depositAmount] : [depositAmount],
@@ -160,7 +160,7 @@ export default function DepositTabContent() {
         value={mintValue}
         onValueChange={onMintChange}
         label="Mint amount"
-        token={primordiumAddresses[chainId]?.token}
+        token={chainConfig[chainId]?.addresses.token}
       />
       <Switch
         isSelected={isMintToSelected}

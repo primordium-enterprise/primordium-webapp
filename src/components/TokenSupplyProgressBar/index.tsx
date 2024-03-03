@@ -6,7 +6,7 @@ import { format as dnFormat } from "dnum";
 import LabelWithPopover from "./components/LabelWithPopover";
 import { governanceThresholdBps, maxSupply } from "@/utils/constants";
 import { useChainId } from "wagmi";
-import {primordiumAddresses} from "@/config/addresses";
+import {chainConfig} from "@/config/chainConfig";
 
 const governanceThresholdPercentage = Number(governanceThresholdBps) / 100;
 
@@ -27,7 +27,7 @@ const calculateBpsOfMaxSupply = (
 export default function TokenSupplyProgressBar() {
   const chainId = useChainId();
   const { totalSupply, isLoading, isError } = useTotalSupply(
-    primordiumAddresses[chainId]?.token,
+    chainConfig[chainId]?.addresses.token,
   );
 
   const percentageOfMaxSupply = useMemo(

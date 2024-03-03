@@ -1,11 +1,11 @@
-import {primordiumAddresses} from "@/config/addresses";
+import {chainConfig} from "@/config/chainConfig";
 import { useReadContract } from "wagmi";
 import { Address } from "viem";
 
 /**
  * Reads the max supply of the provided ERC20 token (uses MUSHI token address by default)
  */
-// export default function useMaxSupply(token: Address = primordiumAddresses.token.address) {
+// export default function useMaxSupply(token: Address = chainConfig.token.address) {
 //   const result = useReadContract({
 //     address: token,
 //     abi: [

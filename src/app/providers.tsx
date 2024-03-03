@@ -6,9 +6,9 @@ import wagmiConfig, { defaultChain, projectId } from "@/config/wagmi-config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { createWeb3Modal } from "@web3modal/wagmi/react";
-import { foundry, mainnet, sepolia } from "viem/chains";
-import { useEffect } from "react";
 import ModalManagerProvider from "@/components/_modals/ModalManagerProvider";
+import { Client, Provider as URQLProvider, cacheExchange, fetchExchange } from "urql";
+import { chainConfig } from "@/config/chainConfig";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: Infinity } },
@@ -20,6 +20,11 @@ createWeb3Modal({
   projectId,
   enableAnalytics: process.env.NODE_ENV === "production",
   defaultChain,
+});
+
+export const urqlClient = new Client({
+  url: chainConfig[defaultChain.id]?.subgraphUrl || "",
+  exchanges: [cacheExchange, fetchExchange],
 });
 
 export default function Providers({
@@ -34,9 +39,11 @@ export default function Providers({
   return (
     <WagmiProvider config={wagmiConfig} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
-        <NextUIProvider navigate={router.push}>
-          <ModalManagerProvider>{children}</ModalManagerProvider>
-        </NextUIProvider>
+        <URQLProvider value={urqlClient}>
+          <NextUIProvider navigate={router.push}>
+            <ModalManagerProvider>{children}</ModalManagerProvider>
+          </NextUIProvider>
+        </URQLProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

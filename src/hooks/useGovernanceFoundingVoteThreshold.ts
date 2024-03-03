@@ -1,9 +1,9 @@
-import {primordiumAddresses} from "@/config/addresses";
+import {chainConfig} from "@/config/chainConfig";
 import { Address } from "viem";
 import { useReadContract } from "wagmi";
 
 // export default function useGovernanceFoundingVoteThreshold(
-//   governor: Address = primordiumAddresses.governor.address,
+//   governor: Address = chainConfig.governor.address,
 // ) {
 //   const result = useReadContract({
 //     address: governor,

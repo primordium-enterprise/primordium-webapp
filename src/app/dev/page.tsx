@@ -4,7 +4,7 @@ import { Button, ButtonGroup, Input } from "@nextui-org/react";
 import { notFound } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { Address, createTestClient, http, parseEther } from "viem";
+import { Address, createTestClient, http, parseEther, publicActions } from "viem";
 import { foundry } from "viem/chains";
 import styles from "./dev.module.css";
 import { useBlock, useBlockNumber } from "wagmi";
@@ -37,15 +37,28 @@ export default function DevPage() {
         chain: foundry,
         mode: "anvil",
         transport: http(),
-      }),
+      }).extend(publicActions),
     [],
   );
+
+  useEffect(() => {
+    if (client) {
+      client.getBlock().then(console.log);
+    }
+  }, [client])
 
   const {
     data: block,
     isLoading: isBlockLoading,
     refetch: refetchBlock,
   } = useBlock({ watch: true });
+
+  const [isAutomine, setIsAutomine] = useState<boolean | undefined>(undefined);
+  useEffect(() => {
+    if (client) {
+      client.getAutomine().then(setIsAutomine);
+    }
+  }, [client]);
 
   const [blocksToMine, updateBlocksToMine] = useState("1");
   const mine = () => {
@@ -98,7 +111,7 @@ export default function DevPage() {
       let newStates = [...anvilStates, { name: dumpStateName, state }];
       updateAnvilStates(newStates);
       window.localStorage.setItem(ANVIL_STATES_KEY, JSON.stringify(newStates));
-      updateDumpStateName('');
+      updateDumpStateName("");
     });
   };
 
@@ -120,6 +133,16 @@ export default function DevPage() {
 
   const [confirmStateItemIndex, updateConfirmStateItemIndex] = useState<number | undefined>();
 
+  const [getNonceValue, updateGetNonceValue] = useState("");
+  const getNonce = () => {
+    client
+      .getTransactionCount({ address: getNonceValue as Address })
+      .then((count) => {
+        toast(`Account nonce: ${count}`);
+      })
+      .catch(handleTestClientError("getNonce()"));
+  };
+
   return (
     <div className="container mx-auto max-w-[500px]">
       <h1 className="my-4 text-center text-2xl">Local Dev Page</h1>
@@ -127,6 +150,7 @@ export default function DevPage() {
         <h2 className="text-lg underline">Current Status</h2>
         <div>Block number: {isBlockLoading ? "..." : block?.number.toString()}</div>
         <div>Block timestamp: {isBlockLoading ? "..." : block?.timestamp.toString()}</div>
+        <div>Is automine?: {isAutomine === undefined ? "..." : isAutomine ? "true" : "false"}</div>
       </div>
       <InputGroup>
         <h3>Mine:</h3>
@@ -205,6 +229,11 @@ export default function DevPage() {
             </ButtonGroup>
           </div>
         ))}
+      </InputGroup>
+      <InputGroup>
+        <h3>Get Address Nonce:</h3>
+        <Input label="Address:" value={getNonceValue} onValueChange={updateGetNonceValue} />
+        <Button onPress={getNonce}>Get Nonce</Button>
       </InputGroup>
     </div>
   );

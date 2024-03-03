@@ -1,5 +1,5 @@
 import AssetAmountInput from "@/components/AssetAmountInput";
-import { primordiumAddresses } from "@/config/addresses";
+import { chainConfig } from "@/config/chainConfig";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import parseDnumFromString from "@/utils/parseDnumFromString";
 import {
@@ -38,7 +38,7 @@ export default function WithdrawTabContent() {
   const config = useConfig();
   const chainId = useChainId();
 
-  const token = primordiumAddresses[chainId]?.token;
+  const token = chainConfig[chainId]?.addresses.token;
 
   const { address, isConnected } = useAccount();
   const { refetch: refetchEthBalance } = useBalance({ address });
@@ -141,7 +141,7 @@ export default function WithdrawTabContent() {
     const toastId = toast.loading("Sending withdraw transaction...");
 
     writeContractAsync({
-      address: primordiumAddresses[chainId].token,
+      address: chainConfig[chainId].addresses.token,
       abi: PrimordiumTokenV1Abi,
       functionName: isWithdrawToSelected ? "withdrawTo" : "withdraw",
       args: isWithdrawToSelected

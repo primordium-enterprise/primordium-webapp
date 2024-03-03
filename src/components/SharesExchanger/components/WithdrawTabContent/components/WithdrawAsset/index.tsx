@@ -1,6 +1,6 @@
 "use client";
 
-import { primordiumAddresses } from "@/config/addresses";
+import { chainConfig } from "@/config/chainConfig";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import useTotalSupply from "@/hooks/useTotalSupply";
 import shortenAddress from "@/utils/shortenAddress";
@@ -34,7 +34,7 @@ export default function WithdrawAsset({
 }) {
   const chainId = useChainId();
   const { totalSupply, refetch: refetchTotalSupply } = useTotalSupply(
-    primordiumAddresses[chainId]?.token,
+    chainConfig[chainId]?.addresses.token,
   );
   const {
     value: assetBalance,
@@ -43,7 +43,7 @@ export default function WithdrawAsset({
     formatted,
     queryResult: { refetch: refetchAssetBalance },
   } = useFormattedBalance({
-    address: primordiumAddresses[chainId]?.executor,
+    address: chainConfig[chainId]?.addresses.executor,
     token: asset,
   });
 
