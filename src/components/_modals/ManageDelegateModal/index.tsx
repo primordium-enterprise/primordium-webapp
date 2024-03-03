@@ -1,6 +1,14 @@
 "use client";
 
-import { Button, Input, Modal, ModalBody, ModalContent, ModalHeader, Spinner } from "@nextui-org/react";
+import {
+  Button,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  Spinner,
+} from "@nextui-org/react";
 import { useModalState } from "../ModalManagerProvider";
 import { useAccount } from "wagmi";
 import { useQuery } from "urql";
@@ -27,13 +35,18 @@ export default function ManageDelegateModal() {
   } = useFormattedMushiBalance({ address });
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center" isDismissable={!isWeb3ModalOpen}>
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      placement="center"
+      isDismissable={!isWeb3ModalOpen}
+    >
       <ModalContent>
         <ModalHeader className="font-londrina-solid text-xl sm:text-3xl">
           Delegate Your Votes
         </ModalHeader>
         <ModalBody>
-          <p className="text-xs sm:text-sm">
+          <p className="text-2xs xs:text-xs sm:text-sm">
             PrimordiumDAO votes are represented by delegated MUSHI tokens. MUSHI holders may
             delegate their votes to themselves or any other address they choose.
           </p>
@@ -42,13 +55,30 @@ export default function ManageDelegateModal() {
               <div className="flex justify-center">
                 <Spinner />
               </div>
-            ) : mushiBalance > 0 ? (<>
-              <div className="text:md flex justify-between sm:text-lg">
-                <div>Votes:</div>
-                <div className="font-bold">{formattedMushiBalance}</div>
-              </div>
-              <Input />
-            </>) : address ? (
+            ) : mushiBalance > 0 ? (
+              <>
+                <Input
+                  label="Your MUSHI votes balance:"
+                  labelPlacement="inside"
+                  isReadOnly
+                  classNames={{
+                    inputWrapper: "!bg-default-100"
+                  }}
+                  value={formattedMushiBalance}
+                  endContent={<span className="text-sm text-foreground-500">MUSHI</span>}
+                />
+                <Input
+                  label="Currently delegated to:"
+                  className="mt-4"
+                  classNames={{
+                    inputWrapper: "!bg-default-100"
+                  }}
+                  labelPlacement="inside"
+                  isReadOnly
+                  value={"test"}
+                />
+              </>
+            ) : address ? (
               <>
                 <p className="mb-2 text-foreground-500">You currently have no votes to delegate.</p>
                 <div className="flex justify-end">
