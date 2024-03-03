@@ -12,3 +12,18 @@ export const MemberQuery = gql`
     }
   }
 `;
+
+export const DelegateQuery = gql`
+  query Delegate($id: Bytes!) {
+    delegate(id: $id) {
+      id
+      delegatedVotesBalance
+      proposerRoleExpiresAt
+      cancelerRoleExpiresAt
+      membersRepresented {
+        tokenBalance
+        id
+      }
+    }
+  }
+`;
