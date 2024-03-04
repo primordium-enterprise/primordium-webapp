@@ -2,6 +2,7 @@
 
 import {
   Button,
+  ButtonGroup,
   Card,
   CardBody,
   Input,
@@ -17,7 +18,7 @@ import { useQuery } from "urql";
 import { DelegateQuery, MemberQuery } from "@/subgraph/subgraphQueries";
 import useFormattedMushiBalance from "@/hooks/useFormattedMushiBalance";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Address, isAddress, isAddressEqual } from "viem";
 import shortenAddress from "@/utils/shortenAddress";
 import { CopyIcon } from "@radix-ui/react-icons";
@@ -25,6 +26,8 @@ import toast from "react-hot-toast";
 import { normalize } from "viem/ens";
 import { defaultChain } from "@/config/wagmi-config";
 import { foundry, mainnet } from "viem/chains";
+import DisplayAddress from "@/components/DisplayAddress";
+import abbreviateBalance from "@/utils/abbreviateBalance";
 
 export const MANAGE_DELEGATE_MODAL = "ManageDelegateModal";
 
@@ -38,17 +41,16 @@ export default function ManageDelegateModal() {
   const [result] = useQuery({ query: MemberQuery, variables: { id: address }, pause: !isOpen });
   const { data: memberData, fetching, error } = result;
 
-  const delegate: Address | "" = useMemo(() => {
-    if (memberData && memberData.delegate) {
-      return memberData.delegate.id as Address;
-    }
-    return "";
+  // The current delegate that the account has delegated to, or empty string if none
+  const currentDelegateAddress: Address | "" = useMemo(() => {
+    return memberData?.delegate?.id || "";
   }, [memberData]);
 
+  // The display JSX element of the current delegate address (or null if no delegate)
   const currentDelegateDisplay: JSX.Element | null = useMemo(() => {
-    if (!address || delegate === "") {
+    if (!address || currentDelegateAddress === "") {
       return null;
-    } else if (isAddressEqual(delegate, address)) {
+    } else if (isAddressEqual(currentDelegateAddress, address)) {
       return (
         <span>
           <i>Yourself</i>
@@ -57,25 +59,27 @@ export default function ManageDelegateModal() {
     } else {
       return (
         <div className="align-center flex justify-between">
-          <span>{shortenAddress(delegate || "0x1231231231231231231231231231231111111113")}</span>
+          <span>{shortenAddress(currentDelegateAddress || "0x1231231231231231231231231231231111111113")}</span>
           <CopyIcon
             className="hover:cursor-pointer"
             onClick={() => {
-              navigator.clipboard.writeText(delegate);
+              navigator.clipboard.writeText(currentDelegateAddress);
               toast.success("Copied address to clipboard!", { duration: 5000 });
             }}
           />
         </div>
       );
     }
-  }, [delegate, address]);
+  }, [currentDelegateAddress, address]);
 
+  // The current account's MUSHI balance
   const {
     value: mushiBalance,
     formatted: formattedMushiBalance,
     queryResult: { isLoading: isMushiBalanceLoading },
   } = useFormattedMushiBalance({ address });
 
+  // State for updating to a new delegate
   const [isUpdatingDelegate, setIsUpdatingDelegate] = useState(false);
   const [newDelegateValue, setNewDelegateValue] = useState("");
   const startUpdatingDelegate = (delegateToSelf: boolean = false) => {
@@ -85,6 +89,7 @@ export default function ManageDelegateModal() {
     setIsUpdatingDelegate(true);
   };
 
+  // Resolves to the normalized ENS name if the update input value is a valid ENS name, undefined otherwise
   const ensName = useMemo(() => {
     if (newDelegateValue.endsWith(".eth")) {
       try {
@@ -97,38 +102,52 @@ export default function ManageDelegateModal() {
     return undefined;
   }, [newDelegateValue]);
 
+  // Loads the ENS address of a valid ENS name
   const {
     data: newDelegateEnsAddress,
     isLoading: isEnsLoading,
     error: isEnsError,
   } = useEnsAddress({
     name: ensName, // undefined sets "enabled" to false for query
-    chainId: defaultChain.id === foundry.id ? mainnet.id : defaultChain.id
+    chainId: defaultChain.id === foundry.id ? mainnet.id : defaultChain.id,
   });
 
+  // Tracks whether the input value is valid
   const isNewDelegateValueValid = useMemo(() => {
     return ensName || newDelegateValue === "null" || isAddress(newDelegateValue);
   }, [newDelegateValue, ensName]);
 
-  const newDelegateAddress = !!ensName
+  // Will be "null" if the ENS name is valid, loaded, but no matching address is found
+  const newDelegateAddress: Address | null | undefined = !!ensName
     ? isEnsLoading && !isEnsError
       ? undefined
       : newDelegateEnsAddress
     : isNewDelegateValueValid
-      ? newDelegateValue
+      ? (newDelegateValue as Address)
       : undefined;
-
-  if (newDelegateAddress) {
-    console.log(newDelegateAddress);
-  }
 
   const [delegateResult] = useQuery({
     query: DelegateQuery,
     variables: { id: newDelegateAddress },
-    pause: !!ensName || !isNewDelegateValueValid,
+    pause: !newDelegateAddress,
   });
+  const { data: delegateData, fetching: isDelegateDataLoading, error: delegateDataError } = delegateResult;
 
-  const newDelegateLoading = true;
+  // True if currently fetching data related to the inputted delegate value
+  const delegateLoading = isEnsLoading || isDelegateDataLoading;
+
+  // The formatted vote count of the loaded delegate, or "0"
+  const delegateVotesDisplay = useMemo(() => {
+    let votes = delegateData?.delegate?.delegatedVotesBalance;
+    if (!votes) return "0";
+    return abbreviateBalance(BigInt(votes), 18);
+  }, [delegateData]);
+
+  useEffect(() => {
+    if (delegateDataError) {
+      console.log(delegateDataError);
+    }
+  }, [delegateDataError]);
 
   return (
     <Modal
@@ -138,15 +157,17 @@ export default function ManageDelegateModal() {
       isDismissable={!isWeb3ModalOpen}
     >
       <ModalContent>
-        <ModalHeader className="font-londrina-solid text-xl sm:text-3xl">
-          Delegate Your Votes
+        <ModalHeader className="font-londrina-solid text-xl xs:text-3xl">
+          {isUpdatingDelegate ? "Update Delegate" : "Delegate Your Votes"}
         </ModalHeader>
-        <ModalBody>
-          <p className="text-2xs xs:text-xs sm:text-sm">
-            PrimordiumDAO votes are represented by delegated MUSHI tokens. MUSHI holders may
-            delegate their votes to themselves or any other address they choose.
-          </p>
-          <div className="my-2">
+        <ModalBody className="pb-4">
+          {!isUpdatingDelegate && (
+            <p className="text-2xs xs:text-xs sm:text-sm">
+              PrimordiumDAO votes are represented by delegated MUSHI tokens. MUSHI holders may
+              delegate their votes to themselves or any other address they choose.
+            </p>
+          )}
+          <div>
             {isMushiBalanceLoading ? (
               <div className="flex justify-center">
                 <Spinner />
@@ -154,19 +175,83 @@ export default function ManageDelegateModal() {
             ) : mushiBalance > 0 ? (
               isUpdatingDelegate ? (
                 <>
-                  <p>
+                  <p className="text-2xs xs:text-xs sm:text-sm">
                     Enter the address or ENS name of the account you want to delegate to. Enter
                     "null" if you would like to un-delegate your votes.
                   </p>
                   <Input
+                    className="mt-4"
+                    classNames={{
+                      input: "text-xs",
+                    }}
+                    label="Delegate to:"
                     value={newDelegateValue}
                     onValueChange={setNewDelegateValue}
+                    variant="bordered"
                     placeholder="0x... or ...eth"
                     isInvalid={newDelegateValue.length > 0 && !isNewDelegateValueValid}
+                    errorMessage={
+                      newDelegateAddress === null
+                        ? "No matching ENS address was found."
+                        : newDelegateAddress === currentDelegateAddress
+                          ? "Already set to the provided address."
+                          : undefined
+                    }
                     endContent={
-                      <Spinner size="sm" style={{ opacity: newDelegateLoading ? "100" : "0" }} />
+                      <Spinner size="sm" style={{ opacity: delegateLoading ? "100" : "0" }} />
                     }
                   />
+                  {newDelegateAddress && !delegateLoading && (
+                    <div className="mt-2">
+                      {delegateDataError ? (
+                        <p className="text-sm text-danger-500">
+                          There was an error fetching the votes for the provided delegate address.
+                        </p>
+                      ) : (
+                        <Card className="bg-default-100">
+                          <CardBody>
+                            <div className="flex justify-between">
+                              <div className="flex flex-col">
+                                <h6 className="text-2xs text-foreground-500 xs:text-xs">
+                                  Delegate:
+                                </h6>
+                                <DisplayAddress
+                                  address={newDelegateAddress}
+                                  className="sm:text-md text-sm"
+                                  knownEnsName={ensName}
+                                  enableClickToCopy
+                                />
+                                {ensName && (
+                                  <DisplayAddress
+                                    address={newDelegateAddress}
+                                    className="text-xs text-foreground-600 sm:text-sm"
+                                    skipEns
+                                    enableClickToCopy
+                                  />
+                                )}
+                              </div>
+                              <div className="flex flex-col items-end">
+                                <h6 className="text-2xs text-foreground-500 xs:text-xs">
+                                  Current Votes:
+                                </h6>
+                                <span className="sm:text-md text-sm font-bold">
+                                  {delegateVotesDisplay}
+                                </span>
+                              </div>
+                            </div>
+                          </CardBody>
+                        </Card>
+                      )}
+                    </div>
+                  )}
+                  <div className="mt-2 flex justify-end">
+                    <Button className="mr-2" onPress={() => setIsUpdatingDelegate(false)}>
+                      Cancel
+                    </Button>
+                    <Button color="primary" isDisabled={!newDelegateAddress}>
+                      Update Delegate
+                    </Button>
+                  </div>
                 </>
               ) : (
                 <>
@@ -183,7 +268,7 @@ export default function ManageDelegateModal() {
                     <>
                       <Button
                         color="primary"
-                        className="mt-2"
+                        className="mt-4"
                         fullWidth
                         onPress={() => startUpdatingDelegate(true)}
                       >
@@ -193,7 +278,7 @@ export default function ManageDelegateModal() {
                   )}
                   <Button
                     color="primary"
-                    className="mt-2"
+                    className="mt-4"
                     fullWidth
                     onPress={() => startUpdatingDelegate()}
                   >
