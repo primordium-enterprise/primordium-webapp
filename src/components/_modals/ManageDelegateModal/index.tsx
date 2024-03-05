@@ -187,7 +187,9 @@ export default function ManageDelegateModal() {
       args: [newDelegateAddress],
     })
       .then((hash) => {
-        addTransaction(hash, `Delegate votes to ${shortenAddress(newDelegateAddress)}`);
+        addTransaction(hash, `Delegate votes to ${shortenAddress(newDelegateAddress)}`, () =>
+          refetchCurrentDelegateAddress(),
+        );
         toast(
           <span>
             Transaction sent! View the transaction status{" "}

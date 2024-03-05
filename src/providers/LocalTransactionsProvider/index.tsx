@@ -21,18 +21,20 @@ export const LocalTransactionsContext = createContext<{
   pendingTransactionsCount: number;
   isTransactionsListOpen: boolean;
   setIsTransactionsListOpen: Dispatch<SetStateAction<boolean>>;
-  addTransaction: (hash: Hash, description: string) => void;
+  addTransaction: (hash: Hash, description: string, onReceipt?: OnReceiptFn) => void;
   removeTransaction: (hash: Hash) => void;
 }>({
   transactions: [],
   pendingTransactionsCount: 0,
   isTransactionsListOpen: false,
   setIsTransactionsListOpen: ((newState: boolean) => {}) as Dispatch<SetStateAction<boolean>>,
-  addTransaction: (hash, description) => {},
+  addTransaction: () => {},
   removeTransaction: (hash) => {},
 });
 
 type Hash = `0x${string}`;
+
+type OnReceiptFn = (receipt: WaitForTransactionReceiptReturnType) => void;
 
 interface StoredTx {
   hash: Hash;
@@ -99,12 +101,19 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
   }, []);
 
   // Initializes promises on StateTx to watch for transaction receipt
-  const initWaitForTransactionReceipt = (tx: StateTx, db?: IDBPDatabase<LocalTransactionsDB>) => {
+  const initWaitForTransactionReceipt = (
+    tx: StateTx,
+    db?: IDBPDatabase<LocalTransactionsDB>,
+    onReceipt?: OnReceiptFn,
+  ) => {
     // On receipt, update in state
     tx.waitForReceipt = waitForTransactionReceipt(config, {
       hash: tx.hash,
       confirmations: process.env.NODE_ENV === "development" ? 3 : 1,
     }).then((receipt) => {
+      if (onReceipt) {
+        onReceipt(receipt);
+      }
       setTransactions(txReceiptSetStateAction(receipt));
     });
     // After more confirmations, update in state and storage as well (considered finalized)
@@ -144,7 +153,7 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
   }, [address, db, config]);
 
   const addTransaction = useCallback(
-    (hash: Hash, description: string) => {
+    (hash: Hash, description: string, onReceipt?: OnReceiptFn) => {
       if (db && address) {
         const tx: StoredTx = {
           hash,
@@ -156,7 +165,7 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
 
         db.put("transactions", tx).catch(console.log);
         setTransactions((currentTxs) => [tx, ...currentTxs]);
-        initWaitForTransactionReceipt(tx, db);
+        initWaitForTransactionReceipt(tx, db, onReceipt);
       }
     },
     [db, address],
