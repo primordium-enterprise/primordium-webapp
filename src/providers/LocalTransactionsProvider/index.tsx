@@ -12,7 +12,7 @@ import {
 } from "react";
 import { DBSchema, IDBPDatabase, openDB } from "idb";
 import { Config, useAccount, useConfig } from "wagmi";
-import { Address, TransactionReceipt, WaitForTransactionReceiptReturnType } from "viem";
+import { Address, Hash, TransactionReceipt, WaitForTransactionReceiptReturnType } from "viem";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { SAFE_CONFIRMATIONS } from "@/utils/constants";
 
@@ -31,8 +31,6 @@ export const LocalTransactionsContext = createContext<{
   addTransaction: () => {},
   removeTransaction: (hash) => {},
 });
-
-type Hash = `0x${string}`;
 
 type OnReceiptFn = (receipt: WaitForTransactionReceiptReturnType) => void;
 

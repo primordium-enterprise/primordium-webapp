@@ -9,6 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
+        "2xs": "310px",
         xs: "380px",
       },
       fontSize: {

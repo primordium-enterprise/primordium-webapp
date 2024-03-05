@@ -65,11 +65,8 @@ export default function Navigation() {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
 
-  const {
-    isTransactionsListOpen,
-    setIsTransactionsListOpen,
-    pendingTransactionsCount,
-  } = useContext(LocalTransactionsContext);
+  const { isTransactionsListOpen, setIsTransactionsListOpen, pendingTransactionsCount } =
+    useContext(LocalTransactionsContext);
 
   const {
     formatted: ethBalance,
@@ -121,7 +118,14 @@ export default function Navigation() {
               </DropdownMenu>
             </Dropdown>
 
-            <Popover placement="bottom" isOpen={isTransactionsListOpen} onOpenChange={setIsTransactionsListOpen}>
+            <Popover
+              placement="bottom"
+              isOpen={isTransactionsListOpen}
+              onOpenChange={setIsTransactionsListOpen}
+              classNames={{
+                content: "p-0"
+              }}
+            >
               <Badge
                 content={pendingTransactionsCount}
                 color="warning"
