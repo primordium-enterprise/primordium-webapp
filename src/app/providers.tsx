@@ -9,6 +9,7 @@ import { createWeb3Modal } from "@web3modal/wagmi/react";
 import ModalManagerProvider from "@/components/_modals/ModalManagerProvider";
 import { Client, Provider as URQLProvider, cacheExchange, fetchExchange } from "urql";
 import { chainConfig } from "@/config/chainConfig";
+import LocalTransactionsProvider from "@/providers/LocalTransactionsProvider";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: Infinity } },
@@ -41,7 +42,9 @@ export default function Providers({
       <QueryClientProvider client={queryClient}>
         <URQLProvider value={urqlClient}>
           <NextUIProvider navigate={router.push}>
-            <ModalManagerProvider>{children}</ModalManagerProvider>
+            <LocalTransactionsProvider>
+              <ModalManagerProvider>{children}</ModalManagerProvider>
+            </LocalTransactionsProvider>
           </NextUIProvider>
         </URQLProvider>
       </QueryClientProvider>

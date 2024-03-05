@@ -6,6 +6,7 @@ import {
   Card,
   CardBody,
   Input,
+  Link,
   Modal,
   ModalBody,
   ModalContent,
@@ -18,7 +19,7 @@ import { useQuery } from "urql";
 import { DelegateQuery, MemberQuery } from "@/subgraph/subgraphQueries";
 import useFormattedMushiBalance from "@/hooks/useFormattedMushiBalance";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Address, isAddress, isAddressEqual } from "viem";
 import shortenAddress from "@/utils/shortenAddress";
 import { CopyIcon } from "@radix-ui/react-icons";
@@ -31,6 +32,7 @@ import abbreviateBalance from "@/utils/abbreviateBalance";
 import { chainConfig } from "@/config/chainConfig";
 import PrimordiumTokenV1Abi from "@/abi/PrimordiumTokenV1.abi";
 import { ADDRESS_ZERO } from "@/utils/constants";
+import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
 
 export const MANAGE_DELEGATE_MODAL = "ManageDelegateModal";
 
@@ -41,6 +43,8 @@ export default function ManageDelegateModal() {
 
   const chainId = useChainId();
   const { address: accountAddress } = useAccount();
+
+  const { setIsTransactionsListOpen, addTransaction } = useContext(LocalTransactionsContext);
 
   // Read account's currentDelegateAddress from contract
   const {
@@ -67,11 +71,7 @@ export default function ManageDelegateModal() {
     if (!accountAddress || !currentDelegateAddress || currentDelegateAddress === ADDRESS_ZERO) {
       return null;
     } else if (isAddressEqual(currentDelegateAddress, accountAddress)) {
-      return (
-        <span>
-          <i>Yourself</i>
-        </span>
-      );
+      return <span>Yourself</span>;
     } else {
       return (
         <div className="align-center flex justify-between">
@@ -175,24 +175,33 @@ export default function ManageDelegateModal() {
 
   const { writeContractAsync, isPending: isWriteContractPending } = useWriteContract();
 
-  const writeUpdateDelegateTx = () => {
+  const sendUpdateDelegateTx = () => {
     if (!newDelegateAddress) {
       return toast.error("Invalid delegate address.");
     }
-
-    const toastId = toast.loading("Sending transaction to update delegate...");
-
+    const toastId = toast.loading("Creating transaction to update delegate...");
     writeContractAsync({
       address: chainConfig[chainId]?.addresses.token,
       abi: PrimordiumTokenV1Abi,
       functionName: "delegate",
       args: [newDelegateAddress],
-    }).then((txHash) => {
-
-    }).catch((err) => {
-      console.log(err);
-      toast.error("Failed to submit transaction to update delegate.", { id: toastId });
     })
+      .then((hash) => {
+        addTransaction(hash, `Delegate votes to ${shortenAddress(newDelegateAddress)}`);
+        toast(
+          <span>
+            Transaction sent! View the transaction status{" "}
+            <Link className="hover:cursor-pointer" onPress={() => setIsTransactionsListOpen(true)}>
+              here.
+            </Link>
+          </span>,
+          { id: toastId },
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Failed to submit transaction to update delegate.", { id: toastId });
+      });
   };
 
   return (
@@ -294,7 +303,12 @@ export default function ManageDelegateModal() {
                     <Button className="mr-2" onPress={() => setIsUpdatingDelegate(false)}>
                       Cancel
                     </Button>
-                    <Button color="primary" isDisabled={!newDelegateAddress}>
+                    <Button
+                      color="primary"
+                      isDisabled={!newDelegateAddress}
+                      isLoading={isWriteContractPending}
+                      onPress={sendUpdateDelegateTx}
+                    >
                       Update Delegate
                     </Button>
                   </div>
@@ -313,7 +327,9 @@ export default function ManageDelegateModal() {
                 <>
                   {currentDelegateDisplay ? (
                     <>
-                      <div className="text-sm">Delegating {formattedMushiBalance} votes to:</div>
+                      <div className="mb-1 text-sm">
+                        <i>Delegating {formattedMushiBalance} votes to:</i>
+                      </div>
                       <Card>
                         <CardBody className="bg-default-100 text-center">
                           {currentDelegateDisplay}

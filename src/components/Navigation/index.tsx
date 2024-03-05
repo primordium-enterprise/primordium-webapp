@@ -10,6 +10,10 @@ import {
   DropdownItem,
   Card,
   DropdownSection,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Badge,
 } from "@nextui-org/react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
@@ -20,6 +24,7 @@ import {
   DiscordLogoIcon,
   GitHubLogoIcon,
   HamburgerMenuIcon,
+  PaperPlaneIcon,
   ReaderIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
@@ -27,6 +32,8 @@ import useFormattedBalance from "@/hooks/useFormattedBalance";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { usePathname } from "next/navigation";
 import MushiIcon from "../MushiIcon";
+import TransactionsPopoverContent from "./components/TransactionsPopoverContent";
+import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
 
 const routes: {
   route: string;
@@ -57,6 +64,12 @@ export default function Navigation() {
 
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
+
+  const {
+    isTransactionsListOpen,
+    setIsTransactionsListOpen,
+    pendingTransactionsCount,
+  } = useContext(LocalTransactionsContext);
 
   const {
     formatted: ethBalance,
@@ -107,6 +120,23 @@ export default function Navigation() {
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
+
+            <Popover placement="bottom" isOpen={isTransactionsListOpen} onOpenChange={setIsTransactionsListOpen}>
+              <Badge
+                content={pendingTransactionsCount}
+                color="warning"
+                isInvisible={pendingTransactionsCount === 0}
+              >
+                <PopoverTrigger>
+                  <Button variant="solid" className="ml-2 min-w-0">
+                    <PaperPlaneIcon />
+                  </Button>
+                </PopoverTrigger>
+              </Badge>
+              <PopoverContent>
+                <TransactionsPopoverContent />
+              </PopoverContent>
+            </Popover>
           </>
         ) : (
           <>
