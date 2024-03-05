@@ -13,7 +13,7 @@ import {
   Spinner,
 } from "@nextui-org/react";
 import { useModalState } from "../ModalManagerProvider";
-import { useAccount, useEnsAddress } from "wagmi";
+import { useAccount, useChainId, useEnsAddress, useReadContract, useWriteContract } from "wagmi";
 import { useQuery } from "urql";
 import { DelegateQuery, MemberQuery } from "@/subgraph/subgraphQueries";
 import useFormattedMushiBalance from "@/hooks/useFormattedMushiBalance";
@@ -28,6 +28,9 @@ import { defaultChain } from "@/config/wagmi-config";
 import { foundry, mainnet } from "viem/chains";
 import DisplayAddress from "@/components/DisplayAddress";
 import abbreviateBalance from "@/utils/abbreviateBalance";
+import { chainConfig } from "@/config/chainConfig";
+import PrimordiumTokenV1Abi from "@/abi/PrimordiumTokenV1.abi";
+import { ADDRESS_ZERO } from "@/utils/constants";
 
 export const MANAGE_DELEGATE_MODAL = "ManageDelegateModal";
 
@@ -36,21 +39,34 @@ export default function ManageDelegateModal() {
   const { open: openWeb3Modal } = useWeb3Modal();
   const { open: isWeb3ModalOpen } = useWeb3ModalState();
 
-  const { address } = useAccount();
+  const chainId = useChainId();
+  const { address: accountAddress } = useAccount();
 
-  const [result] = useQuery({ query: MemberQuery, variables: { id: address }, pause: !isOpen });
-  const { data: memberData, fetching, error } = result;
+  // Read account's currentDelegateAddress from contract
+  const {
+    data: currentDelegateAddress,
+    isLoading: isCurrentDelegateAddressLoading,
+    isError: currentDelegateAddressError,
+    refetch: refetchCurrentDelegateAddress,
+  } = useReadContract({
+    address: chainConfig[defaultChain.id]?.addresses.token,
+    abi: PrimordiumTokenV1Abi,
+    functionName: "delegates",
+    args: [accountAddress as Address],
+    query: { enabled: !!accountAddress && isOpen },
+  });
 
-  // The current delegate that the account has delegated to, or empty string if none
-  const currentDelegateAddress: Address | "" = useMemo(() => {
-    return memberData?.delegate?.id || "";
-  }, [memberData]);
+  useEffect(() => {
+    if (currentDelegateAddressError) {
+      console.log(currentDelegateAddressError);
+    }
+  }, [currentDelegateAddressError]);
 
   // The display JSX element of the current delegate address (or null if no delegate)
   const currentDelegateDisplay: JSX.Element | null = useMemo(() => {
-    if (!address || currentDelegateAddress === "") {
+    if (!accountAddress || !currentDelegateAddress || currentDelegateAddress === ADDRESS_ZERO) {
       return null;
-    } else if (isAddressEqual(currentDelegateAddress, address)) {
+    } else if (isAddressEqual(currentDelegateAddress, accountAddress)) {
       return (
         <span>
           <i>Yourself</i>
@@ -59,7 +75,9 @@ export default function ManageDelegateModal() {
     } else {
       return (
         <div className="align-center flex justify-between">
-          <span>{shortenAddress(currentDelegateAddress || "0x1231231231231231231231231231231111111113")}</span>
+          <span>
+            {shortenAddress(currentDelegateAddress || "0x1231231231231231231231231231231111111113")}
+          </span>
           <CopyIcon
             className="hover:cursor-pointer"
             onClick={() => {
@@ -70,21 +88,21 @@ export default function ManageDelegateModal() {
         </div>
       );
     }
-  }, [currentDelegateAddress, address]);
+  }, [currentDelegateAddress, accountAddress]);
 
   // The current account's MUSHI balance
   const {
     value: mushiBalance,
     formatted: formattedMushiBalance,
     queryResult: { isLoading: isMushiBalanceLoading },
-  } = useFormattedMushiBalance({ address });
+  } = useFormattedMushiBalance({ address: accountAddress });
 
   // State for updating to a new delegate
   const [isUpdatingDelegate, setIsUpdatingDelegate] = useState(false);
   const [newDelegateValue, setNewDelegateValue] = useState("");
   const startUpdatingDelegate = (delegateToSelf: boolean = false) => {
-    if (delegateToSelf && address) {
-      setNewDelegateValue(address);
+    if (delegateToSelf && accountAddress) {
+      setNewDelegateValue(accountAddress);
     }
     setIsUpdatingDelegate(true);
   };
@@ -123,7 +141,9 @@ export default function ManageDelegateModal() {
       ? undefined
       : newDelegateEnsAddress
     : isNewDelegateValueValid
-      ? (newDelegateValue as Address)
+      ? newDelegateValue === "null"
+        ? ADDRESS_ZERO
+        : (newDelegateValue as Address)
       : undefined;
 
   const [delegateResult] = useQuery({
@@ -131,7 +151,11 @@ export default function ManageDelegateModal() {
     variables: { id: newDelegateAddress },
     pause: !newDelegateAddress,
   });
-  const { data: delegateData, fetching: isDelegateDataLoading, error: delegateDataError } = delegateResult;
+  const {
+    data: delegateData,
+    fetching: isDelegateDataLoading,
+    error: delegateDataError,
+  } = delegateResult;
 
   // True if currently fetching data related to the inputted delegate value
   const delegateLoading = isEnsLoading || isDelegateDataLoading;
@@ -148,6 +172,28 @@ export default function ManageDelegateModal() {
       console.log(delegateDataError);
     }
   }, [delegateDataError]);
+
+  const { writeContractAsync, isPending: isWriteContractPending } = useWriteContract();
+
+  const writeUpdateDelegateTx = () => {
+    if (!newDelegateAddress) {
+      return toast.error("Invalid delegate address.");
+    }
+
+    const toastId = toast.loading("Sending transaction to update delegate...");
+
+    writeContractAsync({
+      address: chainConfig[chainId]?.addresses.token,
+      abi: PrimordiumTokenV1Abi,
+      functionName: "delegate",
+      args: [newDelegateAddress],
+    }).then((txHash) => {
+
+    }).catch((err) => {
+      console.log(err);
+      toast.error("Failed to submit transaction to update delegate.", { id: toastId });
+    })
+  };
 
   return (
     <Modal
@@ -253,6 +299,16 @@ export default function ManageDelegateModal() {
                     </Button>
                   </div>
                 </>
+              ) : isCurrentDelegateAddressLoading ? (
+                <div className="my-2 flex items-center justify-center">
+                  <Spinner />
+                </div>
+              ) : currentDelegateAddressError ? (
+                <div className="my-2 flex items-center justify-center">
+                  <p className="text-center text-danger-600">
+                    There was an unexpected error loading your delegate info.
+                  </p>
+                </div>
               ) : (
                 <>
                   {currentDelegateDisplay ? (
@@ -286,7 +342,7 @@ export default function ManageDelegateModal() {
                   </Button>
                 </>
               )
-            ) : address ? (
+            ) : accountAddress ? (
               <>
                 <p className="text-foreground-500">You currently have no votes to delegate.</p>
                 <div className="mt-2 flex justify-end">
