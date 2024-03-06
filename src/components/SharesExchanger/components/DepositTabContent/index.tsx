@@ -16,6 +16,8 @@ import { ADDRESS_ZERO } from "@/utils/constants";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import PrimordiumSharesOnboarderV1Abi from "@/abi/PrimordiumSharesOnboarderV1.abi";
 import { defaultChain } from "@/config/wagmi-config";
+import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
+import abbreviateBalance from "@/utils/abbreviateBalance";
 
 const pruneCommas = (value: string): string => {
   return value.replaceAll(",", "");
@@ -43,6 +45,8 @@ export default function DepositTabContent() {
   } = useFormattedBalance({ address, token: chainConfig[defaultChain.id]?.addresses.token });
 
   const { open } = useWeb3Modal();
+
+  const { addTransaction } = useContext(LocalTransactionsContext);
 
   const [depositValue, _setDepositValue] = useState(sharePrice.quoteAmount.toString());
   const setDepositValue = useCallback(
@@ -109,6 +113,8 @@ export default function DepositTabContent() {
     const toastId = toast.loading("Sending deposit transaction...");
 
     let depositAmount = parseDnumFromString(depositValue)[0];
+    let depositAmountDisplay = depositValue.slice();
+    let mintAmountDisplay = mintValue.slice();
     writeContractAsync({
       address: chainConfig[chainId].addresses.sharesOnboarder,
       abi: PrimordiumSharesOnboarderV1Abi,
@@ -117,31 +123,11 @@ export default function DepositTabContent() {
       value: depositAmount,
     })
       .then((hash) => {
-        toast.loading("Waiting for transaction receipt...", { id: toastId });
-        return waitForTransactionReceipt(config, { hash });
-      })
-      .then((receipt) => {
-        // Refetch balances
-        refetchEthBalance();
-        refetchMushiBalance();
-
-        // Update the toast
-        toast.success(
-          <div className="flex items-start">
-            <span>
-              Transaction success!
-              <br />
-              <Link
-                isExternal
-                showAnchorIcon
-                href={`https://${chainId == sepolia.id ? "sepolia." : ""}etherscan.io/tx/${receipt.transactionHash}`}
-              >
-                View on etherscan
-              </Link>
-            </span>
-          </div>,
-          { id: toastId, duration: Infinity },
-        );
+        addTransaction(hash, `Deposit ${depositAmountDisplay} ETH for ${mintAmountDisplay} MUSHI tokens.`, toastId, () => {
+          // Refetch balances
+          refetchEthBalance();
+          refetchMushiBalance();
+        })
       })
       .catch((error) => {
         console.log(error);

@@ -7,21 +7,27 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { DBSchema, IDBPDatabase, openDB } from "idb";
-import { Config, useAccount, useConfig } from "wagmi";
+import { useAccount, useConfig } from "wagmi";
 import { Address, Hash, TransactionReceipt, WaitForTransactionReceiptReturnType } from "viem";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { SAFE_CONFIRMATIONS } from "@/utils/constants";
+import toast from "react-hot-toast";
+import { Link } from "@nextui-org/react";
 
 export const LocalTransactionsContext = createContext<{
   transactions: StateTx[];
   pendingTransactionsCount: number;
   isTransactionsListOpen: boolean;
   setIsTransactionsListOpen: Dispatch<SetStateAction<boolean>>;
-  addTransaction: (hash: Hash, description: string, onReceipt?: OnReceiptFn) => void;
+  addTransaction: (
+    hash: Hash,
+    description: string,
+    toastId?: string,
+    onReceipt?: OnReceiptFn,
+  ) => void;
   removeTransaction: (hash: Hash) => void;
 }>({
   transactions: [],
@@ -107,7 +113,7 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
     // On receipt, update in state
     tx.waitForReceipt = waitForTransactionReceipt(config, {
       hash: tx.hash,
-      confirmations: process.env.NODE_ENV === "development" ? 3 : 1,
+      // confirmations: process.env.NODE_ENV === "development" ? 3 : 1,
     }).then((receipt) => {
       if (onReceipt) {
         onReceipt(receipt);
@@ -151,7 +157,7 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
   }, [address, db, config]);
 
   const addTransaction = useCallback(
-    (hash: Hash, description: string, onReceipt?: OnReceiptFn) => {
+    (hash: Hash, description: string, toastId?: string, onReceipt?: OnReceiptFn) => {
       if (db && address) {
         const tx: StoredTx = {
           hash,
@@ -165,6 +171,19 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
         setTransactions((currentTxs) => [tx, ...currentTxs]);
         initWaitForTransactionReceipt(tx, db, onReceipt);
       }
+
+      toast(
+        <span>
+          Transaction sent! View the transaction status{" "}
+          <Link
+            className="hover:cursor-pointer"
+            onPress={() => setTimeout(() => setIsTransactionsListOpen(true), 0)}
+          >
+            here.
+          </Link>
+        </span>,
+        { id: toastId },
+      );
     },
     [db, address],
   );

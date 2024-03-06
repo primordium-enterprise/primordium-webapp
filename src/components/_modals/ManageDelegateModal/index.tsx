@@ -44,7 +44,7 @@ export default function ManageDelegateModal() {
   const chainId = useChainId();
   const { address: accountAddress } = useAccount();
 
-  const { setIsTransactionsListOpen, addTransaction } = useContext(LocalTransactionsContext);
+  const { addTransaction } = useContext(LocalTransactionsContext);
 
   // Read account's currentDelegateAddress from contract
   const {
@@ -106,6 +106,13 @@ export default function ManageDelegateModal() {
     }
     setIsUpdatingDelegate(true);
   };
+
+  // Reset isUpdatingDelegate to false when exiting modal
+  useEffect(() => {
+    if (!isOpen) {
+      setIsUpdatingDelegate(false);
+    }
+  }, [isOpen]);
 
   // Resolves to the normalized ENS name if the update input value is a valid ENS name, undefined otherwise
   const ensName = useMemo(() => {
@@ -187,17 +194,16 @@ export default function ManageDelegateModal() {
       args: [newDelegateAddress],
     })
       .then((hash) => {
-        addTransaction(hash, `Delegate votes to ${shortenAddress(newDelegateAddress)}.`, () =>
-          refetchCurrentDelegateAddress(),
-        );
-        toast(
-          <span>
-            Transaction sent! View the transaction status{" "}
-            <Link className="hover:cursor-pointer" onPress={() => setIsTransactionsListOpen(true)}>
-              here.
-            </Link>
-          </span>,
-          { id: toastId },
+        setIsUpdatingDelegate(false);
+        setNewDelegateValue('');
+        close();
+        addTransaction(
+          hash,
+          `Delegate votes to ${shortenAddress(newDelegateAddress)}${ensName ? ` (${ensName})` : ""}.`,
+          toastId,
+          () => {
+            refetchCurrentDelegateAddress();
+          },
         );
       })
       .catch((err) => {
