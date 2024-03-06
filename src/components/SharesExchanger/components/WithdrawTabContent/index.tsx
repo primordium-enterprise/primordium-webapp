@@ -20,15 +20,14 @@ import { Address, isAddress, isAddressEqual, keccak256, toHex } from "viem";
 import { ADDRESS_ZERO } from "@/utils/constants";
 import WithdrawAsset from "./components/WithdrawAsset";
 import toast from "react-hot-toast";
-import { waitForTransactionReceipt } from "wagmi/actions";
-import { sepolia } from "viem/chains";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import PrimordiumTokenV1Abi from "@/abi/PrimordiumTokenV1.abi";
+import shortenAddress from "@/utils/shortenAddress";
+import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
 
 const MULT = 1000;
 
-const ASSETS_STORAGE_KEY = keccak256(toHex("WITHDRAWAL ASSETS"));
-const defaultAssetsJSON = JSON.stringify([ADDRESS_ZERO]);
+const ASSETS_STORAGE_KEY = keccak256(toHex("WITHDRAWAL_ASSETS"));
 
 const pruneCommas = (value: string) => {
   return value.replaceAll(",", "");
@@ -39,6 +38,8 @@ export default function WithdrawTabContent() {
   const chainId = useChainId();
 
   const token = chainConfig[chainId]?.addresses.token;
+
+  const { addTransaction } = useContext(LocalTransactionsContext);
 
   const { address, isConnected } = useAccount();
   const { refetch: refetchEthBalance } = useBalance({ address });
@@ -109,9 +110,13 @@ export default function WithdrawTabContent() {
     return !isWithdrawToSelected || (withdrawTo && isWithdrawToValid);
   }, [isWithdrawToSelected, withdrawTo, isWithdrawToValid]);
 
-  const [assets, setAssets] = useState<Address[]>(
-    JSON.parse(window?.localStorage.getItem(ASSETS_STORAGE_KEY) || defaultAssetsJSON),
-  );
+  const [assets, setAssets] = useState<Address[]>([ADDRESS_ZERO]);
+  useEffect(() => {
+    let sessionAssetsJSON =  window.sessionStorage.getItem(ASSETS_STORAGE_KEY);
+    if (sessionAssetsJSON) {
+      setAssets(JSON.parse(sessionAssetsJSON));
+    }
+  }, []);
 
   const addNewAssetAddress = () => {
     if (isNewAssetAddressValid) {
@@ -119,7 +124,7 @@ export default function WithdrawTabContent() {
         const newAssets: Address[] = [...assets, newAssetAddress as Address];
         setAssets(newAssets);
         if (window) {
-          window.localStorage.setItem(ASSETS_STORAGE_KEY, JSON.stringify(newAssets));
+          window.sessionStorage.setItem(ASSETS_STORAGE_KEY, JSON.stringify(newAssets));
         }
       }
       setNewAssetAddress("");
@@ -131,7 +136,7 @@ export default function WithdrawTabContent() {
     const newAssets: Address[] = assets.filter((a) => a !== asset);
     setAssets(newAssets);
     if (window) {
-      window.localStorage.setItem(ASSETS_STORAGE_KEY, JSON.stringify(newAssets));
+      window.sessionStorage.setItem(ASSETS_STORAGE_KEY, JSON.stringify(newAssets));
     }
   };
 
@@ -139,6 +144,7 @@ export default function WithdrawTabContent() {
 
   const withdraw = () => {
     const toastId = toast.loading("Sending withdraw transaction...");
+    let description = `Withdraw ${withdrawInputValue.slice()} MUSHI tokens${isWithdrawToSelected ? ` (send assets to ${shortenAddress(withdrawTo as Address)})` : ""}.`;
 
     writeContractAsync({
       address: chainConfig[chainId].addresses.token,
@@ -149,32 +155,11 @@ export default function WithdrawTabContent() {
         : [withdrawValue, assets],
     })
       .then((hash) => {
-        toast.loading("Waiting for transaction receipt...", { id: toastId });
-        return waitForTransactionReceipt(config, { hash });
-      })
-      .then((receipt) => {
-        // Refetch balances
-        setRefetchCount(refetchCount + 1);
-
-        onWithdrawToInputValueChange("");
-
-        // Update the toast
-        toast.success(
-          <div className="flex items-start">
-            <span>
-              Transaction success!
-              <br />
-              <Link
-                isExternal
-                showAnchorIcon
-                href={`https://${chainId == sepolia.id ? "sepolia." : ""}etherscan.io/tx/${receipt.transactionHash}`}
-              >
-                View on etherscan
-              </Link>
-            </span>
-          </div>,
-          { id: toastId, duration: Infinity },
-        );
+        addTransaction(hash, description, toastId, () => {
+          // Refetch balances
+          setRefetchCount((count) => count + 1);
+          onWithdrawToInputValueChange("");
+        });
       })
       .catch((error) => {
         console.log(error);
@@ -285,7 +270,7 @@ export default function WithdrawTabContent() {
       </div>
 
       <Button
-        className="mb-2 mt-4"
+        className="mb-2 mt-6"
         color="warning"
         size="lg"
         fullWidth

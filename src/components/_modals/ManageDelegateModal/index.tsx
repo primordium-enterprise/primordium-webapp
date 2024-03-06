@@ -368,7 +368,7 @@ export default function ManageDelegateModal() {
               )
             ) : accountAddress ? (
               <>
-                <p className="text-foreground-500">You currently have no votes to delegate.</p>
+                <p className="text-foreground-500 italic">You currently have no votes to delegate.</p>
                 <div className="mt-2 flex justify-end">
                   <Button onPress={close}>Close</Button>
                 </div>

@@ -1,7 +1,7 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { Button, Checkbox, Input, Switch, Tab } from "@nextui-org/react";
 import AssetAmountInput from "@/components/AssetAmountInput";
-import {chainConfig} from "@/config/chainConfig";
+import { chainConfig } from "@/config/chainConfig";
 import { sharePrice } from "@/config/primordiumSettings";
 import parseDnumFromString from "@/utils/parseDnumFromString";
 import { Dnum, format as dnFormat } from "dnum";
@@ -18,6 +18,7 @@ import PrimordiumSharesOnboarderV1Abi from "@/abi/PrimordiumSharesOnboarderV1.ab
 import { defaultChain } from "@/config/wagmi-config";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
 import abbreviateBalance from "@/utils/abbreviateBalance";
+import shortenAddress from "@/utils/shortenAddress";
 
 const pruneCommas = (value: string): string => {
   return value.replaceAll(",", "");
@@ -111,10 +112,9 @@ export default function DepositTabContent() {
 
   const mint = () => {
     const toastId = toast.loading("Sending deposit transaction...");
-
     let depositAmount = parseDnumFromString(depositValue)[0];
-    let depositAmountDisplay = depositValue.slice();
-    let mintAmountDisplay = mintValue.slice();
+    let description = `Deposit ${depositValue.slice()} ETH for ${mintValue.slice()} MUSHI tokens${isMintToSelected ? ` (minted to ${shortenAddress(mintTo as Address)})` : ""}.`;
+
     writeContractAsync({
       address: chainConfig[chainId].addresses.sharesOnboarder,
       abi: PrimordiumSharesOnboarderV1Abi,
@@ -123,11 +123,11 @@ export default function DepositTabContent() {
       value: depositAmount,
     })
       .then((hash) => {
-        addTransaction(hash, `Deposit ${depositAmountDisplay} ETH for ${mintAmountDisplay} MUSHI tokens.`, toastId, () => {
-          // Refetch balances
+        addTransaction(hash, description, toastId, () => {
+          // Refetch balances on receipt
           refetchEthBalance();
           refetchMushiBalance();
-        })
+        });
       })
       .catch((error) => {
         console.log(error);
