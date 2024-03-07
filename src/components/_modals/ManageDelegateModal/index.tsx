@@ -33,6 +33,7 @@ import { chainConfig } from "@/config/chainConfig";
 import PrimordiumTokenV1Abi from "@/abi/PrimordiumTokenV1.abi";
 import { ADDRESS_ZERO } from "@/utils/constants";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
+import handleViemContractError from "@/utils/handleViemContractError";
 
 export const MANAGE_DELEGATE_MODAL = "ManageDelegateModal";
 
@@ -202,10 +203,7 @@ export default function ManageDelegateModal() {
           refetchCurrentDelegateAddress();
         });
       })
-      .catch((err) => {
-        console.log(err);
-        toast.error("Failed to submit transaction to update delegate.", { id: toastId });
-      });
+      .catch((error) => handleViemContractError(error, toastId));
   };
 
   return (

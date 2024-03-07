@@ -24,6 +24,7 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import PrimordiumTokenV1Abi from "@/abi/PrimordiumTokenV1.abi";
 import shortenAddress from "@/utils/shortenAddress";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
+import handleViemContractError from "@/utils/handleViemContractError";
 
 const MULT = 1000;
 
@@ -161,10 +162,7 @@ export default function WithdrawTabContent() {
           onWithdrawToInputValueChange("");
         });
       })
-      .catch((error) => {
-        console.log(error);
-        toast.error("Failed to submit the withdraw transaction.", { id: toastId });
-      });
+      .catch((error) => handleViemContractError(error, toastId));
   };
 
   const isReady = useMemo(() => {
