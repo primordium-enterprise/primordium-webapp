@@ -28,6 +28,9 @@ const config: Config = {
       flex: {
         "1rem": "0 0 1rem",
       },
+      translate: {
+        "center": ""
+      }
     },
   },
   darkMode: "class",

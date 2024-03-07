@@ -30,7 +30,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers initialState={initialState}>
             <RequireChainIdModal />
             <Navigation />
-            {children}
+            <div className="mx-auto sm:container !max-w-screen-md p-2">
+              {children}
+            </div>
           <ToastWrapper />
         </Providers>
       </body>

@@ -2,10 +2,7 @@ import GovernanceCountdown from "@/components/GovernanceCountdown";
 import HowItWorks from "@/components/HowItWorks";
 import TokenSupplyProgressBar from "@/components/TokenSupplyProgressBar";
 import { Button } from "@nextui-org/react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
-
-const TokenSupplyProgressBarClient = dynamic(() => import("@/components/TokenSupplyProgressBar"), { ssr: false })
 
 export default function HomePage() {
   return (

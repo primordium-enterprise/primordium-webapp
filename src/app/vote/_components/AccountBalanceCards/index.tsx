@@ -4,12 +4,16 @@ import { MANAGE_DELEGATE_MODAL } from "@/components/_modals/ManageDelegateModal"
 import { useModalState } from "@/components/_modals/ModalManagerProvider";
 import { MemberPlusDelegateQuery } from "@/subgraph/subgraphQueries";
 import abbreviateBalance from "@/utils/abbreviateBalance";
-import { Button, Card, CardBody, CardFooter, CardHeader } from "@nextui-org/react";
+import { Button, Card, CardBody, CardFooter, CardHeader, Link, Spinner } from "@nextui-org/react";
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 import { useAccount } from "wagmi";
 
-type BaseProps = { children: React.ReactNode; className?: string };
+interface BaseProps {
+  children: React.ReactNode;
+  className?: string;
+  isFetching?: boolean;
+}
 
 const BalanceCard = ({ children, className }: BaseProps) => (
   <Card className={`w-full max-w-80 sm:w-auto sm:min-w-72 ${className || ""}`}>{children}</Card>
@@ -21,9 +25,10 @@ const BalanceCardHeader = ({ children }: BaseProps) => (
   </CardHeader>
 );
 
-const BalanceCardBody = ({ children }: BaseProps) => (
-  <CardBody className="py-0 text-center text-sm xs:text-base sm:py-1 sm:text-lg">
-    {children}
+const BalanceCardBody = ({ children, isFetching }: BaseProps) => (
+  <CardBody className="relative py-0 text-center text-sm xs:text-base sm:py-1 sm:text-lg">
+    <div className={isFetching ? "invisible" : ""}>{children}</div>
+    <Spinner size="sm" className={`absolute-center ${isFetching ? "" : "invisible"}`} />
   </CardBody>
 );
 
@@ -70,14 +75,13 @@ export default function AccountBalanceCards() {
     <div className="flex flex-col items-center justify-center sm:flex-row">
       <BalanceCard>
         <BalanceCardHeader>Your MUSHI balance:</BalanceCardHeader>
-        <BalanceCardBody>{mushiBalanceFormatted}</BalanceCardBody>
+        <BalanceCardBody isFetching={fetching}>{mushiBalanceFormatted}</BalanceCardBody>
         <CardFooter>
           <Button
             color="primary"
             fullWidth
             className="h-unit-8 text-sm sm:h-unit-10 sm:text-base"
             onPress={openDelegateModal}
-            isLoading={fetching}
             variant={!address || mushiBalance === BigInt(0) ? "flat" : "solid"}
           >
             Delegate Votes
@@ -86,16 +90,17 @@ export default function AccountBalanceCards() {
       </BalanceCard>
       <BalanceCard className="mt-4 sm:ml-12 sm:mt-0">
         <BalanceCardHeader>Your votes:</BalanceCardHeader>
-        <BalanceCardBody>{votesBalanceFormatted}</BalanceCardBody>
+        <BalanceCardBody isFetching={fetching}>{votesBalanceFormatted}</BalanceCardBody>
         <CardFooter>
-          <Button
-            color="primary"
-            fullWidth
-            className="h-unit-8 text-sm sm:h-unit-10 sm:text-base"
-            isLoading={fetching}
-          >
-            Create Proposal
-          </Button>
+          <Link href="/vote/create-proposal" className="w-full">
+            <Button
+              color="primary"
+              fullWidth
+              className="h-unit-8 text-sm sm:h-unit-10 sm:text-base"
+            >
+              Create Proposal
+            </Button>
+          </Link>
         </CardFooter>
       </BalanceCard>
     </div>
