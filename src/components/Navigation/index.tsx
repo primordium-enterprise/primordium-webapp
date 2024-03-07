@@ -77,18 +77,24 @@ export default function Navigation() {
   const [menuDropdownIsOpen, setMenuDropdownIsOpen] = useState(false);
 
   return (
-    <nav className="flex items-center justify-between p-2 xs:p-2 sm:p-4">
+    <nav className="flex items-center justify-between p-2 pb-6 xs:pb-8 sm:p-4 sm:pb-12">
       <Link href="/">
-        <Image className="pixelated w-12" src={logo} alt="Primordium logo." unoptimized priority />
+        <Image
+          className="pixelated w-8 xs:w-12"
+          src={logo}
+          alt="Primordium logo."
+          unoptimized
+          priority
+        />
       </Link>
-      <div className="flex">
+      <div className="flex h-8 xs:h-10">
         {isConnected ? (
           <>
             <Dropdown onOpenChange={(isOpen) => setAccountDropdownIsOpen(isOpen)} backdrop="blur">
               <DropdownTrigger>
                 <Button
                   variant="bordered"
-                  className="text-xs xs:text-base"
+                  className="h-full px-3 text-xs xs:px-4 xs:text-base"
                   startContent={
                     isEthBalanceSuccess && <span className="hidden sm:block">{ethBalance} ETH</span>
                   }
@@ -123,7 +129,7 @@ export default function Navigation() {
               isOpen={isTransactionsListOpen}
               onOpenChange={setIsTransactionsListOpen}
               classNames={{
-                content: "p-0"
+                content: "p-0",
               }}
             >
               <Badge
@@ -132,8 +138,8 @@ export default function Navigation() {
                 isInvisible={pendingTransactionsCount === 0}
               >
                 <PopoverTrigger>
-                  <Button variant="solid" className="ml-2 min-w-0">
-                    <PaperPlaneIcon />
+                  <Button variant="solid" className="ml-2 h-full min-w-0 px-3 xs:px-4">
+                    <PaperPlaneIcon className="h-[1em] w-[1em]" />
                   </Button>
                 </PopoverTrigger>
               </Badge>
@@ -147,6 +153,7 @@ export default function Navigation() {
             <Button
               variant="ghost"
               color="default"
+              className="text-xs xs:text-base h-full px-3 xs:px-4"
               isLoading={isWeb3ModalOpen}
               onPress={() => open()}
             >
@@ -157,8 +164,8 @@ export default function Navigation() {
 
         <Dropdown onOpenChange={(isOpen) => setMenuDropdownIsOpen(isOpen)} backdrop="blur">
           <DropdownTrigger>
-            <Button variant="solid" className="ml-2 min-w-0">
-              <HamburgerMenuIcon />
+            <Button variant="solid" className="ml-2 h-full min-w-0 px-3 xs:px-4">
+              <HamburgerMenuIcon className="h-[1em] w-[1em]" />
             </Button>
           </DropdownTrigger>
           <DropdownMenu

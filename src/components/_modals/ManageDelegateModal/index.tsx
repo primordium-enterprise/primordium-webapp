@@ -187,6 +187,7 @@ export default function ManageDelegateModal() {
       return toast.error("Invalid delegate address.");
     }
     const toastId = toast.loading("Creating transaction to update delegate...");
+    let description = `Delegate votes to ${shortenAddress(newDelegateAddress)}${ensName ? ` (${ensName})` : newDelegateAddress === accountAddress ? `(Yourself)` : ""}.`;
     writeContractAsync({
       address: chainConfig[chainId]?.addresses.token,
       abi: PrimordiumTokenV1Abi,
@@ -195,16 +196,11 @@ export default function ManageDelegateModal() {
     })
       .then((hash) => {
         setIsUpdatingDelegate(false);
-        setNewDelegateValue('');
+        setNewDelegateValue("");
         close();
-        addTransaction(
-          hash,
-          `Delegate votes to ${shortenAddress(newDelegateAddress)}${ensName ? ` (${ensName})` : ""}.`,
-          toastId,
-          () => {
-            refetchCurrentDelegateAddress();
-          },
-        );
+        addTransaction(hash, description, toastId, () => {
+          refetchCurrentDelegateAddress();
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -278,12 +274,16 @@ export default function ManageDelegateModal() {
                                 <h6 className="text-2xs text-foreground-500 xs:text-xs">
                                   Delegate:
                                 </h6>
-                                <DisplayAddress
-                                  address={newDelegateAddress}
-                                  className="sm:text-md text-sm"
-                                  knownEnsName={ensName}
-                                  enableClickToCopy
-                                />
+                                {newDelegateAddress === accountAddress ? (
+                                  <span className="sm:text-md text-sm">Yourself</span>
+                                ) : (
+                                  <DisplayAddress
+                                    address={newDelegateAddress}
+                                    className="sm:text-md text-sm"
+                                    knownEnsName={ensName}
+                                    enableClickToCopy
+                                  />
+                                )}
                                 {ensName && (
                                   <DisplayAddress
                                     address={newDelegateAddress}
@@ -368,7 +368,9 @@ export default function ManageDelegateModal() {
               )
             ) : accountAddress ? (
               <>
-                <p className="text-foreground-500 italic">You currently have no votes to delegate.</p>
+                <p className="italic text-foreground-500">
+                  You currently have no votes to delegate.
+                </p>
                 <div className="mt-2 flex justify-end">
                   <Button onPress={close}>Close</Button>
                 </div>
