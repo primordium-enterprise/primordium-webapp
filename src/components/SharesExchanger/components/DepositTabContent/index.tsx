@@ -17,7 +17,6 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import PrimordiumSharesOnboarderV1Abi from "@/abi/PrimordiumSharesOnboarderV1.abi";
 import { defaultChain } from "@/config/wagmi-config";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
-import abbreviateBalance from "@/utils/abbreviateBalance";
 import shortenAddress from "@/utils/shortenAddress";
 
 const pruneCommas = (value: string): string => {
