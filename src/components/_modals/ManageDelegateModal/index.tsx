@@ -16,7 +16,7 @@ import {
 import { useModalState } from "../ModalManagerProvider";
 import { useAccount, useChainId, useEnsAddress, useReadContract, useWriteContract } from "wagmi";
 import { useQuery } from "urql";
-import { DelegateQuery, MemberQuery } from "@/subgraph/subgraphQueries";
+import { DelegateQuery } from "@/subgraph/subgraphQueries";
 import useFormattedMushiBalance from "@/hooks/useFormattedMushiBalance";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { useContext, useEffect, useMemo, useState } from "react";
@@ -155,7 +155,7 @@ export default function ManageDelegateModal() {
 
   const [delegateResult] = useQuery({
     query: DelegateQuery,
-    variables: { id: newDelegateAddress },
+    variables: { address: newDelegateAddress },
     pause: !newDelegateAddress,
   });
   const {

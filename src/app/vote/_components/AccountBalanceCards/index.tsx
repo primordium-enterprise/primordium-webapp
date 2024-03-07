@@ -2,7 +2,10 @@
 
 import { MANAGE_DELEGATE_MODAL } from "@/components/_modals/ManageDelegateModal";
 import { useModalState } from "@/components/_modals/ModalManagerProvider";
+import { MemberPlusDelegateQuery } from "@/subgraph/subgraphQueries";
 import { Button, Card, CardBody, CardFooter, CardHeader } from "@nextui-org/react";
+import { useQuery } from "urql";
+import { useAccount } from "wagmi";
 
 type BaseProps = { children: React.ReactNode, className?: string };
 
@@ -22,6 +25,10 @@ const BalanceCardBody = ({ children }: BaseProps) => (
 
 export default function AccountBalanceCards() {
   const { open: openDelegateModal } = useModalState(MANAGE_DELEGATE_MODAL);
+  const { address } = useAccount();
+
+  const [queryResult] = useQuery({ query: MemberPlusDelegateQuery, variables: { address }, pause: !address });
+
 
   return (
     <div className="flex flex-col items-center justify-center sm:flex-row">

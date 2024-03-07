@@ -1,8 +1,8 @@
 import { gql } from "urql";
 
 export const MemberQuery = gql`
-  query Member($id: Bytes!) {
-    member(id: $id) {
+  query Member($address: Bytes!) {
+    member(id: $address) {
       delegate {
         id
         delegatedVotesBalance
@@ -14,8 +14,8 @@ export const MemberQuery = gql`
 `;
 
 export const DelegateQuery = gql`
-  query Delegate($id: Bytes!) {
-    delegate(id: $id) {
+  query Delegate($address: Bytes!) {
+    delegate(id: $address) {
       id
       delegatedVotesBalance
       proposerRoleExpiresAt
@@ -27,3 +27,22 @@ export const DelegateQuery = gql`
     }
   }
 `;
+
+export const MemberPlusDelegateQuery = gql`
+  query MemberPlusDelegateQuery($address: Bytes!) {
+    member(id: $address) {
+      delegate {
+        id
+        delegatedVotesBalance
+      }
+      id
+      tokenBalance
+    }
+    delegate(id: $address) {
+      id
+      delegatedVotesBalance
+      proposerRoleExpiresAt
+      cancelerRoleExpiresAt
+    }
+  }
+`
