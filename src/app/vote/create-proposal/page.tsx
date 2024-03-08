@@ -10,10 +10,13 @@ import abbreviateBalance from "@/utils/abbreviateBalance";
 import { ADDRESS_ZERO } from "@/utils/constants";
 import { Card, CardBody, Link, Spinner } from "@nextui-org/react";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
 import { Address } from "viem";
 import { useAccount, useReadContract, useReadContracts } from "wagmi";
+import ProposalActionsEditor, { ProposalAction } from "./_components/ProposalActionsEditor";
+import { sepolia } from "viem/chains";
+import buildEtherscanURL from "@/utils/buildEtherscanURL";
 
 export default function CreateProposalPage() {
   const { address } = useAccount();
@@ -45,7 +48,14 @@ export default function CreateProposalPage() {
   const { proposalThreshold, proposalThresholdPercentageDisplay, proposalThresholdDisplay } =
     useMemo(() => {
       let proposalThresholdBps;
-      let proposalThresholdPercentageDisplay = "proposalThresholdBps() percentage";
+      let proposalThresholdPercentageDisplay: JSX.Element | string = (
+        <Link
+          href={buildEtherscanURL(`address/${chainConfig[defaultChain.id].addresses.governor}#readProxyContract`)}
+          isExternal
+        >
+          proposalThresholdBps()
+        </Link>
+      );
       let proposalThresholdDisplay;
       let proposalThreshold: bigint | undefined;
       if (governanceData) {
@@ -63,7 +73,7 @@ export default function CreateProposalPage() {
       };
     }, [governanceData]);
 
-
+  const [actions, setActions] = useState<ProposalAction[]>([]);
 
   return (
     <div data-section="create-proposal" className="text-xs xs:text-sm sm:p-4 sm:text-base">
@@ -72,7 +82,7 @@ export default function CreateProposalPage() {
       </h1>
       <div>
         {governanceDataFetching ? (
-          <div className="flex justify-center">
+          <div className="flex justify-center items-center my-20">
             <Spinner size="lg" />
           </div>
         ) : governanceDataError ? (
@@ -86,7 +96,7 @@ export default function CreateProposalPage() {
               <b>{proposalThresholdPercentageDisplay}</b> of the total supply of MUSHI tokens
               delegated to your address to submit a proposal
               {proposalThresholdDisplay
-                ? ` (which is currently approximately ${proposalThresholdDisplay} votes)`
+                ? ` (which is currently about ${proposalThresholdDisplay} votes)`
                 : ""}
               .
             </p>
@@ -125,6 +135,16 @@ export default function CreateProposalPage() {
               )}
           </>
         )}
+      </div>
+      <h3 className="mt-4 font-londrina-shadow text-xl xs:text-2xl sm:mt-6 sm:text-3xl">
+        Proposal Actions
+      </h3>
+      <div className="mt-4 sm:mt-6">
+        <ProposalActionsEditor
+          governanceData={governanceData}
+          actions={actions}
+          setActions={setActions}
+        />
       </div>
     </div>
   );
