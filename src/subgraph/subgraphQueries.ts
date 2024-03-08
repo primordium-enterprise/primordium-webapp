@@ -1,4 +1,5 @@
 import { gql, TypedDocumentNode } from "urql";
+import { Address } from "viem";
 
 export const MemberQuery = gql`
   query Member($address: Bytes!) {
@@ -26,7 +27,15 @@ export const DelegateQuery = gql`
       }
     }
   }
-`;
+` as TypedDocumentNode<{
+  delegate: {
+    id: string,
+    delegatedVotesBalance: string,
+    proposerRoleExpiresAt: string,
+    cancelerRoleExpiresAt: string,
+    membersRepresented: { id: string, tokenBalance: string }[]
+  } | null
+}, { address: Address }>;
 
 export const MemberPlusDelegateQuery = gql`
   query MemberPlusDelegateQuery($address: Bytes!) {
@@ -47,36 +56,33 @@ export const MemberPlusDelegateQuery = gql`
   }
 `;
 
-export const SettingsAndMetadataQuery = gql`
-  query SettingsAndMetadataQuery() {
-    executorData(id: "EXECUTOR_DATA") {
-      sharesOnboarder
-      minDelay
-      id
-      guard
-      distributor
-      balanceSharesManager
-    }
+export const GovernanceDataQuery = gql`
+  query GovernanceDataQuery() {
     governanceData(id: "GOVERNANCE_DATA") {
-      votingPeriod
-      votingDelay
-      totalSupply
-      quorumBps
-      proposalThresholdBps
-      proposalGracePeriod
-      proposalCount
-      percentMajority
-      maxSupply
-      maxDeadlineExtension
-      isFounded
       id
-      governanceThresholdBps
+      totalSupply
+      maxSupply
+      proposalCount
+      proposalThresholdBps
+      quorumBps
+      proposalGracePeriod
       governanceCanBeginAt
-      foundedAtTimestamp
+      governanceThresholdBps
+      isFounded
       foundedAtBlock
-      extensionPercentDecay
-      extensionDecayPeriod
+      foundedAtTimestamp
+      votingDelay
+      votingPeriod
+      percentMajority
+      maxDeadlineExtension
       baseDeadlineExtension
+      extensionDecayPeriod
+      extensionPercentDecay
+      balanceSharesManager
+      sharesOnboarder
+      distributor
+      guard
+      executorMinDelay
     }
     _meta {
       block {
@@ -86,4 +92,31 @@ export const SettingsAndMetadataQuery = gql`
       }
     }
   }
-`;
+` as TypedDocumentNode<{
+  governanceData: {
+    id: string;
+    totalSupply: string;
+    maxSupply: string;
+    proposalCount: string;
+    proposalThresholdBps: number;
+    quorumBps: number;
+    proposalGracePeriod: string;
+    governanceCanBeginAt: string;
+    governanceThresholdBps: number;
+    isFounded: boolean;
+    foundedAtBlock: string;
+    foundedAtTimestamp: string;
+    votingDelay: string;
+    votingPeriod: string;
+    percentMajority: number;
+    maxDeadlineExtension: string;
+    baseDeadlineExtension: string;
+    extensionDecayPeriod: string;
+    extensionPercentDecay: number;
+    balanceSharesManager: string;
+    sharesOnboarder: string;
+    distributor: string;
+    guard: string;
+    executorMinDelay: string;
+  };
+}, undefined>;

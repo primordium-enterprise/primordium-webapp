@@ -1,12 +1,9 @@
 "use client";
 
-import { MANAGE_DELEGATE_MODAL } from "@/components/_modals/ManageDelegateModal";
-import { useModalState } from "@/components/_modals/ModalManagerProvider";
-import { Button, Card, CardBody, CardFooter, CardHeader, Divider } from "@nextui-org/react";
+import { Divider } from "@nextui-org/react";
 import AccountBalanceCards from "./_components/AccountBalanceCards";
 
 export default function VotePage({ children }: { children: React.ReactNode }) {
-  const { open: openDelegateModal } = useModalState(MANAGE_DELEGATE_MODAL);
 
   return (
     <div className="text-xs xs:text-sm sm:p-4 sm:text-base">

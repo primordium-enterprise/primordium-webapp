@@ -156,7 +156,7 @@ export default function ManageDelegateModal() {
 
   const [delegateResult] = useQuery({
     query: DelegateQuery,
-    variables: { address: newDelegateAddress },
+    variables: { address: newDelegateAddress as Address },
     pause: !newDelegateAddress,
   });
   const {
