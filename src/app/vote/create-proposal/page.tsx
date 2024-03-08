@@ -8,7 +8,7 @@ import { defaultChain } from "@/config/wagmi-config";
 import { DelegateQuery, GovernanceDataQuery } from "@/subgraph/subgraphQueries";
 import abbreviateBalance from "@/utils/abbreviateBalance";
 import { ADDRESS_ZERO } from "@/utils/constants";
-import { Card, CardBody, Spinner } from "@nextui-org/react";
+import { Card, CardBody, Link, Spinner } from "@nextui-org/react";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
@@ -31,7 +31,7 @@ export default function CreateProposalPage() {
 
   const [governanceDataResult] = useQuery({ query: GovernanceDataQuery });
   const {
-    data: { governanceData } = {},
+    data: { governanceData, _meta } = {},
     fetching: governanceDataFetching,
     error: governanceDataError,
   } = governanceDataResult;
@@ -63,6 +63,8 @@ export default function CreateProposalPage() {
       };
     }, [governanceData]);
 
+
+
   return (
     <div data-section="create-proposal" className="text-xs xs:text-sm sm:p-4 sm:text-base">
       <h1 className="mb-2 font-londrina-shadow text-3xl xs:text-4xl sm:mb-4 sm:text-5xl">
@@ -81,8 +83,8 @@ export default function CreateProposalPage() {
           <>
             <p>
               Unless you have the "proposer" role, you must have at least{" "}
-              <b>{proposalThresholdPercentageDisplay}</b> of the total supply of MUSHI
-              tokens delegated to your address to submit a proposal
+              <b>{proposalThresholdPercentageDisplay}</b> of the total supply of MUSHI tokens
+              delegated to your address to submit a proposal
               {proposalThresholdDisplay
                 ? ` (which is currently approximately ${proposalThresholdDisplay} votes)`
                 : ""}
@@ -91,12 +93,36 @@ export default function CreateProposalPage() {
             {BigInt((delegate && delegate.delegatedVotesBalance) || 0) <
               (proposalThreshold as bigint) && (
               <WarningCard className="mt-2 sm:mt-3">
-                <p className="text-warning-400">
+                <p>
                   You do not have enough delegated votes to submit a proposal. You must have at
                   least {proposalThresholdDisplay} votes to submit a proposal.
                 </p>
               </WarningCard>
             )}
+            {governanceData && !governanceData.isFounded && (
+              <WarningCard className="mt-2 sm:mt-3" color="primary">
+                <p>
+                  The governance contract has not been founded yet. The only allowable proposal
+                  action is to found the governance contract.
+                </p>
+              </WarningCard>
+            )}
+            {governanceData &&
+              _meta &&
+              BigInt(_meta.block.timestamp) < BigInt(governanceData.governanceCanBeginAt) && (
+                <WarningCard className="mt-2 sm:mt-3">
+                  <p>
+                    The governance contract cannot be founded until{" "}
+                    <Link
+                      href={`https://timestamp.online/countdown/${governanceData.governanceCanBeginAt}`}
+                      isExternal
+                    >
+                      {governanceData.governanceCanBeginAt}
+                    </Link>{" "}
+                    UTC.
+                  </p>
+                </WarningCard>
+              )}
           </>
         )}
       </div>

@@ -27,15 +27,18 @@ export const DelegateQuery = gql`
       }
     }
   }
-` as TypedDocumentNode<{
-  delegate: {
-    id: string,
-    delegatedVotesBalance: string,
-    proposerRoleExpiresAt: string,
-    cancelerRoleExpiresAt: string,
-    membersRepresented: { id: string, tokenBalance: string }[]
-  } | null
-}, { address: Address }>;
+` as TypedDocumentNode<
+  {
+    delegate: {
+      id: string;
+      delegatedVotesBalance: string;
+      proposerRoleExpiresAt: string;
+      cancelerRoleExpiresAt: string;
+      membersRepresented: { id: string; tokenBalance: string }[];
+    } | null;
+  },
+  { address: Address }
+>;
 
 export const MemberPlusDelegateQuery = gql`
   query MemberPlusDelegateQuery($address: Bytes!) {
@@ -92,31 +95,41 @@ export const GovernanceDataQuery = gql`
       }
     }
   }
-` as TypedDocumentNode<{
-  governanceData: {
-    id: string;
-    totalSupply: string;
-    maxSupply: string;
-    proposalCount: string;
-    proposalThresholdBps: number;
-    quorumBps: number;
-    proposalGracePeriod: string;
-    governanceCanBeginAt: string;
-    governanceThresholdBps: number;
-    isFounded: boolean;
-    foundedAtBlock: string;
-    foundedAtTimestamp: string;
-    votingDelay: string;
-    votingPeriod: string;
-    percentMajority: number;
-    maxDeadlineExtension: string;
-    baseDeadlineExtension: string;
-    extensionDecayPeriod: string;
-    extensionPercentDecay: number;
-    balanceSharesManager: string;
-    sharesOnboarder: string;
-    distributor: string;
-    guard: string;
-    executorMinDelay: string;
-  };
-}, undefined>;
+` as TypedDocumentNode<
+  {
+    governanceData: {
+      id: string;
+      totalSupply: string;
+      maxSupply: string;
+      proposalCount: string;
+      proposalThresholdBps: number;
+      quorumBps: number;
+      proposalGracePeriod: string;
+      governanceCanBeginAt: string;
+      governanceThresholdBps: number;
+      isFounded: boolean;
+      foundedAtBlock: string;
+      foundedAtTimestamp: string;
+      votingDelay: string;
+      votingPeriod: string;
+      percentMajority: number;
+      maxDeadlineExtension: string;
+      baseDeadlineExtension: string;
+      extensionDecayPeriod: string;
+      extensionPercentDecay: number;
+      balanceSharesManager: string;
+      sharesOnboarder: string;
+      distributor: string;
+      guard: string;
+      executorMinDelay: string;
+    };
+    _meta: {
+      block: {
+        number: string;
+        timestamp: string;
+        hash: string;
+      };
+    };
+  },
+  undefined
+>;
