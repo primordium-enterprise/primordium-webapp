@@ -9,7 +9,7 @@ export default function VotePage({ children }: { children: React.ReactNode }) {
   const { open: openDelegateModal } = useModalState(MANAGE_DELEGATE_MODAL);
 
   return (
-    <div className="mx-auto !max-w-screen-md p-2 text-xs sm:container xs:text-sm sm:p-4 sm:text-base">
+    <div className="text-xs xs:text-sm sm:p-4 sm:text-base">
       <div data-section="vote-header">
         <h1 className="mb-2 font-londrina-shadow text-3xl xs:text-4xl sm:mb-4 sm:text-5xl">
           Governance

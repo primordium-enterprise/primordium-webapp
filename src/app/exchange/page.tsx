@@ -2,7 +2,7 @@ import SharesExchanger from "@/components/SharesExchanger";
 
 export default function ExchangePage() {
   return (
-    <div className="sm:container mx-auto">
+    <div>
       <main className="px-4 py-8">
         <section className="text-center">
           <h1 className="font-londrina-shadow my-2 text-5xl">Join PrimordiumDAO</h1>

@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <div className="mx-auto sm:container">
+    <div data-section="home-page">
       <div className="my-6">
         {/* <h4 className="text-center font-londrina-shadow text-xl xs:text-2xl">welcome to</h4> */}
         <h1 className="text-center font-londrina-shadow text-4xl xs:text-5xl md:text-6xl">
@@ -26,7 +26,7 @@ export default function HomePage() {
           </Button>
         </Link>
       </div>
-      <div className="mx-auto my-2 !max-w-screen-md md:container xs:my-4 ">
+      <div data-section="how-it-works" className="mx-auto my-2 !max-w-screen-md md:container xs:my-4">
         <HowItWorks />
       </div>
       <div className="my-2 flex justify-center xs:my-4 mb-4 xs:mb-8">
