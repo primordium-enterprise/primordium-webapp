@@ -82,7 +82,7 @@ export default function CreateProposalPage() {
       </h1>
       <div>
         {governanceDataFetching ? (
-          <div className="flex justify-center items-center my-20">
+          <div className="flex justify-center items-center my-12">
             <Spinner size="lg" />
           </div>
         ) : governanceDataError ? (
