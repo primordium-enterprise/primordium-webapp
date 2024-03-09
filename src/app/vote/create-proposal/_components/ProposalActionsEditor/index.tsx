@@ -15,7 +15,7 @@ import {
 } from "@nextui-org/react";
 import Input from "@/components/Input";
 import { useQuery } from "@tanstack/react-query";
-import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
   Abi,
   AbiFunction,
@@ -49,6 +49,17 @@ const actionTypes = Object.keys(actionTypeDisplays) as ActionType[];
 interface AbiFunctionOption extends AbiFunction {
   signature: string;
 }
+
+interface UploadAbiState {
+  file: File | null;
+  isAbiError: boolean;
+  abi: Abi | null;
+}
+const defaultUploadAbiState: UploadAbiState = {
+  file: null,
+  isAbiError: false,
+  abi: null,
+};
 
 export default function ProposalActionsEditor({
   governanceData,
@@ -89,58 +100,68 @@ export default function ProposalActionsEditor({
     gcTime: 1200000, // 20 min
   });
 
+  // Allow user to upload a custom ABI
   const [isUploadAbiSelected, setIsUploadAbiSelected] = useState(false);
-  const requireUploadAbi = useMemo(
-    () => isEtherscanAbiFetched && etherscanAbi === null,
-    [etherscanAbi, isEtherscanAbiFetched],
-  );
 
+  // Upload is required if no etherscan ABI found
+  const requireUploadAbi = useMemo(
+    () => isEtherscanAbiError || (isEtherscanAbiFetched && etherscanAbi === null),
+    [etherscanAbi, isEtherscanAbiFetched, isEtherscanAbiError],
+  );
   const showUploadAbi = useMemo(
     () => isUploadAbiSelected || requireUploadAbi,
     [isUploadAbiSelected, requireUploadAbi],
   );
 
+  // Handle file upload, and parsed ABI
   const uploadAbiInputRef = useRef<HTMLInputElement>(null);
-  const [uploadAbiInputKey, setUploadAbiInputKey] = useState(0);
-  const resetUploadAbiFileInput = () => {
-    if (uploadAbiInputRef.current) {
-      uploadAbiInputRef.current;
-    }
-  };
-
-  const [uploadAbiFile, setUploadAbiFile] = useState<File | null>(null);
-  const { uploadAbi, isUploadAbiError } = useMemo(() => {
-    console.log(uploadAbiFile);
-    const result: { uploadAbi: Abi | null; isUploadAbiError: boolean } = {
-      uploadAbi: null,
-      isUploadAbiError: false,
-    };
+  const [uploadAbiInputKey, setUploadAbiInputKey] = useState(0); // Used to reset input element
+  const [uploadAbiState, uploadAbiDispatch] = useReducer(
+    (state: UploadAbiState, update: Partial<UploadAbiState>) => {
+      let newState = { ...state, ...update };
+      if (update.abi) {
+        newState.isAbiError = false;
+      } else if (update.isAbiError) {
+        newState.abi = null;
+      }
+      return newState;
+    },
+    defaultUploadAbiState,
+  );
+  const { file: uploadAbiFile, abi: uploadAbi, isAbiError: isUploadAbiError } = uploadAbiState;
+  useEffect(() => {
     if (uploadAbiFile) {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
           let parsed = JSON.parse(e.target?.result as string);
           if (Array.isArray(parsed)) {
-            result.uploadAbi = parsed;
+            uploadAbiDispatch({ abi: parsed });
           } else {
             if (parsed.abi && Array.isArray(parsed.abi)) {
-              result.uploadAbi = parsed.abi;
+              uploadAbiDispatch({ abi: parsed.abi });
             }
             throw new Error("Invalid ABI format");
           }
         } catch (e) {
           console.error(e);
-          result.isUploadAbiError = true;
+          uploadAbiDispatch({ isAbiError: true });
         }
       };
       reader.readAsText(uploadAbiFile, "UTF-8");
     }
-    return result;
   }, [uploadAbiFile]);
 
+  // Valid if the uploaded ABI is present and not errored
+  const isUploadAbiValid = useMemo(
+    () => uploadAbi && !isUploadAbiError,
+    [uploadAbi, isUploadAbiError],
+  );
+
+  // The parsed ABI (prioritizing the uploaded ABI over the Etherscan ABI)
   const abi = useMemo(() => {
-    return uploadAbi || etherscanAbi;
-  }, [etherscanAbi, uploadAbi]);
+    return isUploadAbiSelected ? (isUploadAbiValid ? uploadAbi : null) : etherscanAbi;
+  }, [isUploadAbiSelected, isUploadAbiValid, uploadAbi, etherscanAbi]);
 
   // The AbiFunction types filtered from the current active ABI, with an included "signature" property
   const functionOptions: AbiFunctionOption[] = useMemo(() => {
@@ -164,7 +185,6 @@ export default function ProposalActionsEditor({
   }, [abi]);
 
   useEffect(() => console.log(functionOptions), [functionOptions]);
-  useEffect(() => console.log(signature), [signature]);
 
   return (
     <div>
@@ -244,8 +264,8 @@ export default function ProposalActionsEditor({
                   ) : (
                     isEtherscanAbiFetched &&
                     (etherscanAbi ? (
-                      <span className="text-success-400">
-                        ABI successfully fetched from Etherscan.
+                      <span className="text-success-300">
+                        ABI sucessfully downloaded from Etherscan.
                       </span>
                     ) : (
                       <span className="text-foreground-500">No ABI found on Etherscan.</span>
@@ -274,30 +294,54 @@ export default function ProposalActionsEditor({
                       onChange={(e) => {
                         console.log(e.target.files);
                         const { files } = e.target;
-                        setUploadAbiFile(files && (files[0] || null));
+                        uploadAbiDispatch({
+                          ...defaultUploadAbiState,
+                          file: files && (files[0] || null),
+                        });
                       }}
                       hidden
                     />
-                    <Button variant="bordered" onPress={() => uploadAbiInputRef.current?.click()}>
+                    <p>
+                      Upload a JSON ABI file of your own.
+                      {etherscanAbi && (
+                        <span className="text-warning-500">
+                          {" "}
+                          The uploaded ABI will be used in place of the ABI downloaded from
+                          Etherscan. Only proceed if you are sure the ABI is correct.
+                        </span>
+                      )}
+                    </p>
+                    <Button
+                      color={isUploadAbiError ? "warning" : "primary"}
+                      variant="flat"
+                      onPress={() => uploadAbiInputRef.current?.click()}
+                    >
                       Choose ABI File
                     </Button>
                     {uploadAbiFile && (
-                      <div className="flex items-center justify-end gap-1 xs:gap-2">
-                        <span>{uploadAbiFile.name}</span>
-                        <Button
-                          size="sm"
-                          className="min-h-0 min-w-0 px-2 py-1 text-2xs xs:px-3 xs:py-2 xs:text-xs"
-                          onPress={() => {
-                            setUploadAbiFile(null);
-                            setUploadAbiInputKey((key) => key + 1);
-                          }}
-                        >
-                          Clear
-                        </Button>
+                      <div>
+                        <div className="flex items-center justify-end gap-1 xs:gap-2">
+                          <span className={`text-${isUploadAbiError ? "warning" : "success"}-300`}>
+                            {uploadAbiFile.name}
+                          </span>
+                          <Button
+                            size="sm"
+                            className="min-h-0 min-w-0 px-2 py-1 text-2xs xs:px-3 xs:py-2 xs:text-xs"
+                            onPress={() => {
+                              uploadAbiDispatch({ file: null, isAbiError: false, abi: null });
+                              setUploadAbiInputKey((key) => key + 1);
+                            }}
+                          >
+                            Clear
+                          </Button>
+                        </div>
+                        {isUploadAbiError && (
+                          <div className="text-danger-300 mt-1">
+                            There was an error parsing the ABI from the provided file. Please ensure
+                            that the file is a properly formatted JSON ABI.
+                          </div>
+                        )}
                       </div>
-                    )}
-                    {isUploadAbiError && (
-                      <span className="text-warning-400">Error parsing ABI from file.</span>
                     )}
                   </>
                 )}
@@ -308,6 +352,7 @@ export default function ProposalActionsEditor({
                     items={functionOptions}
                     selectedKeys={[signature]}
                     onChange={(e) => setSignature(e.target.value)}
+                    disallowEmptySelection
                     variant="bordered"
                     selectionMode="single"
                     isDisabled={functionOptions.length === 0}
