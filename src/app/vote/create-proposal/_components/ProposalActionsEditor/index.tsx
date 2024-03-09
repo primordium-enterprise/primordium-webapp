@@ -55,11 +55,19 @@ interface UploadAbiState {
   isAbiError: boolean;
   abi: Abi | null;
 }
+
 const defaultUploadAbiState: UploadAbiState = {
   file: null,
   isAbiError: false,
   abi: null,
 };
+
+interface InputParams {
+  [inputIndex: number]: {
+    value: string;
+    isInvalid?: boolean;
+  };
+}
 
 export default function ProposalActionsEditor({
   governanceData,
@@ -72,18 +80,18 @@ export default function ProposalActionsEditor({
 }) {
   const [isCreateActionModalOpen, setIsCreateActionModalOpen] = useState(false);
 
+  // Type of action to take (function call or value transfer)
+  const [actionType, setActionType] = useState<ActionType>("function");
+
+  // Action target input
   const [target, setTarget] = useState("");
   const isTargetValid = useMemo(() => isAddress(target), [target]);
 
+  // Action ETH value input
   const [value, setValue] = useState("");
 
-  const [signature, setSignature] = useState("");
-  // const [selectedSignature, setSelectedSignature] = useState<Set<string>(new Set[]);
-
   const [args, setArgs] = useState<ContractFunctionArgs[]>([]);
-
-  const [actionType, setActionType] = useState<ActionType>("function");
-
+  // Needs an ABI if the action type is a function call
   const needsAbi = useMemo(() => actionType === "function", [actionType]);
 
   // Load the ABI from Etherscan
@@ -163,11 +171,15 @@ export default function ProposalActionsEditor({
     return isUploadAbiSelected ? (isUploadAbiValid ? uploadAbi : null) : etherscanAbi;
   }, [isUploadAbiSelected, isUploadAbiValid, uploadAbi, etherscanAbi]);
 
+  // The selected function option from the ABI
+  const [functionOption, setFunctionOption] = useState<AbiFunctionOption | null>(null);
+
   // The AbiFunction types filtered from the current active ABI, with an included "signature" property
   const functionOptions: AbiFunctionOption[] = useMemo(() => {
-    if (!abi) {
-      // Reset the selected signature
-      setSignature("");
+    // Return empty array (resetting function option to null too) when no ABI is needed or present
+    if (!needsAbi || !abi) {
+      // Reset the selected function option
+      setFunctionOption(null);
       return [];
     }
     const filtered = abi
@@ -180,11 +192,56 @@ export default function ProposalActionsEditor({
         ...item,
         signature: toFunctionSignature(item as AbiFunction),
       })) as AbiFunctionOption[];
-    setSignature(filtered[0]?.signature || "");
+    setFunctionOption(filtered[0] || null);
     return filtered;
-  }, [abi]);
+  }, [needsAbi, abi]);
 
   useEffect(() => console.log(functionOptions), [functionOptions]);
+
+  // Value is disabled (and set to 0) if the selected function is nonpayable
+  const isValueDisabled = useMemo(() => {
+    console.log(functionOption);
+    if (functionOption?.stateMutability === "nonpayable") {
+      setValue("0");
+      return true;
+    }
+    return false;
+  }, [functionOption]);
+
+  const [inputParams, dispatchInputParams] = useReducer(
+    (state: InputParams, update: { type?: "reset"; payload: InputParams }) => {
+      const { type, payload } = update;
+      if (type === "reset") {
+        return payload;
+      }
+
+      let newState = { ...state };
+      for (let paramIndex in payload) {
+        newState[paramIndex] = { ...newState[paramIndex], ...payload[paramIndex] };
+      }
+      return newState;
+    },
+    {},
+  );
+
+  // Reset the inputParams when the function option changes
+  useEffect(() => {
+    let payload = {};
+    if (functionOption) {
+      payload = functionOption.inputs.reduce(
+        (acc, param, index) => ({
+          ...acc,
+          [index]: {
+            value: "",
+          },
+        }),
+        {},
+      );
+    }
+    dispatchInputParams({ type: "reset", payload });
+  }, [functionOption]);
+
+  useEffect(() => console.log("Input Params", inputParams), [inputParams]);
 
   return (
     <div>
@@ -233,6 +290,7 @@ export default function ProposalActionsEditor({
                 </SelectItem>
               ))}
             </Select>
+
             <Input
               label="Target address:"
               variant="bordered"
@@ -336,7 +394,7 @@ export default function ProposalActionsEditor({
                           </Button>
                         </div>
                         {isUploadAbiError && (
-                          <div className="text-danger-300 mt-1">
+                          <div className="mt-1 text-danger-300">
                             There was an error parsing the ABI from the provided file. Please ensure
                             that the file is a properly formatted JSON ABI.
                           </div>
@@ -350,8 +408,12 @@ export default function ProposalActionsEditor({
                   <Select
                     label="Function to call:"
                     items={functionOptions}
-                    selectedKeys={[signature]}
-                    onChange={(e) => setSignature(e.target.value)}
+                    selectedKeys={[functionOption?.signature || ""]}
+                    onChange={(e) => {
+                      setFunctionOption(
+                        functionOptions.find((f) => f.signature === e.target.value) || null,
+                      );
+                    }}
                     disallowEmptySelection
                     variant="bordered"
                     selectionMode="single"
@@ -374,14 +436,40 @@ export default function ProposalActionsEditor({
               </>
             )}
 
-            {/* <Input
-              label="Value (ETH):"
-              variant="bordered"
-              type="number"
-              placeholder="0"
-              value={value}
-              onValueChange={setValue}
-            /> */}
+            {(!needsAbi || !!functionOption) && (
+              <>
+                <Input
+                  label="Value (ETH):"
+                  variant="bordered"
+                  type="number"
+                  placeholder="0"
+                  value={value}
+                  isDisabled={isValueDisabled}
+                  onValueChange={setValue}
+                />
+              </>
+            )}
+
+            {functionOption && (
+              <>
+                <p>Input function parameters:</p>
+                {functionOption.inputs.map((param, index) => (
+                  <Input
+                    key={index}
+                    label={param.name}
+                    description={param.type}
+                    // type={param.type === ""}
+                    value={inputParams[index]?.value || ""}
+                    onValueChange={(value) => {
+                      let payload = {
+                        [index]: { value },
+                      };
+                      dispatchInputParams({ payload });
+                    }}
+                  />
+                ))}
+              </>
+            )}
           </ModalBody>
         </ModalContent>
       </Modal>
