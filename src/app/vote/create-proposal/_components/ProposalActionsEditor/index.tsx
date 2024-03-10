@@ -13,7 +13,7 @@ import {
   Spinner,
   Switch,
 } from "@nextui-org/react";
-import Input from "@/components/Input";
+import Input from "@/components/_nextui/InputExtended";
 import { useQuery } from "@tanstack/react-query";
 import { Dispatch, SetStateAction, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {

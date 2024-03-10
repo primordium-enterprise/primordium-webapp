@@ -1,26 +1,12 @@
 "use client";
 
-import Input from "@/components/Input";
+import InputExtended from "@/components/_nextui/InputExtended";
+import TextareaExtended from "@/components/_nextui/TextareaExtended";
 import { AbiFunctionOption } from "../../types";
-import { Dispatch, SetStateAction, useEffect, useMemo, useReducer, useState } from "react";
-import { AbiParameter, BaseError, encodeAbiParameters, isHex } from "viem";
-import { Textarea as BaseTextArea, Button, extendVariants } from "@nextui-org/react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { AbiParameter, encodeAbiParameters, isHex } from "viem";
+import { Button, TextAreaProps } from "@nextui-org/react";
 import { getArrayComponents } from "@/utils/abi";
-
-const Textarea = extendVariants(BaseTextArea, {
-  defaultVariants: {
-    maxRows: 3,
-    minRows: 3,
-  },
-});
-
-interface AbiFunctionInputParams {
-  [inputIndex: number]: {
-    values: string[];
-    isInvalid?: boolean;
-    errorMessage?: string;
-  };
-}
 
 type AbiFunctionInputParam = {
   valueItems: AbiFunctionInputParamValueItem[];
@@ -35,9 +21,11 @@ interface AbiFunctionInputParamValueItem {
 
 type ParsedAbiInputValue = string | boolean | bigint;
 const parseAbiInputValue = (value: string, abiSingularType: string): ParsedAbiInputValue => {
-  value = value.trim();
+  if (!value) {
+    throw new Error("The provided value is empty.");
+  }
 
-  console.log(value, isHex(value, { strict: true }))
+  value = value.trim();
 
   // String type, return as is
   if (abiSingularType === "string") {
@@ -53,22 +41,27 @@ const parseAbiInputValue = (value: string, abiSingularType: string): ParsedAbiIn
     }
   }
 
-  // If the input matches a numeric (no decimals), return a BigInt
-  let numericMatch = /^(-?\d+)$/.exec(value);
-  if (numericMatch) {
-    return BigInt(numericMatch[1]);
-  }
-
   // For bytes types, validate the hex string
   if (abiSingularType.startsWith("bytes")) {
     if (!isHex(value, { strict: true })) {
       throw new Error("The provided value is not a valid hex string.");
     }
   }
+
+  // If the input matches a numeric (no decimals), return a BigInt
+  let numericMatch = /^(-?\d+)$/.exec(value);
+  if (numericMatch) {
+    return BigInt(numericMatch[1]);
+  }
+
   return value;
 };
 
 const inputParamValueValidator = (value: string, abiSingularType: string) => {
+  // Empty string, isInvalid but no error message necessary
+  if (!value) {
+    return { isInvalid: true, errorMessage: "" };
+  }
   try {
     let parsedValue = parseAbiInputValue(value, abiSingularType);
     encodeAbiParameters([{ type: abiSingularType }], [parsedValue]);
@@ -161,7 +154,19 @@ function AbiFunctionInputParam({
   }, [inputParam]);
 
   const BaseComponent = useMemo(
-    () => (inputParam.type.startsWith("string") ? Textarea : Input),
+    () =>
+      inputParam.type.startsWith("string")
+        ? (props: TextAreaProps) => (
+            <TextareaExtended
+              minRows={1}
+              maxRows={6}
+              // disableAutosize
+              // disableAnimation
+              // classNames={{ input: "resize-y min-h-8" }}
+              {...props}
+            />
+          )
+        : InputExtended,
     [inputParam.type],
   );
 
@@ -172,7 +177,7 @@ function AbiFunctionInputParam({
       {arrayComponents && <p>{label}</p>}
       {inputParam.valueItems.map((item, i) => {
         return (
-          <Input
+          <BaseComponent
             className={`${arrayComponents ? "pl-4" : ""}`}
             key={i}
             label={arrayComponents ? `${inputParam.name}[${i}]` : label}
