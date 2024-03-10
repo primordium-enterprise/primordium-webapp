@@ -3,8 +3,8 @@
 import Input from "@/components/Input";
 import { AbiFunctionOption } from "../../types";
 import { Dispatch, SetStateAction, useEffect, useMemo, useReducer, useState } from "react";
-import { AbiParameter, BaseError, encodeAbiParameters } from "viem";
-import { Textarea as BaseTextArea, extendVariants } from "@nextui-org/react";
+import { AbiParameter, BaseError, encodeAbiParameters, isHex } from "viem";
+import { Textarea as BaseTextArea, Button, extendVariants } from "@nextui-org/react";
 import { getArrayComponents } from "@/utils/abi";
 
 const Textarea = extendVariants(BaseTextArea, {
@@ -36,9 +36,15 @@ interface AbiFunctionInputParamValueItem {
 type ParsedAbiInputValue = string | boolean | bigint;
 const parseAbiInputValue = (value: string, abiSingularType: string): ParsedAbiInputValue => {
   value = value.trim();
+
+  console.log(value, isHex(value, { strict: true }))
+
+  // String type, return as is
   if (abiSingularType === "string") {
     return value;
   }
+
+  // Bool should be written as "true" or "false"
   if (abiSingularType === "bool") {
     if (value === "true" || value === "false") {
       return value === "true" ? true : false;
@@ -46,9 +52,18 @@ const parseAbiInputValue = (value: string, abiSingularType: string): ParsedAbiIn
       throw new Error("bool values must be 'true' or 'false'.");
     }
   }
+
+  // If the input matches a numeric (no decimals), return a BigInt
   let numericMatch = /^(-?\d+)$/.exec(value);
   if (numericMatch) {
     return BigInt(numericMatch[1]);
+  }
+
+  // For bytes types, validate the hex string
+  if (abiSingularType.startsWith("bytes")) {
+    if (!isHex(value, { strict: true })) {
+      throw new Error("The provided value is not a valid hex string.");
+    }
   }
   return value;
 };
@@ -59,12 +74,14 @@ const inputParamValueValidator = (value: string, abiSingularType: string) => {
     encodeAbiParameters([{ type: abiSingularType }], [parsedValue]);
     return { isInvalid: false, errorMessage: "" };
   } catch (e: any) {
+    console.log(e);
     return {
       isInvalid: true,
-      errorMessage: e?.shortMessage || e?.message || "There was an error parsing the parameter value.",
+      errorMessage:
+        e?.shortMessage || e?.message || "There was an error parsing the parameter value.",
     };
   }
-}
+};
 
 /**
  * Component to input parameters for an ABI function option.
@@ -148,18 +165,60 @@ function AbiFunctionInputParam({
     [inputParam.type],
   );
 
-  return inputParam.valueItems.map((item, i) => {
-    return (
-      <BaseComponent
-        key={i}
-        label={label}
-        value={item.value}
-        errorMessage={item.errorMessage}
-        onValueChange={(value) => {
-          inputParam.valueItems[i] = { value, ...inputParamValueValidator(value, abiSingularType)};
-          setInputParams((prev) => [...prev]);
-        }}
-      />
-    );
-  });
+  const { arrayComponents } = inputParam;
+
+  return (
+    <>
+      {arrayComponents && <p>{label}</p>}
+      {inputParam.valueItems.map((item, i) => {
+        return (
+          <Input
+            className={`${arrayComponents ? "pl-4" : ""}`}
+            key={i}
+            label={arrayComponents ? `${inputParam.name}[${i}]` : label}
+            value={item.value}
+            errorMessage={item.errorMessage}
+            onValueChange={(value) => {
+              inputParam.valueItems[i] = {
+                value,
+                ...inputParamValueValidator(value, abiSingularType),
+              };
+              setInputParams((prev) => [...prev]);
+            }}
+          />
+        );
+      })}
+      {arrayComponents && arrayComponents[0] === null && (
+        <div className="flex justify-end gap-2">
+          <Button
+            size="sm"
+            className=""
+            onPress={() => {
+              inputParam.valueItems.push({ value: "" });
+              setInputParams((prev) => [...prev]);
+            }}
+          >
+            Add
+          </Button>
+          {inputParam.valueItems.length > 0 && (
+            <Button
+              size="sm"
+              className="text-danger-300"
+              onPress={() => {
+                if (inputParam.valueItems.length > 0) {
+                  inputParam.valueItems = inputParam.valueItems.slice(
+                    0,
+                    inputParam.valueItems.length - 1,
+                  );
+                }
+                setInputParams((prev) => [...prev]);
+              }}
+            >
+              Remove
+            </Button>
+          )}
+        </div>
+      )}
+    </>
+  );
 }

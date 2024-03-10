@@ -409,7 +409,7 @@ export default function ProposalActionsEditor({
 
             {functionOption && (
               <>
-                <p>Input function parameters:</p>
+                <p className="text-sm xs:text-md font-bold">Input function parameters:</p>
                 <FunctionOptionInputParams functionOption={functionOption} />
               </>
             )}
