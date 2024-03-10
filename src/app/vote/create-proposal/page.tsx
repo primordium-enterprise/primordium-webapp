@@ -14,9 +14,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
 import { Address } from "viem";
 import { useAccount, useReadContract, useReadContracts } from "wagmi";
-import ProposalActionsEditor, { ProposalAction } from "./_components/ProposalActionsEditor";
+import ProposalActionsEditor from "./_components/ProposalActionsEditor";
 import { sepolia } from "viem/chains";
 import buildEtherscanURL from "@/utils/buildEtherscanURL";
+import { ProposalAction } from "./_components/ProposalActionsEditor/types";
 
 export default function CreateProposalPage() {
   const { address } = useAccount();

@@ -23,32 +23,21 @@ import {
   Address,
   ContractFunctionArgs,
   Hex,
+  encodeAbiParameters,
   isAddress,
   toFunctionSignature,
 } from "viem";
+import { AbiFunctionOption, ProposalAction, ProposalActionType } from "./types";
+import FunctionOptionInputParams from "./components/FunctionOptionInputParams";
+import { getArrayComponents } from "@/utils/abi";
 
-export interface ProposalAction {
-  target: Address;
-  value: BigInt;
-  signature?: string;
-  calldata: Hex;
-  abi?: Abi;
-  functionName?: string;
-  args?: ContractFunctionArgs[];
-}
-
-type ActionType = "function" | "value";
 const actionTypeDisplays: {
-  [key in ActionType]: string;
+  [key in ProposalActionType]: string;
 } = {
   function: "Function Call",
   value: "Value Transfer",
 } as const;
-const actionTypes = Object.keys(actionTypeDisplays) as ActionType[];
-
-interface AbiFunctionOption extends AbiFunction {
-  signature: string;
-}
+const actionTypes = Object.keys(actionTypeDisplays) as ProposalActionType[];
 
 interface UploadAbiState {
   file: File | null;
@@ -62,13 +51,6 @@ const defaultUploadAbiState: UploadAbiState = {
   abi: null,
 };
 
-interface InputParams {
-  [inputIndex: number]: {
-    value: string;
-    isInvalid?: boolean;
-  };
-}
-
 export default function ProposalActionsEditor({
   governanceData,
   actions,
@@ -81,7 +63,7 @@ export default function ProposalActionsEditor({
   const [isCreateActionModalOpen, setIsCreateActionModalOpen] = useState(false);
 
   // Type of action to take (function call or value transfer)
-  const [actionType, setActionType] = useState<ActionType>("function");
+  const [actionType, setActionType] = useState<ProposalActionType>("function");
 
   // Action target input
   const [target, setTarget] = useState("");
@@ -182,16 +164,25 @@ export default function ProposalActionsEditor({
       setFunctionOption(null);
       return [];
     }
-    const filtered = abi
-      .filter(
+    const filtered = (
+      abi.filter(
         (item) =>
           item.type === "function" &&
           (item.stateMutability === "nonpayable" || item.stateMutability === "payable"),
-      )
-      .map((item) => ({
+      ) as AbiFunction[]
+    ).map((item) => {
+      return {
         ...item,
         signature: toFunctionSignature(item as AbiFunction),
-      })) as AbiFunctionOption[];
+        arrayComponentsByInputIndex: (item as AbiFunction).inputs.reduce(
+          (acc, param, index) => {
+            acc[index] = getArrayComponents(param.type);
+            return acc;
+          },
+          {} as { [index: number]: ReturnType<typeof getArrayComponents> },
+        ),
+      };
+    });
     setFunctionOption(filtered[0] || null);
     return filtered;
   }, [needsAbi, abi]);
@@ -207,41 +198,6 @@ export default function ProposalActionsEditor({
     }
     return false;
   }, [functionOption]);
-
-  const [inputParams, dispatchInputParams] = useReducer(
-    (state: InputParams, update: { type?: "reset"; payload: InputParams }) => {
-      const { type, payload } = update;
-      if (type === "reset") {
-        return payload;
-      }
-
-      let newState = { ...state };
-      for (let paramIndex in payload) {
-        newState[paramIndex] = { ...newState[paramIndex], ...payload[paramIndex] };
-      }
-      return newState;
-    },
-    {},
-  );
-
-  // Reset the inputParams when the function option changes
-  useEffect(() => {
-    let payload = {};
-    if (functionOption) {
-      payload = functionOption.inputs.reduce(
-        (acc, param, index) => ({
-          ...acc,
-          [index]: {
-            value: "",
-          },
-        }),
-        {},
-      );
-    }
-    dispatchInputParams({ type: "reset", payload });
-  }, [functionOption]);
-
-  useEffect(() => console.log("Input Params", inputParams), [inputParams]);
 
   return (
     <div>
@@ -282,7 +238,7 @@ export default function ProposalActionsEditor({
             <Select
               label="Action type:"
               selectedKeys={[actionType]}
-              onChange={(e) => setActionType(e.target.value as ActionType)}
+              onChange={(e) => setActionType(e.target.value as ProposalActionType)}
             >
               {actionTypes.map((type) => (
                 <SelectItem key={type} value={type}>
@@ -445,6 +401,7 @@ export default function ProposalActionsEditor({
                   placeholder="0"
                   value={value}
                   isDisabled={isValueDisabled}
+                  description={isValueDisabled ? "This function is nonpayable." : ""}
                   onValueChange={setValue}
                 />
               </>
@@ -453,21 +410,7 @@ export default function ProposalActionsEditor({
             {functionOption && (
               <>
                 <p>Input function parameters:</p>
-                {functionOption.inputs.map((param, index) => (
-                  <Input
-                    key={index}
-                    label={param.name}
-                    description={param.type}
-                    // type={param.type === ""}
-                    value={inputParams[index]?.value || ""}
-                    onValueChange={(value) => {
-                      let payload = {
-                        [index]: { value },
-                      };
-                      dispatchInputParams({ payload });
-                    }}
-                  />
-                ))}
+                <FunctionOptionInputParams functionOption={functionOption} />
               </>
             )}
           </ModalBody>
