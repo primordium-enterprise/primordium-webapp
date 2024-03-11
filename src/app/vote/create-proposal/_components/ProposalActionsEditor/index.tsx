@@ -1,36 +1,12 @@
 "use client";
 
-import { getEtherscanContract } from "@/fetch/etherscan";
 import { GovernanceData } from "@/subgraph/subgraphQueries";
 import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Select,
-  SelectItem,
-  Spinner,
-  Switch,
+  Button
 } from "@nextui-org/react";
-import Input from "@/components/_nextui/InputExtended";
-import { useQuery } from "@tanstack/react-query";
-import { Dispatch, SetStateAction, useEffect, useMemo, useReducer, useRef, useState } from "react";
-import {
-  Abi,
-  AbiFunction,
-  Address,
-  ContractFunctionArgs,
-  isAddress,
-  toFunctionSignature,
-} from "viem";
-import { AbiFunctionOption, ProposalAction, ProposalActionType, actionTypeDisplays } from "./types";
-import FunctionInputParams from "./components/FunctionInputParams";
-import { getArrayComponents } from "@/utils/abi";
+import { Dispatch, SetStateAction, useState } from "react";
+import { ProposalAction } from "./types";
 import CreateProposalActionModal from "./components/CreateProposalActionModal";
-
-
 
 export default function ProposalActionsEditor({
   governanceData,

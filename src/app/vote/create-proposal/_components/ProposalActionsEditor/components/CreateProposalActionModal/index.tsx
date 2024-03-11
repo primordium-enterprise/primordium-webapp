@@ -13,14 +13,31 @@ import {
   Spinner,
   Switch,
 } from "@nextui-org/react";
-import { AbiFunctionOption, ProposalActionType, actionTypeDisplays } from "../../types";
+import {
+  AbiFunctionInputParam,
+  AbiFunctionOption,
+  ProposalAction,
+  ProposalActionType,
+  actionTypeDisplays,
+} from "../../types";
 import FunctionInputParams from "../FunctionInputParams";
 import InputExtended from "@/components/_nextui/InputExtended";
-import { Abi, AbiFunction, Address, isAddress, toFunctionSignature } from "viem";
+import {
+  Abi,
+  AbiFunction,
+  Address,
+  Hex,
+  encodeFunctionData,
+  isAddress,
+  parseEther,
+  toFunctionSignature,
+} from "viem";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getEtherscanContract } from "@/fetch/etherscan";
 import { getArrayComponents } from "@/utils/abi";
+import { UnionPartialBy } from "node_modules/viem/_types/types/utils";
+import toast from "react-hot-toast";
 
 const actionTypes = Object.keys(actionTypeDisplays) as ProposalActionType[];
 
@@ -180,15 +197,70 @@ export default function CreateProposalActionModal({ ...modalProps }: Props) {
     return false;
   }, [functionOption]);
 
-  const [isFunctionInputParamsValid, setIsFunctionInputParamsValid] = useState(false);
+  const [inputParams, setInputParams] = useState<AbiFunctionInputParam[]>([]);
+  const isInputParamsValid = useMemo(() => {
+    return inputParams.every((inputParam) => {
+      return inputParam.valueItems.every((item) => !item.isInvalid);
+    });
+  }, [inputParams]);
 
   const isActionValid = useMemo(() => {
     if (actionType === "function") {
-      return isTargetValid && isFunctionInputParamsValid;
+      return isTargetValid && isInputParamsValid;
     } else {
       return isTargetValid;
     }
-  }, [isTargetValid, isFunctionInputParamsValid]);
+  }, [isTargetValid, isInputParamsValid]);
+
+  const createProposalAction = () => {
+    // Default values
+    let signature = "";
+    let functionName = "";
+    let calldata: Hex = "0x";
+    let abi = undefined;
+    let abiFunctionInputParams = undefined;
+    if (actionType === "function") {
+      if (!functionOption) {
+        return toast.error("No function option is selected.");
+      }
+      signature = functionOption.signature;
+      functionName = functionOption.name;
+      try {
+        calldata = encodeFunctionData({
+          abi: [functionOption],
+          functionName,
+          args: [
+            inputParams.map((inputParam) => {
+              if (inputParam.arrayComponents) {
+                return inputParam.valueItems.map((valueItem) => valueItem.parsedValue);
+              }
+              return inputParam.valueItems[0].parsedValue;
+            }),
+          ],
+        });
+        abi = [functionOption];
+        abiFunctionInputParams = inputParams;
+      } catch (e) {
+        console.log(e);
+        return toast.error("Failed to encode the function calldata.");
+      }
+    }
+
+    if (!isActionValid) {
+      return toast.error("The action is not formatted correctly.");
+    }
+
+    const action: ProposalAction<typeof actionType> = {
+      actionType,
+      target: target as Address,
+      value: parseEther(value || "0"),
+      signature,
+      functionName,
+      calldata,
+      abi,
+      abiFunctionInputParams,
+    };
+  };
 
   return (
     <Modal {...modalProps}>
@@ -388,7 +460,8 @@ export default function CreateProposalActionModal({ ...modalProps }: Props) {
               <p className="xs:text-md text-sm font-bold">Input function parameters:</p>
               <FunctionInputParams
                 functionOption={functionOption}
-                setIsValid={setIsFunctionInputParamsValid}
+                inputParams={inputParams}
+                setInputParams={setInputParams}
               />
             </>
           )}

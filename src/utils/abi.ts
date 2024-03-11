@@ -1,7 +1,9 @@
+import { isHex } from "viem";
+
 /**
  * Returns the length and inner type of an ABI input parameter (or undefined if the input is not an array).
- * @copyright Based off of function from Viem https://github.com/wevm/viem/blob/3123f50ffdc6275b82a01c209da90bcf631357c8/src/utils/abi/encodeAbiParameters.ts#L395 (MIT License)
  * @param type The ABI type.
+ * @returns An array containing the length (or null if dynamic) and inner type of the ABI input parameter, or undefined if the input is not an array.
  */
 export function getArrayComponents(
   type: string,
@@ -12,3 +14,47 @@ export function getArrayComponents(
       [matches[2] ? Number(matches[2]) : null, matches[1]]
     : undefined;
 }
+
+/**
+ * Parses the ABI input value based on the ABI singular type.
+ * @param value The value to parse.
+ * @param abiType The ABI type.
+ * @returns The parsed value.
+ * @throws Error if the provided value is empty, bool values are not 'true' or 'false', or the provided value is not a valid hex string.
+ */
+export const parseAbiInputValue = (value: string, abiType: string): string | boolean | bigint => {
+  if (!value) {
+    throw new Error("The provided value is empty.");
+  }
+
+  value = value.trim();
+
+  // String type, return as is
+  if (abiType.startsWith("string")) {
+    return value;
+  }
+
+  // Bool should be written as "true" or "false"
+  if (abiType.startsWith("bool")) {
+    if (value === "true" || value === "false") {
+      return value === "true" ? true : false;
+    } else {
+      throw new Error("bool values must be 'true' or 'false'.");
+    }
+  }
+
+  // For bytes types, validate the hex string
+  if (abiType.startsWith("bytes")) {
+    if (!isHex(value, { strict: true })) {
+      throw new Error("The provided value is not a valid hex string.");
+    }
+  }
+
+  // If the input matches a numeric (no decimals), return a BigInt
+  let numericMatch = /^(-?\d+)$/.exec(value);
+  if (numericMatch) {
+    return BigInt(numericMatch[1]);
+  }
+
+  return value;
+};

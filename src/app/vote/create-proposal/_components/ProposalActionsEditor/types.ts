@@ -1,16 +1,18 @@
-import { getArrayComponents } from "@/utils/abi";
-import { Abi, AbiFunction, Address, Hex } from "viem";
-
-export interface ProposalAction {
-  target: Address;
-  value: BigInt;
-  signature?: string;
-  calldata: Hex;
-  abi?: Abi;
-  functionName?: string;
-}
+import { getArrayComponents, parseAbiInputValue } from "@/utils/abi";
+import { Abi, AbiFunction, AbiParameter, Address, Hex } from "viem";
 
 export type ProposalActionType = "function" | "value";
+
+export interface ProposalAction<proposalActionType = ProposalActionType> {
+  actionType: ProposalActionType;
+  target: Address;
+  value: BigInt;
+  signature: string;
+  calldata: Hex;
+  abi: proposalActionType extends "value" ? undefined : Abi;
+  functionName: proposalActionType extends "value" ? undefined : string;
+  abiFunctionInputParams: proposalActionType extends "value" ? undefined : AbiFunctionInputParam[];
+}
 
 export const actionTypeDisplays: {
   [key in ProposalActionType]: string;
@@ -26,3 +28,14 @@ export interface AbiFunctionOption extends AbiFunction {
   }
 }
 
+export type AbiFunctionInputParam = {
+  valueItems: AbiFunctionInputParamValueItem[];
+  arrayComponents: ReturnType<typeof getArrayComponents>;
+} & AbiParameter;
+
+export interface AbiFunctionInputParamValueItem {
+  value: string;
+  parsedValue?: ReturnType<typeof parseAbiInputValue>;
+  isInvalid?: boolean;
+  errorMessage?: string;
+}
