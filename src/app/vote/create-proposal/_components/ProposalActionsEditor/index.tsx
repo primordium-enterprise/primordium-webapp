@@ -7,6 +7,7 @@ import {
   Modal,
   ModalBody,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   Select,
   SelectItem,
@@ -19,16 +20,13 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useReducer, useRef, useSt
 import {
   Abi,
   AbiFunction,
-  AbiParameter,
   Address,
   ContractFunctionArgs,
-  Hex,
-  encodeAbiParameters,
   isAddress,
   toFunctionSignature,
 } from "viem";
 import { AbiFunctionOption, ProposalAction, ProposalActionType } from "./types";
-import FunctionOptionInputParams from "./components/FunctionOptionInputParams";
+import FunctionInputParams from "./components/FunctionInputParams";
 import { getArrayComponents } from "@/utils/abi";
 
 const actionTypeDisplays: {
@@ -199,6 +197,8 @@ export default function ProposalActionsEditor({
     return false;
   }, [functionOption]);
 
+  const [isFunctionInputParamsValid, setIsFunctionInputParamsValid] = useState(false);
+
   return (
     <div>
       <div className="my-2">
@@ -229,12 +229,15 @@ export default function ProposalActionsEditor({
         isOpen={isCreateActionModalOpen}
         onOpenChange={setIsCreateActionModalOpen}
         placement="center"
+        classNames={{
+          wrapper: "overflow-hidden",
+        }}
       >
-        <ModalContent>
+        <ModalContent className="max-h-[90vh] overflow-y-auto">
           <ModalHeader className="font-londrina-solid text-xl sm:text-2xl">
             Create Proposal Action
           </ModalHeader>
-          <ModalBody className="px-3 py-2 text-2xs xs:px-6 xs:py-3 sm:text-xs">
+          <ModalBody className="overflow-y-auto px-3 py-2 text-2xs xs:px-6 xs:py-3 sm:text-xs">
             <Select
               label="Action type:"
               selectedKeys={[actionType]}
@@ -401,7 +404,13 @@ export default function ProposalActionsEditor({
                   placeholder="0"
                   value={value}
                   isDisabled={isValueDisabled}
-                  description={isValueDisabled ? "This function is nonpayable." : ""}
+                  description={
+                    !needsAbi
+                      ? "Enter the proposed ETH value to transfer from the treasury."
+                      : isValueDisabled
+                        ? "This function is nonpayable."
+                        : "The proposed ETH value to send with this function call."
+                  }
                   onValueChange={setValue}
                 />
               </>
@@ -409,11 +418,20 @@ export default function ProposalActionsEditor({
 
             {functionOption && (
               <>
-                <p className="text-sm xs:text-md font-bold">Input function parameters:</p>
-                <FunctionOptionInputParams functionOption={functionOption} />
+                <p className="xs:text-md text-sm font-bold">Input function parameters:</p>
+                <FunctionInputParams
+                  functionOption={functionOption}
+                  setIsValid={setIsFunctionInputParamsValid}
+                />
               </>
             )}
           </ModalBody>
+          <ModalFooter className="flex justify-end gap-2">
+            <Button onPress={() => setIsCreateActionModalOpen(false)} variant="flat">
+              Cancel
+            </Button>
+            <Button color="primary">Create Action</Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </div>

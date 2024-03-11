@@ -79,10 +79,12 @@ const inputParamValueValidator = (value: string, abiSingularType: string) => {
 /**
  * Component to input parameters for an ABI function option.
  */
-export default function FunctionOptionInputParams({
+export default function FunctionInputParams({
   functionOption,
+  setIsValid,
 }: {
   functionOption: AbiFunctionOption;
+  setIsValid: Dispatch<SetStateAction<boolean>>;
 }) {
   const [inputParams, setInputParams] = useState<AbiFunctionInputParam[]>([]);
 
@@ -110,7 +112,11 @@ export default function FunctionOptionInputParams({
     setInputParams(newInputParams);
   }, [functionOption]);
 
-  useEffect(() => console.log("Input Params", inputParams), [inputParams]);
+  // useEffect(() => console.log("Input Params", inputParams), [inputParams]);
+
+  const isValid = useMemo(() => {
+
+  }, [inputParams]);
 
   return (
     <>
