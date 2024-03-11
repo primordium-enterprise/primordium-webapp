@@ -67,7 +67,6 @@ const inputParamValueValidator = (value: string, abiSingularType: string) => {
     encodeAbiParameters([{ type: abiSingularType }], [parsedValue]);
     return { isInvalid: false, errorMessage: "" };
   } catch (e: any) {
-    console.log(e);
     return {
       isInvalid: true,
       errorMessage:
@@ -103,8 +102,8 @@ export default function FunctionInputParams({
           ...abiParam,
           arrayComponents,
           valueItems: arrayComponents
-            ? Array.apply(null, Array(arrayComponents[0] || 1)).map(() => ({ value: "" }))
-            : [{ value: "" }],
+            ? Array.apply(null, Array(arrayComponents[0] || 1)).map(() => ({ value: "", isInvalid: true }))
+            : [{ value: "", isInvalid: true }],
         };
         newInputParams.push(newInputParam);
       }
@@ -114,9 +113,15 @@ export default function FunctionInputParams({
 
   // useEffect(() => console.log("Input Params", inputParams), [inputParams]);
 
-  const isValid = useMemo(() => {
-
+  const isValid: boolean = useMemo(() => {
+    return inputParams.every((inputParam) => {
+      return inputParam.valueItems.every((item) => !item.isInvalid);
+    });
   }, [inputParams]);
+
+  useEffect(() => {
+    setIsValid(isValid);
+  }, [isValid, setIsValid]);
 
   return (
     <>

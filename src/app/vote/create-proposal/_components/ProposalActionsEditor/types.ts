@@ -12,6 +12,13 @@ export interface ProposalAction {
 
 export type ProposalActionType = "function" | "value";
 
+export const actionTypeDisplays: {
+  [key in ProposalActionType]: string;
+} = {
+  function: "Function Call",
+  value: "Value Transfer",
+} as const;
+
 export interface AbiFunctionOption extends AbiFunction {
   signature: string;
   arrayComponentsByInputIndex: {
