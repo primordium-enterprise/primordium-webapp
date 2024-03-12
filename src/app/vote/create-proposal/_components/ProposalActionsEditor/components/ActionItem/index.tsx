@@ -38,7 +38,9 @@ export default function ActionItem({
         <div className="text-foreground-500">{`${index + 1})`}</div>
         <div className="text-xs xs:text-sm">
           Action Type:{" "}
-          <span className="text-foreground-500">{actionTypeDisplays[action.actionType]}</span>
+          <span className="text-foreground-500">
+            {action.actionTypeDisplay || actionTypeDisplays[action.actionType]}
+          </span>
         </div>
         <div className="ml-2 flex flex-col gap-1">
           <div className="flex gap-4">

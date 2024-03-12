@@ -5,6 +5,7 @@ export type ProposalActionType = "function" | "value";
 
 export interface ProposalAction {
   actionType: ProposalActionType;
+  actionTypeDisplay?: string;
   target: Address;
   value: bigint;
   signature: string; // Should be an empty string for value transfers

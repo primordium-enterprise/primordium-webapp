@@ -273,6 +273,7 @@ export default function CreateProposalActionModal({ addProposalAction, ...modalP
             label="Action type:"
             selectedKeys={[actionType]}
             onChange={(e) => setActionType(e.target.value as ProposalActionType)}
+            disallowEmptySelection
           >
             {actionTypes.map((type) => (
               <SelectItem key={type} value={type}>

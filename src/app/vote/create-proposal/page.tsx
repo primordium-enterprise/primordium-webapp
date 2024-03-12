@@ -8,7 +8,7 @@ import { defaultChain } from "@/config/wagmi-config";
 import { DelegateQuery, GovernanceDataQuery } from "@/subgraph/subgraphQueries";
 import abbreviateBalance from "@/utils/abbreviateBalance";
 import { ADDRESS_ZERO } from "@/utils/constants";
-import { Card, CardBody, Link, Spinner } from "@nextui-org/react";
+import { Card, CardBody, Code, Link, Spinner } from "@nextui-org/react";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
@@ -28,6 +28,8 @@ import ButtonExtended from "@/components/_nextui/ButtonExtended";
 import toast from "react-hot-toast";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
 import handleViemContractError from "@/utils/handleViemContractError";
+
+const MAX_BPS = 10000;
 
 export default function CreateProposalPage() {
   const { address } = useAccount();
@@ -71,12 +73,14 @@ export default function CreateProposalPage() {
       );
       let proposalThresholdDisplay;
       let proposalThreshold: bigint | undefined;
+      let governanceThresholdBps: number | undefined;
       if (governanceData) {
         proposalThresholdBps = Number(governanceData.proposalThresholdBps);
         proposalThresholdPercentageDisplay = `${proposalThresholdBps / 100}%`;
         proposalThreshold =
-          (BigInt(governanceData.totalSupply) * BigInt(proposalThresholdBps)) / BigInt(10000);
+          (BigInt(governanceData.totalSupply) * BigInt(proposalThresholdBps)) / BigInt(MAX_BPS);
         proposalThresholdDisplay = abbreviateBalance(proposalThreshold);
+        governanceThresholdBps = governanceData.governanceThresholdBps;
       }
       return {
         proposalThresholdBps,
@@ -85,6 +89,22 @@ export default function CreateProposalPage() {
         proposalThreshold,
       };
     }, [governanceData]);
+
+  const { governanceThresholdBps, maxSupply, totalSupply } = useMemo(() => {
+    return {
+      governanceThresholdBps: governanceData?.governanceThresholdBps,
+      maxSupply: governanceData?.maxSupply,
+      totalSupply: BigInt(governanceData?.totalSupply || 0),
+    };
+  }, [governanceData]);
+
+  const governanceThreshold = useMemo(() => {
+    return (
+      governanceThresholdBps &&
+      maxSupply &&
+      (BigInt(maxSupply) * BigInt(governanceThresholdBps)) / BigInt(MAX_BPS)
+    );
+  }, [governanceThresholdBps, maxSupply]);
 
   // Track the proposal actions in state
   const [actions, setActions] = useState<ProposalAction[]>([]);
@@ -114,24 +134,27 @@ export default function CreateProposalPage() {
     const toastId = toast.loading("Creating transaction to update delegate...");
     const finalDescription = `# ${title}\n\n${description}`;
     const txDescription = `Create proposal: ${title}`;
-    const splitActions: [Address[], bigint[], Hex[], string[]] = actions.reduce(([t, v, c, s], action) => {
-      t.push(action.target);
-      v.push(action.value);
-      c.push(action.calldata);
-      s.push(action.signature);
-      return [t, v, c, s];
-    }, [[], [], [], []] as [Address[], bigint[], Hex[], string[]]);
+    const splitActions: [Address[], bigint[], Hex[], string[]] = actions.reduce(
+      ([t, v, c, s], action) => {
+        t.push(action.target);
+        v.push(action.value);
+        c.push(action.calldata);
+        s.push(action.signature);
+        return [t, v, c, s];
+      },
+      [[], [], [], []] as [Address[], bigint[], Hex[], string[]],
+    );
     writeContractAsync({
       abi: PrimordiumGovernorV1Abi,
       address: chainConfig[defaultChain.id]?.addresses.governor,
       functionName: "propose",
       args: [...splitActions, finalDescription],
     })
-    .then((hash) => {
-      addTransaction(hash, txDescription, toastId);
-    })
-    .catch((error) => handleViemContractError(error, toastId));
-  }
+      .then((hash) => {
+        addTransaction(hash, txDescription, toastId);
+      })
+      .catch((error) => handleViemContractError(error, toastId));
+  };
 
   return (
     <div
@@ -173,8 +196,9 @@ export default function CreateProposalPage() {
             {governanceData && !governanceData.isFounded && (
               <WarningCard className="mt-2 sm:mt-3" color="primary">
                 <p>
-                  The governance contract has not been founded yet. The only allowable proposal
-                  action is to found the governance contract.
+                  The governance contract has not been founded yet. The "foundGovernor(uint256)"
+                  function on the Primordium Governor contract is the only allowable proposal action until a
+                  founding proposal has been passed and executed.
                 </p>
               </WarningCard>
             )}
@@ -194,6 +218,16 @@ export default function CreateProposalPage() {
                   </p>
                 </WarningCard>
               )}
+            {governanceThreshold && governanceThreshold < totalSupply && (
+              <WarningCard className="mt-2 sm:mt-3">
+                <p>
+                  The goverance contract cannot be founded until at least{" "}
+                  {abbreviateBalance(governanceThreshold || BigInt(0))} MUSHI tokens are in
+                  circulation. Currently, the total MUSHI supply is at{" "}
+                  {abbreviateBalance(totalSupply)} tokens.
+                </p>
+              </WarningCard>
+            )}
           </>
         )}
       </div>
