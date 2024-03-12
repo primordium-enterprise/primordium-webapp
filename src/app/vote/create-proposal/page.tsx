@@ -17,8 +17,14 @@ import { useAccount, useReadContract, useReadContracts } from "wagmi";
 import ProposalActionsEditor from "./_components/ProposalActionsEditor";
 import { sepolia } from "viem/chains";
 import buildEtherscanURL from "@/utils/buildEtherscanURL";
-import { PROPOSAL_ACTIONS_STORAGE_KEY, ProposalAction } from "./_components/ProposalActionsEditor/types";
+import {
+  PROPOSAL_ACTIONS_STORAGE_KEY,
+  ProposalAction,
+} from "./_components/ProposalActionsEditor/types";
 import { fromJSON, toJSON } from "@/utils/JSONBigInt";
+import InputExtended from "@/components/_nextui/InputExtended";
+import TextareaExtended from "@/components/_nextui/TextareaExtended";
+import ButtonExtended from "@/components/_nextui/ButtonExtended";
 
 export default function CreateProposalPage() {
   const { address } = useAccount();
@@ -52,7 +58,9 @@ export default function CreateProposalPage() {
       let proposalThresholdBps;
       let proposalThresholdPercentageDisplay: JSX.Element | string = (
         <Link
-          href={buildEtherscanURL(`address/${chainConfig[defaultChain.id].addresses.governor}#readProxyContract`)}
+          href={buildEtherscanURL(
+            `address/${chainConfig[defaultChain.id].addresses.governor}#readProxyContract`,
+          )}
           isExternal
         >
           proposalThresholdBps()
@@ -86,14 +94,20 @@ export default function CreateProposalPage() {
     }
   }, []);
 
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
   return (
-    <div data-section="create-proposal" className="text-xs xs:text-sm sm:p-4 sm:text-base">
-      <h1 className="mb-2 font-londrina-shadow text-3xl xs:text-4xl sm:mb-4 sm:text-5xl">
+    <div
+      data-section="create-proposal"
+      className="pb-8 text-xs xs:text-sm sm:p-4 sm:pb-12 sm:text-base"
+    >
+      <h1 className="mb-2 font-londrina-shadow text-4xl xs:text-5xl sm:mb-4 sm:text-6xl">
         Create Proposal
       </h1>
       <div>
         {governanceDataFetching ? (
-          <div className="flex justify-center items-center my-12">
+          <div className="my-12 flex items-center justify-center">
             <Spinner size="lg" />
           </div>
         ) : governanceDataError ? (
@@ -147,9 +161,7 @@ export default function CreateProposalPage() {
           </>
         )}
       </div>
-      <h3 className="mt-4 font-londrina-shadow text-xl xs:text-2xl sm:mt-6 sm:text-3xl">
-        Proposal Actions
-      </h3>
+      <h3 className="mt-4 font-londrina-shadow text-2xl sm:mt-6 sm:text-3xl">On-Chain Actions</h3>
       <div className="mt-4 sm:mt-6">
         <ProposalActionsEditor
           governanceData={governanceData}
@@ -157,6 +169,38 @@ export default function CreateProposalPage() {
           setActions={setActions}
         />
       </div>
+      <h3 className="mt-4 font-londrina-shadow text-2xl sm:mt-6 sm:text-3xl">Description</h3>
+      <div className="mt-4 flex flex-col gap-4">
+        <InputExtended label="Title:" placeholder="Enter a title for your proposal..." size="lg" value={title} onValueChange={setTitle} />
+        <TextareaExtended
+          placeholder={
+            "## Summary\n\nInsert your summary here\n\n## Methodology\n\nInsert your methodology here\n\n## Conclusion\n\nInsert your conclusion here"
+          }
+          disableAutosize
+          disableAnimation
+          classNames={{ input: "resize-y min-h-[15rem]" }}
+          minRows={15}
+          value={description}
+          onValueChange={setDescription}
+          description={
+            <div>
+              <span>Proposal description's are formatted using </span>
+              <Link
+                style={{ fontSize: "inherit", lineHeight: "inherit" }}
+                href="https://www.markdownguide.org/getting-started/"
+                isExternal
+              >
+                markdown
+              </Link>
+              <span>
+                . It is recommended to use only heading 2 (##) and 3 (###) in the description, as
+                heading 1 (#) is used in the title.
+              </span>
+            </div>
+          }
+        />
+      </div>
+      <ButtonExtended color="primary" className="mt-4 sm:mt-6" size="lg" fullWidth >Submit Proposal</ButtonExtended>
     </div>
   );
 }

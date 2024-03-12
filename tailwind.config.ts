@@ -9,8 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
-        "2xs": "310px",
-        xs: "380px",
+        "2xs": "320px",
+        xs: "450px",
       },
       fontSize: {
         "2xs": "0.625rem",

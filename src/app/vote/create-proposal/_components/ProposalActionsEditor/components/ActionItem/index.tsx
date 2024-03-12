@@ -13,6 +13,7 @@ import { AbiFunctionInputParam, ProposalAction, actionTypeDisplays } from "../..
 import { useMemo, useState } from "react";
 import { formatEther } from "viem";
 import DisplayAddress from "@/components/DisplayAddress";
+import ButtonExtended from "@/components/_nextui/ButtonExtended";
 
 export default function ActionItem({
   action,
@@ -92,13 +93,13 @@ export default function ActionItem({
         </div>
         <div className="flex justify-end gap-2">
           {confirmDeleteAction && (
-            <Button size="sm" color="danger" onPress={removeAction}>
+            <ButtonExtended size="sm" color="danger" onPress={removeAction}>
               Remove Action
-            </Button>
+            </ButtonExtended>
           )}
-          <Button size="sm" onPress={() => setConfirmDeleteAction(!confirmDeleteAction)}>
+          <ButtonExtended size="sm" onPress={() => setConfirmDeleteAction(!confirmDeleteAction)}>
             {confirmDeleteAction ? "Cancel" : "Remove Action"}
-          </Button>
+          </ButtonExtended>
         </div>
       </CardBody>
     </Card>

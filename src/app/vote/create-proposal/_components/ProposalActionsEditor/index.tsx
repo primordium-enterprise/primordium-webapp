@@ -7,6 +7,7 @@ import { PROPOSAL_ACTIONS_STORAGE_KEY, ProposalAction } from "./types";
 import CreateProposalActionModal from "./components/CreateProposalActionModal";
 import { toJSON } from "@/utils/JSONBigInt";
 import ActionItem from "./components/ActionItem";
+import ButtonExtended from "@/components/_nextui/ButtonExtended";
 
 export default function ProposalActionsEditor({
   governanceData,
@@ -40,14 +41,13 @@ export default function ProposalActionsEditor({
         )}
       </div>
       <div className="flex justify-end">
-        <Button
+        <ButtonExtended
           className="mt-4"
           color="primary"
-          size="lg"
           onPress={() => setIsCreateActionModalOpen(true)}
         >
           Add Proposal Action
-        </Button>
+        </ButtonExtended>
       </div>
       <CreateProposalActionModal
         addProposalAction={(newAction) => {
