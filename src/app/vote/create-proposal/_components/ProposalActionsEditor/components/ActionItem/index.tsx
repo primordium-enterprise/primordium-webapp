@@ -93,7 +93,14 @@ export default function ActionItem({
         </div>
         <div className="flex justify-end gap-2">
           {confirmDeleteAction && (
-            <ButtonExtended size="sm" color="danger" onPress={removeAction}>
+            <ButtonExtended
+              size="sm"
+              color="danger"
+              onPress={() => {
+                setConfirmDeleteAction(false);
+                removeAction();
+              }}
+            >
               Remove Action
             </ButtonExtended>
           )}

@@ -17,7 +17,7 @@ export interface ProposalAction {
 export const actionTypeDisplays: {
   [key in ProposalActionType]: string;
 } = {
-  value: "Value Transfer",
+  value: "ETH Transfer",
   function: "Function Call",
 } as const;
 

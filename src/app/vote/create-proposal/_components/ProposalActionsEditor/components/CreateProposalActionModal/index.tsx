@@ -311,7 +311,6 @@ export default function CreateProposalActionModal({ addProposalAction, ...modalP
                 "Enter the address to send ETH to."
               )
             }
-            isRequired
           />
 
           {actionType === "function" && (
