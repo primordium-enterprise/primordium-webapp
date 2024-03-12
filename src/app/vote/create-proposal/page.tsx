@@ -10,10 +10,10 @@ import abbreviateBalance from "@/utils/abbreviateBalance";
 import { ADDRESS_ZERO } from "@/utils/constants";
 import { Card, CardBody, Link, Spinner } from "@nextui-org/react";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
-import { Address } from "viem";
-import { useAccount, useReadContract, useReadContracts } from "wagmi";
+import { Address, Hex } from "viem";
+import { useAccount, useReadContract, useReadContracts, useWriteContract } from "wagmi";
 import ProposalActionsEditor from "./_components/ProposalActionsEditor";
 import { sepolia } from "viem/chains";
 import buildEtherscanURL from "@/utils/buildEtherscanURL";
@@ -25,6 +25,9 @@ import { fromJSON, toJSON } from "@/utils/JSONBigInt";
 import InputExtended from "@/components/_nextui/InputExtended";
 import TextareaExtended from "@/components/_nextui/TextareaExtended";
 import ButtonExtended from "@/components/_nextui/ButtonExtended";
+import toast from "react-hot-toast";
+import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
+import handleViemContractError from "@/utils/handleViemContractError";
 
 export default function CreateProposalPage() {
   const { address } = useAccount();
@@ -96,6 +99,39 @@ export default function CreateProposalPage() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  const isProposalValid = useMemo(() => {
+    return actions.length > 0 && title && description;
+  }, [actions, title, description]);
+
+  const { addTransaction } = useContext(LocalTransactionsContext);
+  const { writeContractAsync, isPending: isWriteContractPending } = useWriteContract();
+
+  const createProposalTx = () => {
+    if (!isProposalValid) {
+      toast.error("Proposal is not valid for submission.");
+    }
+    const toastId = toast.loading("Creating transaction to update delegate...");
+    const finalDescription = `# ${title}\n\n${description}`;
+    const txDescription = `Create proposal: ${title}`;
+    const splitActions: [Address[], bigint[], Hex[], string[]] = actions.reduce(([t, v, c, s], action) => {
+      t.push(action.target);
+      v.push(action.value);
+      c.push(action.calldata);
+      s.push(action.signature);
+      return [t, v, c, s];
+    }, [[], [], [], []] as [Address[], bigint[], Hex[], string[]]);
+    writeContractAsync({
+      abi: PrimordiumGovernorV1Abi,
+      address: chainConfig[defaultChain.id]?.addresses.governor,
+      functionName: "propose",
+      args: [...splitActions, finalDescription],
+    })
+    .then((hash) => {
+      addTransaction(hash, txDescription, toastId);
+    })
+    .catch((error) => handleViemContractError(error, toastId));
+  }
 
   return (
     <div
@@ -171,7 +207,13 @@ export default function CreateProposalPage() {
       </div>
       <h3 className="mt-4 font-londrina-shadow text-2xl sm:mt-6 sm:text-3xl">Description</h3>
       <div className="mt-4 flex flex-col gap-4">
-        <InputExtended label="Title:" placeholder="Enter a title for your proposal..." size="lg" value={title} onValueChange={setTitle} />
+        <InputExtended
+          label="Title:"
+          placeholder="Enter a title for your proposal..."
+          size="lg"
+          value={title}
+          onValueChange={setTitle}
+        />
         <TextareaExtended
           placeholder={
             "## Summary\n\nInsert your summary here\n\n## Methodology\n\nInsert your methodology here\n\n## Conclusion\n\nInsert your conclusion here"
@@ -200,7 +242,16 @@ export default function CreateProposalPage() {
           }
         />
       </div>
-      <ButtonExtended color="primary" className="mt-4 sm:mt-6" size="lg" fullWidth >Submit Proposal</ButtonExtended>
+      <ButtonExtended
+        color="primary"
+        className="mt-4 sm:mt-6"
+        size="lg"
+        fullWidth
+        isDisabled={!isProposalValid}
+        onPress={createProposalTx}
+      >
+        Submit Proposal
+      </ButtonExtended>
     </div>
   );
 }
