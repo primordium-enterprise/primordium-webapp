@@ -48,7 +48,8 @@ export const parseAbiInputValue = (value: string, abiType: string): string | boo
     if (!isHex(value, { strict: true })) {
       throw new Error("The provided value is not a valid hex string.");
     }
-    return padHex(value, { size: size(value), dir: "left" });
+    // Pad the beginning byte with a zero if it's an odd length
+    return value.length % 2 === 0 ? value : `0x0${value.split('0x')[1]}`;
   }
 
   // If the input matches a numeric (no decimals), return a BigInt

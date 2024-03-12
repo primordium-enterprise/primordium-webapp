@@ -17,7 +17,8 @@ import { useAccount, useReadContract, useReadContracts } from "wagmi";
 import ProposalActionsEditor from "./_components/ProposalActionsEditor";
 import { sepolia } from "viem/chains";
 import buildEtherscanURL from "@/utils/buildEtherscanURL";
-import { ProposalAction } from "./_components/ProposalActionsEditor/types";
+import { PROPOSAL_ACTIONS_STORAGE_KEY, ProposalAction } from "./_components/ProposalActionsEditor/types";
+import { fromJSON, toJSON } from "@/utils/JSONBigInt";
 
 export default function CreateProposalPage() {
   const { address } = useAccount();
@@ -74,7 +75,16 @@ export default function CreateProposalPage() {
       };
     }, [governanceData]);
 
+  // Track the proposal actions in state
   const [actions, setActions] = useState<ProposalAction[]>([]);
+
+  // On page load, get actions from session storage
+  useEffect(() => {
+    const savedActions = window.sessionStorage.getItem(PROPOSAL_ACTIONS_STORAGE_KEY);
+    if (savedActions) {
+      setActions(fromJSON(savedActions));
+    }
+  }, []);
 
   return (
     <div data-section="create-proposal" className="text-xs xs:text-sm sm:p-4 sm:text-base">

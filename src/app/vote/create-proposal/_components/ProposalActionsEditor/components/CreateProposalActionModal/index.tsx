@@ -40,7 +40,7 @@ import { getArrayComponents } from "@/utils/abi";
 import { UnionPartialBy } from "node_modules/viem/_types/types/utils";
 import toast from "react-hot-toast";
 
-const actionTypes = Object.keys(actionTypeDisplays) as ProposalActionType[];
+const actionTypes: ProposalActionType[] = ["value", "function"];
 
 interface UploadAbiState {
   file: File | null;
@@ -54,11 +54,13 @@ const defaultUploadAbiState: UploadAbiState = {
   abi: null,
 };
 
-interface Props extends Omit<ModalProps, "children"> {}
+interface Props extends Omit<ModalProps, "children"> {
+  addProposalAction: (action: ProposalAction) => void;
+}
 
-export default function CreateProposalActionModal({ ...modalProps }: Props) {
+export default function CreateProposalActionModal({ addProposalAction, ...modalProps }: Props) {
   // Type of action to take (function call or value transfer)
-  const [actionType, setActionType] = useState<ProposalActionType>("function");
+  const [actionType, setActionType] = useState<ProposalActionType>("value");
 
   // Action target input
   const [target, setTarget] = useState("");
@@ -209,26 +211,29 @@ export default function CreateProposalActionModal({ ...modalProps }: Props) {
     if (actionType === "function") {
       return isTargetValid && isInputParamsValid;
     } else {
-      return isTargetValid;
+      return isTargetValid && value && parseEther(value) > BigInt(0);
     }
-  }, [isTargetValid, isInputParamsValid]);
+  }, [isTargetValid, value, isInputParamsValid]);
 
   const createProposalAction = () => {
-    // Default values
-    let signature = "";
-    let calldata: Hex = "0x";
-    let abi: [AbiFunctionOption] | undefined = undefined;
-    let abiFunctionInputParams = undefined;
+    const action: ProposalAction = {
+      actionType,
+      target: target as Address,
+      value: parseEther(value || "0"),
+      signature: "",
+      calldata: "0x",
+    };
+
     if (actionType === "function") {
       if (!functionOption) {
         return toast.error("No function option is selected.");
       }
-      signature = functionOption.signature;
+      action.signature = functionOption.signature;
       try {
-        abi = [functionOption];
+        action.abi = [functionOption];
         // No functionName needed for abi with one argument
-        calldata = encodeFunctionData({
-          abi,
+        action.calldata = encodeFunctionData({
+          abi: action.abi,
           args: inputParams.map((inputParam) => {
             if (inputParam.arrayComponents) {
               return inputParam.valueItems.map((valueItem) => valueItem.parsedValue);
@@ -236,8 +241,7 @@ export default function CreateProposalActionModal({ ...modalProps }: Props) {
             return inputParam.valueItems[0].parsedValue;
           }),
         });
-        abi = [functionOption];
-        abiFunctionInputParams = inputParams;
+        action.abiFunctionInputParams = inputParams;
       } catch (e) {
         console.log(e);
         return toast.error("Failed to encode the function calldata.");
@@ -248,18 +252,14 @@ export default function CreateProposalActionModal({ ...modalProps }: Props) {
       return toast.error("The action is not formatted correctly.");
     }
 
-    const action: ProposalAction<typeof actionType> = {
-      actionType,
-      target: target as Address,
-      value: parseEther(value || "0"),
-      signature,
-      calldata,
-      abi,
-      abiFunctionInputParams,
-    };
+    console.log("Action:", action);
 
-    console.log(action);
-    console.log(decodeFunctionData({ abi: abi as AbiFunction[], data: calldata }));
+    addProposalAction(action);
+
+    // Reset the state
+    setTarget("");
+    setValue("");
+    setIsUploadAbiSelected(false);
   };
 
   return (

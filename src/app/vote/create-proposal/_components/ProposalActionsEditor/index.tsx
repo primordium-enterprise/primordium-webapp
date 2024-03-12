@@ -1,12 +1,12 @@
 "use client";
 
 import { GovernanceData } from "@/subgraph/subgraphQueries";
-import {
-  Button
-} from "@nextui-org/react";
+import { Button, Card, CardBody } from "@nextui-org/react";
 import { Dispatch, SetStateAction, useState } from "react";
-import { ProposalAction } from "./types";
+import { PROPOSAL_ACTIONS_STORAGE_KEY, ProposalAction } from "./types";
 import CreateProposalActionModal from "./components/CreateProposalActionModal";
+import { toJSON } from "@/utils/JSONBigInt";
+import ActionItem from "./components/ActionItem";
 
 export default function ProposalActionsEditor({
   governanceData,
@@ -21,30 +21,43 @@ export default function ProposalActionsEditor({
 
   return (
     <div>
-      <div className="my-2">
+      <div className="my-2 flex flex-col gap-2 sm:gap-4 ml-0 sm:ml-6">
         {actions.length > 0 ? (
           <>
             {actions.map((action, index) => (
-              <div key={index}>
-                <div>{action.target}</div>
-                <div>{action.value.toString()}</div>
-                <div>{action.signature}</div>
-              </div>
+              <ActionItem key={index} action={action} index={index} removeAction={() => {
+                setActions((currentActions) => {
+                  let newActions = [...currentActions];
+                  newActions.splice(index, 1);
+                  window.sessionStorage.setItem(PROPOSAL_ACTIONS_STORAGE_KEY, toJSON(newActions));
+                  return newActions;
+                });
+              }}/>
             ))}
           </>
         ) : (
           <div className="text-foreground-500">No actions created yet.</div>
         )}
       </div>
-      <Button
-        className="mt-4"
-        color="primary"
-        fullWidth
-        onPress={() => setIsCreateActionModalOpen(true)}
-      >
-        Add Proposal Action
-      </Button>
+      <div className="flex justify-end">
+        <Button
+          className="mt-4"
+          color="primary"
+          size="lg"
+          onPress={() => setIsCreateActionModalOpen(true)}
+        >
+          Add Proposal Action
+        </Button>
+      </div>
       <CreateProposalActionModal
+        addProposalAction={(newAction) => {
+          setActions((currentActions) => {
+            let newActions = [...currentActions, newAction];
+            window.sessionStorage.setItem(PROPOSAL_ACTIONS_STORAGE_KEY, toJSON(newActions));
+            return newActions;
+          });
+          setIsCreateActionModalOpen(false);
+        }}
         isOpen={isCreateActionModalOpen}
         onOpenChange={setIsCreateActionModalOpen}
         placement="center"

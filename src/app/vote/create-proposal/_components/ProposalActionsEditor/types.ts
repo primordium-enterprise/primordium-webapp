@@ -3,21 +3,22 @@ import { Abi, AbiFunction, AbiParameter, Address, Hex } from "viem";
 
 export type ProposalActionType = "function" | "value";
 
-export interface ProposalAction<proposalActionType = ProposalActionType> {
+export interface ProposalAction {
   actionType: ProposalActionType;
   target: Address;
-  value: BigInt;
-  signature: string;
-  calldata: Hex;
-  abi: proposalActionType extends "value" ? undefined : [AbiFunction];
-  abiFunctionInputParams: proposalActionType extends "value" ? undefined : AbiFunctionInputParam[];
+  value: bigint;
+  signature: string; // Should be an empty string for value transfers
+  calldata: Hex; // Should be empty bytes "0x" for value transfers
+  // Below only present for function calls
+  abi?: [AbiFunction];
+  abiFunctionInputParams?: AbiFunctionInputParam[];
 }
 
 export const actionTypeDisplays: {
   [key in ProposalActionType]: string;
 } = {
-  function: "Function Call",
   value: "Value Transfer",
+  function: "Function Call",
 } as const;
 
 export interface AbiFunctionOption extends AbiFunction {
@@ -38,3 +39,5 @@ export interface AbiFunctionInputParamValueItem {
   isInvalid?: boolean;
   errorMessage?: string;
 }
+
+export const PROPOSAL_ACTIONS_STORAGE_KEY = "APP_create-proposal-actions";
