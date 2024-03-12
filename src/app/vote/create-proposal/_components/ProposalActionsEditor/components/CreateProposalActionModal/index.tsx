@@ -27,6 +27,7 @@ import {
   AbiFunction,
   Address,
   Hex,
+  decodeFunctionData,
   encodeFunctionData,
   isAddress,
   parseEther,
@@ -215,28 +216,25 @@ export default function CreateProposalActionModal({ ...modalProps }: Props) {
   const createProposalAction = () => {
     // Default values
     let signature = "";
-    let functionName = "";
     let calldata: Hex = "0x";
-    let abi = undefined;
+    let abi: [AbiFunctionOption] | undefined = undefined;
     let abiFunctionInputParams = undefined;
     if (actionType === "function") {
       if (!functionOption) {
         return toast.error("No function option is selected.");
       }
       signature = functionOption.signature;
-      functionName = functionOption.name;
       try {
+        abi = [functionOption];
+        // No functionName needed for abi with one argument
         calldata = encodeFunctionData({
-          abi: [functionOption],
-          functionName,
-          args: [
-            inputParams.map((inputParam) => {
-              if (inputParam.arrayComponents) {
-                return inputParam.valueItems.map((valueItem) => valueItem.parsedValue);
-              }
-              return inputParam.valueItems[0].parsedValue;
-            }),
-          ],
+          abi,
+          args: inputParams.map((inputParam) => {
+            if (inputParam.arrayComponents) {
+              return inputParam.valueItems.map((valueItem) => valueItem.parsedValue);
+            }
+            return inputParam.valueItems[0].parsedValue;
+          }),
         });
         abi = [functionOption];
         abiFunctionInputParams = inputParams;
@@ -255,11 +253,13 @@ export default function CreateProposalActionModal({ ...modalProps }: Props) {
       target: target as Address,
       value: parseEther(value || "0"),
       signature,
-      functionName,
       calldata,
       abi,
       abiFunctionInputParams,
     };
+
+    console.log(action);
+    console.log(decodeFunctionData({ abi: abi as AbiFunction[], data: calldata }));
   };
 
   return (
@@ -473,7 +473,7 @@ export default function CreateProposalActionModal({ ...modalProps }: Props) {
           >
             Cancel
           </Button>
-          <Button color="primary" isDisabled={!isActionValid}>
+          <Button color="primary" isDisabled={!isActionValid} onPress={createProposalAction}>
             Create Action
           </Button>
         </ModalFooter>

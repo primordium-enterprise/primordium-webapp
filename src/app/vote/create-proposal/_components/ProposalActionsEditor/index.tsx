@@ -29,7 +29,6 @@ export default function ProposalActionsEditor({
                 <div>{action.target}</div>
                 <div>{action.value.toString()}</div>
                 <div>{action.signature}</div>
-                <div>{action.functionName}</div>
               </div>
             ))}
           </>
@@ -52,6 +51,7 @@ export default function ProposalActionsEditor({
         classNames={{
           wrapper: "overflow-hidden",
         }}
+        isDismissable={false}
       />
     </div>
   );

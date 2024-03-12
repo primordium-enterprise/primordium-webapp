@@ -12,11 +12,14 @@ export default function ToastWrapper() {
   return (
     <Toaster
       position="bottom-right"
-      containerStyle={{ zIndex: 200000 }}
+      // containerStyle={{ zIndex: 200000 }}
       toastOptions={{ duration: Infinity, style: { maxWidth: "380px" } }}
     >
       {(t) => (
-        <ToastBar toast={t}>
+        <ToastBar toast={t} style={{
+          ...t.style,
+          pointerEvents: t.visible ? "auto" : "none"
+        }}>
           {({ icon, message }) => {
             return (
             <>

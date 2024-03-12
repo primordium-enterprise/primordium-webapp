@@ -9,8 +9,7 @@ export interface ProposalAction<proposalActionType = ProposalActionType> {
   value: BigInt;
   signature: string;
   calldata: Hex;
-  abi: proposalActionType extends "value" ? undefined : Abi;
-  functionName: proposalActionType extends "value" ? undefined : string;
+  abi: proposalActionType extends "value" ? undefined : [AbiFunction];
   abiFunctionInputParams: proposalActionType extends "value" ? undefined : AbiFunctionInputParam[];
 }
 
