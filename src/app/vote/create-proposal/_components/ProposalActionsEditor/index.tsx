@@ -40,6 +40,17 @@ export default function ProposalActionsEditor({
 
   const needsFounding = useMemo(() => !governanceData?.isFounded, [governanceData]);
 
+  const hasFoundGovernorAction = useMemo(() => {
+    return (
+      needsFounding &&
+      actions.some(
+        (action) =>
+          action.signature === "foundGovernor(uint256)" &&
+          action.target === chainConfig[defaultChain.id]?.addresses.governor,
+      )
+    );
+  }, [needsFounding, actions]);
+
   const [isProposalCountLoading, setIsProposalCountLoading] = useState(false);
   const createFoundGovernorAction = async () => {
     setIsProposalCountLoading(true);
@@ -134,6 +145,7 @@ export default function ProposalActionsEditor({
           color="primary"
           variant={needsFounding ? "bordered" : "solid"}
           onPress={() => setIsCreateActionModalOpen(true)}
+          isDisabled={hasFoundGovernorAction}
         >
           Add Proposal Action
         </ButtonExtended>
@@ -142,11 +154,20 @@ export default function ProposalActionsEditor({
             color="primary"
             onPress={createFoundGovernorAction}
             isLoading={isProposalCountLoading}
+            isDisabled={hasFoundGovernorAction}
           >
             Add "Found Governor" Action
           </ButtonExtended>
         )}
       </div>
+      {hasFoundGovernorAction && (
+        <div className="mt-2 flex items-center justify-center">
+          <p className="text-center text-2xs text-primary-300 xs:text-xs">
+            When founding the governor, only a single foundGovernor(uint256) function call is
+            allowed in the proposal actions.
+          </p>
+        </div>
+      )}
       <CreateProposalActionModal
         addProposalAction={addProposalAction}
         isOpen={isCreateActionModalOpen}

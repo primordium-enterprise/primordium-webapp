@@ -1,27 +1,23 @@
 "use client";
 
 import PrimordiumGovernorV1Abi from "@/abi/PrimordiumGovernorV1.abi";
-import PrimordiumTokenV1Abi from "@/abi/PrimordiumTokenV1.abi";
 import WarningCard from "@/components/WarningCard";
 import { chainConfig } from "@/config/chainConfig";
 import { defaultChain } from "@/config/wagmi-config";
 import { DelegateQuery, GovernanceDataQuery } from "@/subgraph/subgraphQueries";
 import abbreviateBalance from "@/utils/abbreviateBalance";
-import { ADDRESS_ZERO } from "@/utils/constants";
-import { Card, CardBody, Code, Link, Spinner } from "@nextui-org/react";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { Link, Spinner } from "@nextui-org/react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "urql";
-import { Address, Hex } from "viem";
-import { useAccount, useReadContract, useReadContracts, useWriteContract } from "wagmi";
+import { Address, Hex, encodeFunctionData } from "viem";
+import { useAccount, useWriteContract } from "wagmi";
 import ProposalActionsEditor from "./_components/ProposalActionsEditor";
-import { sepolia } from "viem/chains";
 import buildEtherscanURL from "@/utils/buildEtherscanURL";
 import {
   PROPOSAL_ACTIONS_STORAGE_KEY,
   ProposalAction,
 } from "./_components/ProposalActionsEditor/types";
-import { fromJSON, toJSON } from "@/utils/JSONBigInt";
+import { fromJSON } from "@/utils/JSONBigInt";
 import InputExtended from "@/components/_nextui/InputExtended";
 import TextareaExtended from "@/components/_nextui/TextareaExtended";
 import ButtonExtended from "@/components/_nextui/ButtonExtended";
@@ -73,14 +69,12 @@ export default function CreateProposalPage() {
       );
       let proposalThresholdDisplay;
       let proposalThreshold: bigint | undefined;
-      let governanceThresholdBps: number | undefined;
       if (governanceData) {
         proposalThresholdBps = Number(governanceData.proposalThresholdBps);
         proposalThresholdPercentageDisplay = `${proposalThresholdBps / 100}%`;
         proposalThreshold =
           (BigInt(governanceData.totalSupply) * BigInt(proposalThresholdBps)) / BigInt(MAX_BPS);
         proposalThresholdDisplay = abbreviateBalance(proposalThreshold);
-        governanceThresholdBps = governanceData.governanceThresholdBps;
       }
       return {
         proposalThresholdBps,
@@ -117,24 +111,53 @@ export default function CreateProposalPage() {
     }
   }, []);
 
+  // Proposal title (cached to session storage)
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  useEffect(() => {
+    setTitle(window.sessionStorage.getItem("APP_create-proposal-title") || "");
+  }, []);
 
+  const titleUpdateTimeoutRef = useRef<number | undefined>(undefined);
+  const updateTitle = (newTitle: string) => {
+    window.clearTimeout(titleUpdateTimeoutRef.current);
+    titleUpdateTimeoutRef.current = window.setTimeout(() => {
+      window.sessionStorage.setItem("APP_create-proposal-title", newTitle);
+      titleUpdateTimeoutRef.current = undefined;
+    }, 500);
+    setTitle(newTitle);
+  };
+
+  // Proposal description (cached to session storage)
+  const [description, setDescription] = useState("");
+  useEffect(() => {
+    setDescription(window.sessionStorage.getItem("APP_create-proposal-description") || "");
+  }, []);
+
+  const descriptionUpdateTimeoutRef = useRef<number | undefined>(undefined);
+  const updateDescription = (newDescription: string) => {
+    window.clearTimeout(descriptionUpdateTimeoutRef.current);
+    descriptionUpdateTimeoutRef.current = window.setTimeout(() => {
+      window.sessionStorage.setItem("APP_create-proposal-description", newDescription);
+      descriptionUpdateTimeoutRef.current = undefined;
+    }, 500);
+    setDescription(newDescription);
+  };
+
+  // Check if the proposal is valid
   const isProposalValid = useMemo(() => {
     return actions.length > 0 && title && description;
   }, [actions, title, description]);
 
+  // Write the transaction to create the proposal
   const { addTransaction } = useContext(LocalTransactionsContext);
   const { writeContractAsync, isPending: isWriteContractPending } = useWriteContract();
 
-  const createProposalTx = () => {
-    if (!isProposalValid) {
-      toast.error("Proposal is not valid for submission.");
-    }
-    const toastId = toast.loading("Creating transaction to update delegate...");
-    const finalDescription = `# ${title}\n\n${description}`;
-    const txDescription = `Create proposal: ${title}`;
-    const splitActions: [Address[], bigint[], Hex[], string[]] = actions.reduce(
+  const getFormattedDescription = () => {
+    return `# ${title}\n\n${description}`;
+  };
+
+  const getSplitActions = (): [Address[], bigint[], Hex[], string[]] => {
+    return actions.reduce(
       ([t, v, c, s], action) => {
         t.push(action.target);
         v.push(action.value);
@@ -144,16 +167,35 @@ export default function CreateProposalPage() {
       },
       [[], [], [], []] as [Address[], bigint[], Hex[], string[]],
     );
+  };
+
+  const createProposalTx = () => {
+    if (!isProposalValid) {
+      toast.error("Proposal is not valid for submission.");
+    }
+    const toastId = toast.loading("Creating transaction to update delegate...");
+    const txDescription = `Create proposal: ${title}`;
     writeContractAsync({
       abi: PrimordiumGovernorV1Abi,
       address: chainConfig[defaultChain.id]?.addresses.governor,
       functionName: "propose",
-      args: [...splitActions, finalDescription],
+      args: [...getSplitActions(), getFormattedDescription()],
     })
       .then((hash) => {
         addTransaction(hash, txDescription, toastId);
       })
       .catch((error) => handleViemContractError(error, toastId));
+  };
+
+  const copyProposalCalldata = () => {
+    navigator.clipboard.writeText(
+      encodeFunctionData({
+        abi: PrimordiumGovernorV1Abi,
+        functionName: "propose",
+        args: [...getSplitActions(), getFormattedDescription()],
+      }),
+    );
+    toast.success("Proposal calldata copied to clipboard!", { duration: 5000 });
   };
 
   return (
@@ -196,9 +238,9 @@ export default function CreateProposalPage() {
             {governanceData && !governanceData.isFounded && (
               <WarningCard className="mt-2 sm:mt-3" color="primary">
                 <p>
-                  The governance contract has not been founded yet. The "foundGovernor(uint256)"
-                  function on the Primordium Governor contract is the only allowable proposal action until a
-                  founding proposal has been passed and executed.
+                  The governance contract has not been founded yet. The foundGovernor(uint256)
+                  function on the Primordium Governor contract is the only allowable proposal action
+                  until a founding proposal has been passed and executed.
                 </p>
               </WarningCard>
             )}
@@ -218,7 +260,7 @@ export default function CreateProposalPage() {
                   </p>
                 </WarningCard>
               )}
-            {governanceThreshold && governanceThreshold < totalSupply && (
+            {governanceThreshold && totalSupply < governanceThreshold && (
               <WarningCard className="mt-2 sm:mt-3">
                 <p>
                   The goverance contract cannot be founded until at least{" "}
@@ -246,7 +288,7 @@ export default function CreateProposalPage() {
           placeholder="Enter a title for your proposal..."
           size="lg"
           value={title}
-          onValueChange={setTitle}
+          onValueChange={updateTitle}
         />
         <TextareaExtended
           placeholder={
@@ -257,7 +299,7 @@ export default function CreateProposalPage() {
           classNames={{ input: "resize-y min-h-[15rem]" }}
           minRows={15}
           value={description}
-          onValueChange={setDescription}
+          onValueChange={updateDescription}
           description={
             <div>
               <span>Proposal description's are formatted using </span>
@@ -286,6 +328,16 @@ export default function CreateProposalPage() {
       >
         Submit Proposal
       </ButtonExtended>
+      <ButtonExtended
+        className="mt-4 sm:mt-6"
+        size="lg"
+        fullWidth
+        isDisabled={!isProposalValid}
+        onPress={copyProposalCalldata}
+      >
+        Copy Transaction Calldata
+      </ButtonExtended>
+      <div className="text-foreground-500 text-2xs xs:text-xs mt-1">Copy the calldata to use in a different transaction builder.</div>
     </div>
   );
 }
