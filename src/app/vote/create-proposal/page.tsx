@@ -24,6 +24,7 @@ import ButtonExtended from "@/components/_nextui/ButtonExtended";
 import toast from "react-hot-toast";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
 import handleViemContractError from "@/utils/handleViemContractError";
+import BackButton from "@/components/BackButton";
 
 const MAX_BPS = 10000;
 
@@ -203,6 +204,9 @@ export default function CreateProposalPage() {
       data-section="create-proposal"
       className="pb-8 text-xs xs:text-sm sm:p-4 sm:pb-12 sm:text-base"
     >
+      <div className="mb-4">
+        <BackButton href="/vote" />
+      </div>
       <h1 className="mb-2 font-londrina-shadow text-4xl xs:text-5xl sm:mb-4 sm:text-6xl">
         Create Proposal
       </h1>

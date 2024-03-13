@@ -1,6 +1,24 @@
 import { gql, TypedDocumentNode } from "urql";
 import { Address } from "viem";
 
+export interface MetaData {
+  block: {
+    number: string;
+    timestamp: string;
+    hash: string;
+  };
+}
+
+const MetaFragment = gql`
+  fragment MetaFragment on _Meta_ {
+    block {
+      number
+      timestamp
+      hash
+    }
+  }
+`;
+
 export const MemberQuery = gql`
   query Member($address: Bytes!) {
     member(id: $address) {
@@ -59,6 +77,55 @@ export const MemberPlusDelegateQuery = gql`
   }
 `;
 
+export interface ProposalListItemData {
+  id: string;
+  state: string;
+  title: string;
+  voteStart: string;
+  voteEnd: string;
+  originalVoteEnd: string;
+  createdAtBlock: string;
+  createdAtTimestamp: string;
+  queuedAtBlock: string | null;
+  queuedAtTimestamp: string | null;
+  eta: string | null;
+  executedAtBlock: string | null;
+  executedAtTimestamp: string | null;
+  canceledAtBlock: string | null;
+  canceledAtTimestamp: string | null;
+}
+
+export const ProposalsQuery = gql`
+  query ProposalsQuery($first: Int!, $skip: Int!) {
+    ${MetaFragment}
+    _meta { ...MetaFragment }
+    proposals(first: $first, skip: $skip, orderBy: id, orderDirection: desc) {
+      id
+      state
+      title
+      voteStart
+      voteEnd
+      originalVoteEnd
+      createdAtBlock
+      createdAtTimestamp
+      queuedAtBlock
+      queuedAtTimestamp
+      eta
+      executedAtBlock
+      executedAtTimestamp
+      canceledAtBlock
+      canceledAtTimestamp
+    },
+
+  }
+` as TypedDocumentNode<{
+  proposals: ProposalListItemData[];
+  _meta: MetaData;
+}, {
+  first: number;
+  skip: number;
+}>;
+
 export interface GovernanceData {
   id: string;
   totalSupply: string;
@@ -88,6 +155,8 @@ export interface GovernanceData {
 
 export const GovernanceDataQuery = gql`
   query GovernanceDataQuery() {
+    ${MetaFragment}
+    _meta { ...MetaFragment }
     governanceData(id: "GOVERNANCE_DATA") {
       id
       totalSupply
@@ -114,24 +183,11 @@ export const GovernanceDataQuery = gql`
       guard
       executorMinDelay
     }
-    _meta {
-      block {
-        number
-        timestamp
-        hash
-      }
-    }
   }
 ` as TypedDocumentNode<
   {
     governanceData: GovernanceData;
-    _meta: {
-      block: {
-        number: string;
-        timestamp: string;
-        hash: string;
-      };
-    };
+    _meta: MetaData;
   },
   undefined
 >;
