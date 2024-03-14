@@ -71,7 +71,7 @@ export default function ProposalStateSticker({ proposalState, className, ...prop
 
   return (
     state !== undefined && (
-      <Chip {...props} color={color} radius="sm" variant={variant} className={className}>
+      <Chip {...props} color={color} radius="sm" variant={variant} className={`text-xs sm:text-sm ${className}`}>
         {text}
       </Chip>
     )

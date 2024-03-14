@@ -1,4 +1,4 @@
-import { ProposalListItemData } from "@/subgraph/subgraphQueries";
+import { ProposalPartialData } from "@/subgraph/subgraphQueries";
 import { AVERAGE_SECONDS_PER_BLOCK } from "./constants";
 
 export enum ProposalState {
@@ -23,7 +23,7 @@ const GRACE_PERIOD = BigInt(14 * 24 * 60 * 60); // 14 days in seconds
  * calculations or contract reads are required to determine the "Defeated" or "Succeeded" state.
  */
 export const getProposalState = (
-  proposal: ProposalListItemData,
+  proposal: ProposalPartialData,
   { number, timestamp }: { number: bigint | string; timestamp: bigint | string },
   proposalGracePeriod?: bigint | string
 ): ProposalState => {

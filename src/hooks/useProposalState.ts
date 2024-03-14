@@ -1,7 +1,7 @@
 import PrimordiumGovernorV1Abi from "@/abi/PrimordiumGovernorV1.abi";
 import { chainConfig } from "@/config/chainConfig";
 import { defaultChain } from "@/config/wagmi-config";
-import { GovernanceData, GovernanceDataQuery, ProposalListItemData } from "@/subgraph/subgraphQueries";
+import { GovernanceData, GovernanceDataQuery, ProposalPartialData } from "@/subgraph/subgraphQueries";
 import { ProposalState, getProposalState } from "@/utils/proposalUtils";
 import { useMemo, useState } from "react";
 import { useQuery } from "urql";
@@ -16,7 +16,7 @@ export default function useProposalState({
   proposal,
   block,
 }: {
-  proposal?: ProposalListItemData;
+  proposal?: ProposalPartialData;
   block?: { number: bigint | string; timestamp: bigint | string };
 }): UseProposalStateReturn {
   const [governanceDataResult] = useQuery({ query: GovernanceDataQuery });
@@ -31,9 +31,9 @@ export default function useProposalState({
     address: chainConfig[defaultChain.id]?.addresses.governor,
     abi: PrimordiumGovernorV1Abi,
     functionName: "state",
-    args: [BigInt(proposal!.id)],
+    args: [BigInt(proposal?.id || 0)],
     query: {
-      enabled: state === ProposalState.VoteFinished,
+      enabled: !!proposal && state === ProposalState.VoteFinished,
     },
   });
 

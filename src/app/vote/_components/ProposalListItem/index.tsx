@@ -2,22 +2,23 @@
 
 import ProposalStateSticker from "@/components/ProposalStateSticker";
 import useProposalState from "@/hooks/useProposalState";
-import { MetaData, ProposalListItemData } from "@/subgraph/subgraphQueries";
+import { MetaData, ProposalPartialData } from "@/subgraph/subgraphQueries";
 import { Card, CardBody } from "@nextui-org/react";
 import { useMemo } from "react";
 import { ProposalState } from "@/utils/proposalUtils";
 import { blocksToSeconds } from "@/utils/blockchainUtils";
 import dayjs from "@/wrappers/dayjs";
 import { ClockIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
 
 export default function ProposalListItem({
   proposal,
   _meta,
 }: {
-  proposal: ProposalListItemData;
+  proposal: ProposalPartialData;
   _meta: MetaData;
 }) {
-  const proposalIdDisplay = useMemo(() => BigInt(proposal.id).toString(), [proposal]);
+  const proposalIdString = useMemo(() => BigInt(proposal.id).toString(), [proposal]);
 
   const proposalState = useProposalState({ proposal, block: _meta.block });
   const { state, governanceData } = proposalState;
@@ -53,31 +54,33 @@ export default function ProposalListItem({
   }, [state, _meta, governanceData]);
 
   return (
-    <Card radius="sm">
-      <CardBody className="gap-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="text-lg font-bold text-foreground-400 sm:text-xl">
-              {proposalIdDisplay}
-            </div>
-            <div className="font-medium">{proposal.title}</div>
-          </div>
-          <div className="flex items-center gap-2">
-            {countdownDisplay && (
-              <div className="hidden items-center gap-1 text-xs text-foreground-500 sm:flex">
-                <ClockIcon className="inline-block" /> <span>{countdownDisplay}</span>
+    <Link href={`/vote/${proposalIdString}`}>
+      <Card radius="sm">
+        <CardBody className="gap-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="text-lg font-bold text-foreground-400 sm:text-xl">
+                {proposalIdString}
               </div>
-            )}
-            <ProposalStateSticker className="text-xs sm:text-sm" proposalState={proposalState} />
+              <div className="font-medium">{proposal.title}</div>
+            </div>
+            <div className="flex items-center gap-2">
+              {countdownDisplay && (
+                <div className="hidden items-center gap-1 text-xs text-foreground-500 sm:flex">
+                  <ClockIcon className="inline-block" /> <span>{countdownDisplay}</span>
+                </div>
+              )}
+              <ProposalStateSticker proposalState={proposalState} />
+            </div>
           </div>
-        </div>
-        {countdownDisplay && (
-          <div className="flex items-center justify-end gap-1 text-2xs text-foreground-500 sm:hidden">
-            <ClockIcon className="inline-block" />
-            <span>{countdownDisplay}</span>
-          </div>
-        )}
-      </CardBody>
-    </Card>
+          {countdownDisplay && (
+            <div className="flex items-center justify-end gap-1 text-2xs text-foreground-500 sm:hidden">
+              <ClockIcon className="inline-block" />
+              <span>{countdownDisplay}</span>
+            </div>
+          )}
+        </CardBody>
+      </Card>
+    </Link>
   );
 }

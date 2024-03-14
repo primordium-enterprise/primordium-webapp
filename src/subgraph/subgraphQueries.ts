@@ -1,5 +1,5 @@
 import { gql, TypedDocumentNode } from "urql";
-import { Address } from "viem";
+import { Address, Hash, Hex } from "viem";
 
 export interface MetaData {
   block: {
@@ -77,9 +77,10 @@ export const MemberPlusDelegateQuery = gql`
   }
 `;
 
-export interface ProposalListItemData {
+export interface ProposalPartialData {
   id: string;
   state: number;
+  clockMode: string;
   title: string;
   voteStart: string;
   voteEnd: string;
@@ -95,36 +96,115 @@ export interface ProposalListItemData {
   canceledAtTimestamp: string | null;
 }
 
+const ProposalPartialFragment = gql`
+  fragment ProposalPartialFragment on Proposal {
+    id
+    state
+    clockMode
+    title
+    voteStart
+    voteEnd
+    originalVoteEnd
+    createdAtBlock
+    createdAtTimestamp
+    queuedAtBlock
+    queuedAtTimestamp
+    eta
+    executedAtBlock
+    executedAtTimestamp
+    canceledAtBlock
+    canceledAtTimestamp
+  }
+`;
+
 export const ProposalsQuery = gql`
   query ProposalsQuery($first: Int!, $skip: Int!) {
     ${MetaFragment}
+    ${ProposalPartialFragment}
     _meta { ...MetaFragment }
     proposals(first: $first, skip: $skip, orderBy: id, orderDirection: desc) {
-      id
-      state
-      title
-      voteStart
-      voteEnd
-      originalVoteEnd
-      createdAtBlock
-      createdAtTimestamp
-      queuedAtBlock
-      queuedAtTimestamp
-      eta
-      executedAtBlock
-      executedAtTimestamp
-      canceledAtBlock
-      canceledAtTimestamp
+      ...ProposalPartialFragment
     },
 
   }
-` as TypedDocumentNode<{
-  proposals: ProposalListItemData[];
-  _meta: MetaData;
-}, {
-  first: number;
-  skip: number;
-}>;
+` as TypedDocumentNode<
+  {
+    _meta: MetaData;
+    proposals: ProposalPartialData[];
+  },
+  {
+    first: number;
+    skip: number;
+  }
+>;
+
+type ProposalDelegateRoleData = {
+  id: Address;
+  delegatedVotesBalance: string;
+  cancelerRoleExpiresAt: string;
+  proposerRoleExpiresAt: string;
+};
+
+export interface ProposalData extends ProposalPartialData {
+  description: string;
+  createdTransactionHash: Hash;
+  againstVotes: string;
+  forVotes: string;
+  abstainVotes: string;
+  isCancelerRole: boolean;
+  isProposerRole: boolean;
+  proposer: ProposalDelegateRoleData;
+  canceler: ProposalDelegateRoleData;
+  targets: Address[];
+  values: string[];
+  calldatas: Hex[];
+  signatures: string[];
+  executedTransactionHash: Hash;
+}
+
+export const ProposalQuery = gql`
+  query ProposalQuery($id: ID!) {
+    ${MetaFragment}
+    ${ProposalPartialFragment}
+    _meta { ...MetaFragment }
+    proposal(id: $id) {
+      ...ProposalPartialFragment
+      description
+      createdTransactionHash
+      againstVotes
+      forVotes
+      abstainVotes
+
+      isCancelerRole
+      isProposerRole
+      proposer {
+        id
+        delegatedVotesBalance
+        cancelerRoleExpiresAt
+        proposerRoleExpiresAt
+      }
+      canceler {
+        id
+        delegatedVotesBalance
+        cancelerRoleExpiresAt
+        proposerRoleExpiresAt
+      }
+      targets
+      values
+      calldatas
+      signatures
+      executedTransactionHash
+    }
+  }
+` as TypedDocumentNode<
+  {
+    _meta: MetaData;
+    proposal: ProposalData;
+  },
+  {
+    id: Hex;
+  }
+>;
 
 export interface GovernanceData {
   id: string;
