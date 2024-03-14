@@ -1,7 +1,7 @@
 import PrimordiumGovernorV1Abi from "@/abi/PrimordiumGovernorV1.abi";
 import { chainConfig } from "@/config/chainConfig";
 import { defaultChain } from "@/config/wagmi-config";
-import { GovernanceDataQuery, ProposalListItemData } from "@/subgraph/subgraphQueries";
+import { GovernanceData, GovernanceDataQuery, ProposalListItemData } from "@/subgraph/subgraphQueries";
 import { ProposalState, getProposalState } from "@/utils/proposalUtils";
 import { useMemo, useState } from "react";
 import { useQuery } from "urql";
@@ -9,6 +9,7 @@ import { useReadContract } from "wagmi";
 
 export interface UseProposalStateReturn extends Omit<ReturnType<typeof useReadContract>, "data"> {
   state?: ProposalState;
+  governanceData?: GovernanceData;
 }
 
 export default function useProposalState({
@@ -36,5 +37,5 @@ export default function useProposalState({
     },
   });
 
-  return { state: readState || state, ...readStateResult };
+  return { state: readState || state, governanceData, ...readStateResult };
 }

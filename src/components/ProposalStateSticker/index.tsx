@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { UseProposalStateReturn } from "@/hooks/useProposalState";
 import { ProposalState } from "@/utils/proposalUtils";
@@ -9,30 +9,31 @@ const proposalStateDisplays: {
   [key in ProposalState]: {
     text: string;
     color: ChipProps["color"];
-    bordered?: boolean;
+    variant?: ChipProps["variant"];
   };
 } = {
   [ProposalState.Pending]: {
     text: "Pending",
     color: "warning",
+    variant: "flat",
   },
   [ProposalState.Active]: {
     text: "Active",
     color: "success",
+    variant: "flat",
   },
   [ProposalState.Canceled]: {
     text: "Canceled",
     color: "warning",
+    variant: "faded",
   },
   [ProposalState.Defeated]: {
     text: "Defeated",
     color: "danger",
-    bordered: true,
   },
   [ProposalState.Succeeded]: {
     text: "Succeeded",
     color: "success",
-    bordered: true,
   },
   [ProposalState.Queued]: {
     text: "Queued",
@@ -49,25 +50,30 @@ const proposalStateDisplays: {
   [ProposalState.VoteFinished]: {
     text: "Voting Complete",
     color: "default",
-  }
+  },
 };
-
 
 type Props = {
   proposalState: UseProposalStateReturn;
   className?: string;
 } & Omit<ChipProps, "className">;
 
-export default function ProposalStateSticker({
-  proposalState,
-  className,
-  ...props
-}: Props) {
+export default function ProposalStateSticker({ proposalState, className, ...props }: Props) {
   const { state } = proposalState;
 
-  return state !== undefined && (
-    <Chip {...props} color={proposalStateDisplays[state].color} radius="sm">
-      {proposalStateDisplays[state].text}
-    </Chip>
+  const [text, color, variant] = useMemo(() => {
+    if (state === undefined) {
+      return [];
+    }
+    const s = proposalStateDisplays[state];
+    return [s.text, s.color, s.variant];
+  }, [state]);
+
+  return (
+    state !== undefined && (
+      <Chip {...props} color={color} radius="sm" variant={variant} className={className}>
+        {text}
+      </Chip>
+    )
   );
 }

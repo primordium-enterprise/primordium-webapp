@@ -15,11 +15,6 @@ export enum ProposalState {
   VoteFinished
 }
 
-const avgSecondsPerBlock = BigInt(AVERAGE_SECONDS_PER_BLOCK);
-const blocksToSeconds = (blocks: bigint): number => {
-  return Number(blocks * avgSecondsPerBlock);
-};
-
 const GRACE_PERIOD = BigInt(14 * 24 * 60 * 60); // 14 days in seconds
 
 /**
