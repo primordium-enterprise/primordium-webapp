@@ -79,7 +79,7 @@ export const MemberPlusDelegateQuery = gql`
 
 export interface ProposalListItemData {
   id: string;
-  state: string;
+  state: number;
   title: string;
   voteStart: string;
   voteEnd: string;
