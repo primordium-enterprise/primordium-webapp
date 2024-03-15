@@ -21,6 +21,9 @@ import { useReadContracts } from "wagmi";
 import { chainConfig } from "@/config/chainConfig";
 import { defaultChain } from "@/config/wagmi-config";
 import PrimordiumGovernorV1Abi from "@/abi/PrimordiumGovernorV1.abi";
+import Markdown from "react-markdown";
+import remarkBreaks from "remark-breaks";
+import remarkGfm from "remark-gfm";
 
 const governorContract = {
   address: chainConfig[defaultChain.id]?.addresses.governor,
@@ -117,8 +120,15 @@ export default function ProposalPage({
     if (!votes || quorum === undefined) {
       return 0;
     }
-    return Math.min(100, Number(votes.towardsQuorum * BigInt(100) / quorum));
-  }, [quorum, votes])
+    return Math.min(100, Number((votes.towardsQuorum * BigInt(100)) / quorum));
+  }, [quorum, votes]);
+
+  const processedDescription = useMemo(() => {
+    if (!proposal) {
+      return "";
+    }
+    return proposal.description.replace(proposal.title, "");
+  }, [proposal]);
 
   return (
     <div
@@ -127,7 +137,7 @@ export default function ProposalPage({
     >
       <BackButton href="/vote" />
       <div className="flex items-center gap-4 sm:gap-5">
-        <h3 className="font-londrina-shadow text-lg text-foreground-600 xs:text-xl sm:text-2xl">
+        <h3 className="font-londrina-shadow text-xl text-foreground-600 xs:text-2xl sm:text-3xl">
           Proposal {proposalIdString}
         </h3>
         {proposal && <ProposalStateSticker proposalState={proposalState} />}
@@ -197,6 +207,14 @@ export default function ProposalPage({
                     blockString={proposal.voteEnd}
                     label="Voting Ends at Block:"
                   />
+                </div>
+                <h2 className="font-londrina-shadow text-xl xs:text-2xl sm:text-3xl">
+                  Description
+                </h2>
+                <div className="markdown flex flex-col gap-2">
+                  <Markdown remarkPlugins={[remarkBreaks, remarkGfm]}>
+                    {processedDescription}
+                  </Markdown>
                 </div>
               </div>
             </>
