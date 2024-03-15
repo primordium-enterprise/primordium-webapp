@@ -11,7 +11,7 @@ export default function DisplayAddress({
   knownEnsName,
   className,
   skipEns,
-  enableClickToCopy
+  enableClickToCopy,
 }: {
   address: Address | undefined;
   knownEnsName?: string | undefined;
@@ -23,17 +23,20 @@ export default function DisplayAddress({
   const { data: ensName } = useEnsName({
     address,
     query: {
-      enabled: !knownEnsName && !skipEns
-    }
+      enabled: !knownEnsName && !skipEns,
+    },
   });
 
   return (
-    <span className={`${className ? className : ""} font-roboto-mono hover:cursor-pointer`} onClick={() => {
-      if (address && enableClickToCopy) {
-        navigator.clipboard.writeText(address);
-        toast.success("Copied address to clipboard!", { duration: 5000 });
-      }
-    }}>
+    <span
+      className={`${className ? className : ""} font-roboto-mono ${enableClickToCopy ? "hover:cursor-pointer" : ""}`}
+      onClick={() => {
+        if (address && enableClickToCopy) {
+          navigator.clipboard.writeText(address);
+          toast.success("Copied address to clipboard!", { duration: 5000 });
+        }
+      }}
+    >
       {skipEns ? shortAddress : knownEnsName || ensName || shortAddress}
     </span>
   );
