@@ -17,6 +17,15 @@ import { useRouter } from "next/navigation";
 import abbreviateBalance from "@/utils/abbreviateBalance";
 import { ProposalVotes } from "./types";
 import ProposalVoteCounts from "./_components/ProposalVoteCounts";
+import { useReadContracts } from "wagmi";
+import { chainConfig } from "@/config/chainConfig";
+import { defaultChain } from "@/config/wagmi-config";
+import PrimordiumGovernorV1Abi from "@/abi/PrimordiumGovernorV1.abi";
+
+const governorContract = {
+  address: chainConfig[defaultChain.id]?.addresses.governor,
+  abi: PrimordiumGovernorV1Abi,
+} as const;
 
 export default function ProposalPage({
   params: { proposalId: proposalIdString },
@@ -72,6 +81,34 @@ export default function ProposalPage({
     return v;
   }, [proposal]);
 
+  const snapshot = useMemo(() => proposal && BigInt(proposal.voteStart), [proposal]);
+
+  const isSnapshotReached = useMemo(
+    () => !!snapshot && snapshot < BigInt(_meta!.block.number),
+    [snapshot, _meta],
+  );
+
+  // Get the quorum and the percent majority for the proposal if the snapshot has been reached
+  const {
+    data: [{ result: quorum = undefined }, { result: percentMajority = undefined }] = [{}, {}],
+  } = useReadContracts({
+    query: {
+      enabled: isSnapshotReached,
+    },
+    contracts: [
+      {
+        ...governorContract,
+        functionName: "quorum",
+        args: [snapshot!],
+      },
+      {
+        ...governorContract,
+        functionName: "percentMajority",
+        args: [snapshot!],
+      },
+    ],
+  });
+
   return (
     <div
       data-section="proposal-details"
@@ -115,7 +152,7 @@ export default function ProposalPage({
                   View tx
                 </Link>
               </div>
-              <div className="mt-4 flex flex-col gap-4">
+              <div className="mt-2 flex flex-col gap-6">
                 {state === ProposalState.Active && (
                   <div className="flex justify-end">
                     <ButtonExtended color="primary">Submit Vote</ButtonExtended>
@@ -123,10 +160,15 @@ export default function ProposalPage({
                 )}
                 {state !== ProposalState.Pending && (
                   <>
-                    {votes && <ProposalVoteCounts votes={votes} />}
+                    {votes && (
+                      <ProposalVoteCounts
+                        votes={votes}
+                        percentMajority={percentMajority}
+                      />
+                    )}
                   </>
                 )}
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 pl-4 xs:pl-6 sm:pl-10">
                   <ProposalBlockTimeDisplay
                     currentBlockNumber={_meta!.block.number}
                     blockString={proposal.voteStart}
