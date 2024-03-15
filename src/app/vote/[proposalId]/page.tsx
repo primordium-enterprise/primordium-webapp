@@ -9,22 +9,22 @@ import { ProposalQuery } from "@/subgraph/subgraphQueries";
 import buildEtherscanURL from "@/utils/buildEtherscanURL";
 import { ProposalState } from "@/utils/proposalUtils";
 import { Card, CardBody, Link, Spinner } from "@nextui-org/react";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 import { pad, toHex } from "viem";
-import dayjs from "@/wrappers/dayjs";
-import { blocksToSeconds } from "@/utils/blockchainUtils";
 import ProposalBlockTimeDisplay from "./_components/ProposalBlockTimeDisplay";
-
-const BlockTimeDisplay = () => {
-
-}
+import { useRouter } from "next/navigation";
+import abbreviateBalance from "@/utils/abbreviateBalance";
+import { ProposalVotes } from "./types";
+import ProposalVoteCounts from "./_components/ProposalVoteCounts";
 
 export default function ProposalPage({
   params: { proposalId: proposalIdString },
 }: {
   params: { proposalId: string };
 }) {
+  const router = useRouter();
+
   const proposalId = useMemo(() => BigInt(proposalIdString), [proposalIdString]);
   const proposalIdHex = useMemo(() => pad(toHex(proposalId)), [proposalId]);
 
@@ -38,10 +38,39 @@ export default function ProposalPage({
     error: proposalError,
   } = proposalResult;
 
+  useEffect(() => {
+    if (proposalError) {
+      console.log(proposalError);
+    }
+  }, [proposalError]);
+
+  // Navigate back to the vote page if the proposal is not found
+  useEffect(() => {
+    if (!proposalFetching && !proposalError && proposal === null) {
+      router.replace("/vote");
+    }
+  }, [proposal, proposalFetching, proposalError]);
+
   const proposalState = useProposalState({ proposal, block: _meta?.block });
   const { state, governanceData } = proposalState;
 
-
+  // Format the vote totals
+  const votes = useMemo(() => {
+    if (!proposal) {
+      return undefined;
+    }
+    const v: ProposalVotes = {
+      for: BigInt(proposal.forVotes),
+      against: BigInt(proposal.againstVotes),
+      abstain: BigInt(proposal.abstainVotes),
+    } as ProposalVotes;
+    v.forDisplay = abbreviateBalance(v.for);
+    v.againstDisplay = abbreviateBalance(v.against);
+    v.abstainDisplay = abbreviateBalance(v.abstain);
+    v.totalCounted = v.for + v.against;
+    v.towardsQuorum = v.for + v.abstain;
+    return v;
+  }, [proposal]);
 
   return (
     <div
@@ -93,9 +122,9 @@ export default function ProposalPage({
                   </div>
                 )}
                 {state !== ProposalState.Pending && (
-                  <div data-section="vote-counts">
-
-                  </div>
+                  <>
+                    {votes && <ProposalVoteCounts votes={votes} />}
+                  </>
                 )}
                 <div className="flex flex-col gap-4">
                   <ProposalBlockTimeDisplay

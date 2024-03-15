@@ -184,6 +184,10 @@ export default function CreateProposalPage() {
     })
       .then((hash) => {
         addTransaction(hash, txDescription, toastId);
+        updateTitle('');
+        updateDescription('');
+        setActions([]);
+        window.sessionStorage.removeItem(PROPOSAL_ACTIONS_STORAGE_KEY);
       })
       .catch((error) => handleViemContractError(error, toastId));
   };

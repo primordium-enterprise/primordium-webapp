@@ -34,6 +34,11 @@ const config: Config = {
     },
   },
   darkMode: "class",
+  safelist: [
+    {
+      pattern: /text-(success|danger|warning|default)-\d+/
+    }
+  ],
   plugins: [nextui()],
 };
 export default config;
