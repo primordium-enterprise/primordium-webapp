@@ -61,25 +61,6 @@ a {
   }
 }
 
-.markdown {
-  h1 {
-    font-size: theme(fontSize.3xl);
-    font-weight: 700;
-  }
-  h2 {
-    font-size: theme(fontSize.2xl);
-    font-weight: 600;
-  }
-  h3 {
-    font-size: theme(fontSize.xl);
-    font-weight: 600;
-  }
-  h1,h2,h3 {
-    margin-bottom: theme(margin.2);
-    /* font-family: var(--font-londrina-shadow); */
-  }
-}
-
 @layer utilities {
   .absolute-center {
     position: absolute;

@@ -21,9 +21,8 @@ import { useReadContracts } from "wagmi";
 import { chainConfig } from "@/config/chainConfig";
 import { defaultChain } from "@/config/wagmi-config";
 import PrimordiumGovernorV1Abi from "@/abi/PrimordiumGovernorV1.abi";
-import Markdown from "react-markdown";
-import remarkBreaks from "remark-breaks";
-import remarkGfm from "remark-gfm";
+import RenderMarkdown from "@/components/RenderMarkdown";
+import ProposalActionsDisplay from "./_components/ProposalActionsDisplay";
 
 const governorContract = {
   address: chainConfig[defaultChain.id]?.addresses.governor,
@@ -127,7 +126,8 @@ export default function ProposalPage({
     if (!proposal) {
       return "";
     }
-    return proposal.description.replace(proposal.title, "");
+    return proposal.description;
+    // return proposal.description.replace(proposal.title, "");
   }, [proposal]);
 
   return (
@@ -208,14 +208,16 @@ export default function ProposalPage({
                     label="Voting Ends at Block:"
                   />
                 </div>
-                <h2 className="font-londrina-shadow text-xl xs:text-2xl sm:text-3xl">
-                  Description
-                </h2>
-                <div className="markdown flex flex-col gap-2">
-                  <Markdown remarkPlugins={[remarkBreaks, remarkGfm]}>
-                    {processedDescription}
-                  </Markdown>
+                <div>
+                  <h2 className="mt-4 font-londrina-shadow text-xl xs:text-2xl sm:text-3xl">
+                    Description
+                  </h2>
+                  <RenderMarkdown markdown={processedDescription} />
                 </div>
+                <h2 className="font-londrina-shadow text-xl xs:text-2xl sm:text-3xl">
+                    Proposed Actions
+                </h2>
+                <ProposalActionsDisplay proposal={proposal} />
               </div>
             </>
           )
