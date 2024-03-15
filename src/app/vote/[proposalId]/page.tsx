@@ -8,7 +8,7 @@ import useProposalState from "@/hooks/useProposalState";
 import { ProposalQuery } from "@/subgraph/subgraphQueries";
 import buildEtherscanURL from "@/utils/buildEtherscanURL";
 import { ProposalState } from "@/utils/proposalUtils";
-import { Card, CardBody, Link, Spinner } from "@nextui-org/react";
+import { Card, CardBody, CircularProgress, Link, Spinner } from "@nextui-org/react";
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 import { pad, toHex } from "viem";
@@ -109,6 +109,17 @@ export default function ProposalPage({
     ],
   });
 
+  const quorumDisplay = useMemo(() => {
+    return quorum && abbreviateBalance(quorum, 18, 2);
+  }, [quorum]);
+
+  const quorumPercentage = useMemo(() => {
+    if (!votes || quorum === undefined) {
+      return 0;
+    }
+    return Math.min(100, Number(votes.towardsQuorum * BigInt(100) / quorum));
+  }, [quorum, votes])
+
   return (
     <div
       data-section="proposal-details"
@@ -158,17 +169,24 @@ export default function ProposalPage({
                     <ButtonExtended color="primary">Submit Vote</ButtonExtended>
                   </div>
                 )}
-                {state !== ProposalState.Pending && (
+                {state !== ProposalState.Pending && votes && (
                   <>
-                    {votes && (
-                      <ProposalVoteCounts
-                        votes={votes}
-                        percentMajority={percentMajority}
+                    <ProposalVoteCounts votes={votes} percentMajority={percentMajority} />
+                    <div className="flex flex-col items-center gap-2">
+                      <p className="text-xs text-foreground-600 sm:text-sm">Quorum Progress:</p>
+                      <CircularProgress
+                        value={quorumPercentage}
+                        size="lg"
+                        label={`A quorum ${quorumDisplay ? `(${quorumDisplay} votes)` : ""} is required to succeed.`}
+                        classNames={{
+                          label: "text-2xs sm:text-xs text-foreground-500",
+                        }}
+                        showValueLabel
                       />
-                    )}
+                    </div>
                   </>
                 )}
-                <div className="flex flex-col gap-4 pl-4 xs:pl-6 sm:pl-10">
+                <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                   <ProposalBlockTimeDisplay
                     currentBlockNumber={_meta!.block.number}
                     blockString={proposal.voteStart}
