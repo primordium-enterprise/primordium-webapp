@@ -103,7 +103,7 @@ export default function ProposalActionsDisplay({ proposal }: { proposal?: Propos
             ) : (
               <>
                 <span>
-                  <DisplayAddress address={action.target} skipEns enableClickToCopy />
+                  <DisplayAddress address={action.target} enableClickToCopy />
                   {"."}
                   {action.functionName}
                 </span>

@@ -9,7 +9,7 @@ import { ProposalQuery } from "@/subgraph/subgraphQueries";
 import buildEtherscanURL from "@/utils/buildEtherscanURL";
 import { ProposalState } from "@/utils/proposalUtils";
 import { Card, CardBody, CircularProgress, Link, Spinner } from "@nextui-org/react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
 import { pad, toHex } from "viem";
 import ProposalBlockTimeDisplay from "./_components/ProposalBlockTimeDisplay";
@@ -23,6 +23,7 @@ import { defaultChain } from "@/config/wagmi-config";
 import PrimordiumGovernorV1Abi from "@/abi/PrimordiumGovernorV1.abi";
 import RenderMarkdown from "@/components/RenderMarkdown";
 import ProposalActionsDisplay from "./_components/ProposalActionsDisplay";
+import SubmitVoteModal from "./_components/SubmitVoteModal";
 
 const governorContract = {
   address: chainConfig[defaultChain.id]?.addresses.governor,
@@ -111,10 +112,12 @@ export default function ProposalPage({
     ],
   });
 
+  // Display abbreviated quorum
   const quorumDisplay = useMemo(() => {
     return quorum && abbreviateBalance(quorum, 18, 2);
   }, [quorum]);
 
+  // Calculate the percentage towards quorum (maxed at 100%)
   const quorumPercentage = useMemo(() => {
     if (!votes || quorum === undefined) {
       return 0;
@@ -129,6 +132,9 @@ export default function ProposalPage({
     return proposal.description;
     // return proposal.description.replace(proposal.title, "");
   }, [proposal]);
+
+  // Vote submission
+  const [isSubmitVoteModalOpen, setIsSubmitVoteModalOpen] = useState(false);
 
   return (
     <div
@@ -176,27 +182,31 @@ export default function ProposalPage({
               <div className="mt-2 flex flex-col gap-6">
                 {state === ProposalState.Active && (
                   <div className="flex justify-end">
-                    <ButtonExtended color="primary">Submit Vote</ButtonExtended>
+                    <ButtonExtended color="primary" onPress={() => setIsSubmitVoteModalOpen(true)}>
+                      Submit Vote
+                    </ButtonExtended>
                   </div>
                 )}
                 {state !== ProposalState.Pending && votes && (
                   <>
                     <ProposalVoteCounts votes={votes} percentMajority={percentMajority} />
-                    <div className="flex flex-col items-center gap-2">
-                      <p className="text-xs text-foreground-600 sm:text-sm">Quorum Progress:</p>
-                      <CircularProgress
-                        value={quorumPercentage}
-                        size="lg"
-                        label={`A quorum ${quorumDisplay ? `(${quorumDisplay} votes)` : ""} is required to succeed.`}
-                        classNames={{
-                          label: "text-2xs sm:text-xs text-foreground-500",
-                        }}
-                        showValueLabel
-                      />
-                    </div>
+                    <Card className="self-center">
+                      <CardBody className="flex flex-col items-center gap-2">
+                        <p className="text-xs text-foreground-600 sm:text-sm">Quorum Progress:</p>
+                        <CircularProgress
+                          value={quorumPercentage}
+                          size="lg"
+                          label={`${quorumDisplay ? `Current quorum: ${quorumDisplay} MUSHI` : ""}`}
+                          classNames={{
+                            label: "text-2xs sm:text-xs text-foreground-500",
+                          }}
+                          showValueLabel
+                        />
+                      </CardBody>
+                    </Card>
                   </>
                 )}
-                <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+                <div className="flex flex-col items-center justify-around gap-4 sm:flex-row">
                   <ProposalBlockTimeDisplay
                     currentBlockNumber={_meta!.block.number}
                     blockString={proposal.voteStart}
@@ -215,10 +225,18 @@ export default function ProposalPage({
                   <RenderMarkdown markdown={processedDescription} />
                 </div>
                 <h2 className="font-londrina-shadow text-xl xs:text-2xl sm:text-3xl">
-                    Proposed Actions
+                  Proposed Actions
                 </h2>
                 <ProposalActionsDisplay proposal={proposal} />
               </div>
+
+              <SubmitVoteModal
+                proposal={proposal}
+                isDismissable={false}
+                isOpen={isSubmitVoteModalOpen}
+                onOpenChange={setIsSubmitVoteModalOpen}
+                placement="center"
+              />
             </>
           )
         )}

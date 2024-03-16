@@ -15,6 +15,12 @@ export enum ProposalState {
   VoteFinished
 }
 
+export enum ProposalVoteType {
+  Against,
+  For,
+  Abstain
+}
+
 const GRACE_PERIOD = BigInt(14 * 24 * 60 * 60); // 14 days in seconds
 
 /**
