@@ -94,10 +94,8 @@ export default function CreateProposalPage() {
   }, [governanceData]);
 
   const governanceThreshold = useMemo(() => {
-    return (
-      governanceThresholdBps &&
-      maxSupply &&
-      (BigInt(maxSupply) * BigInt(governanceThresholdBps)) / BigInt(MAX_BPS)
+    if (!governanceThresholdBps || !maxSupply) return undefined;
+    return ((BigInt(maxSupply) * BigInt(governanceThresholdBps)) / BigInt(MAX_BPS)
     );
   }, [governanceThresholdBps, maxSupply]);
 
@@ -174,7 +172,7 @@ export default function CreateProposalPage() {
     if (!isProposalValid) {
       toast.error("Proposal is not valid for submission.");
     }
-    const toastId = toast.loading("Creating transaction to update delegate...");
+    const toastId = toast.loading("Submitting transaction to create proposal...");
     const txDescription = `Create proposal: ${title}`;
     writeContractAsync({
       abi: PrimordiumGovernorV1Abi,
@@ -268,7 +266,7 @@ export default function CreateProposalPage() {
                   </p>
                 </WarningCard>
               )}
-            {governanceThreshold && totalSupply < governanceThreshold && (
+            {governanceThreshold !== undefined && totalSupply < governanceThreshold && (
               <WarningCard className="mt-2 sm:mt-3">
                 <p>
                   The goverance contract cannot be founded until at least{" "}

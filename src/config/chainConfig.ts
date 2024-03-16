@@ -32,7 +32,7 @@ export const chainConfig: {
       executor: "0x6cCf924d8Ab61c1Cf375D00220a09582603D38D6",
       token: "0x472236e3e5bE03bEcde08AD5aaaab5EF9Ec38FA9",
       sharesOnboarder: "0x849b8d8899c3105f9c86946e194268f879A66CE4",
-      governor: "0xA98896A921E66983292201a6629FA9D93eF0F3C2",
+      governor: "0x02445fD52Cf3C6baAd9D616E89233DA9A819aa10",
       distributor: "0x217A246eac5FCDb09570Af269b40ba006dc11a24",
     },
     subgraphUrl: "http://localhost:8000/subgraphs/name/primordium-dao"
