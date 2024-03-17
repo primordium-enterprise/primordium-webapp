@@ -2,8 +2,7 @@
 
 import PrimordiumGovernorV1Abi from "@/abi/PrimordiumGovernorV1.abi";
 import WarningCard from "@/components/WarningCard";
-import { chainConfig } from "@/config/chainConfig";
-import { defaultChain } from "@/config/wagmi-config";
+import chainConfig from "@/config/chainConfig";
 import { DelegateQuery, GovernanceDataQuery } from "@/subgraph/subgraphQueries";
 import abbreviateBalance from "@/utils/abbreviateBalance";
 import { Link, Spinner } from "@nextui-org/react";
@@ -61,7 +60,7 @@ export default function CreateProposalPage() {
       let proposalThresholdPercentageDisplay: JSX.Element | string = (
         <Link
           href={buildEtherscanURL(
-            `address/${chainConfig[defaultChain.id].addresses.governor}#readProxyContract`,
+            `address/${chainConfig.addresses.governor}#readProxyContract`,
           )}
           isExternal
         >
@@ -176,7 +175,7 @@ export default function CreateProposalPage() {
     const txDescription = `Create proposal: ${title}`;
     writeContractAsync({
       abi: PrimordiumGovernorV1Abi,
-      address: chainConfig[defaultChain.id]?.addresses.governor,
+      address: chainConfig.addresses.governor,
       functionName: "propose",
       args: [...getSplitActions(), getFormattedDescription()],
     })

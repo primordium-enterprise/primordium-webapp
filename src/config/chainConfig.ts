@@ -1,5 +1,5 @@
-import { Address } from "viem";
-import { foundry, sepolia } from "viem/chains";
+import { Address, Chain } from "viem";
+import { foundry, mainnet, sepolia } from "viem/chains";
 
 type PrimordiumContractNames = {
   readonly "token": string;
@@ -9,14 +9,36 @@ type PrimordiumContractNames = {
   readonly "distributor": string;
 }
 
-export const chainConfig: {
-  [chainId: number]: {
-    addresses: {
-      [ContractName in keyof PrimordiumContractNames]: Address
-    },
-    subgraphUrl: string
-  }
+const envChain = process.env.NEXT_PUBLIC_CHAIN;
+export const defaultChain: Chain =
+  envChain === "mainnet"
+    ? mainnet
+    : envChain === "sepolia"
+      ? sepolia
+      : process.env.NODE_ENV === "development"
+        ? foundry
+        : mainnet;
+
+interface ChainConfig {
+  addresses: {
+    [ContractName in keyof PrimordiumContractNames]: Address
+  },
+  subgraphUrl: string
+}
+
+export const chainConfigs: {
+  [chainId: number]: ChainConfig
 } = {
+  [mainnet.id]: {
+    addresses: {
+      executor: "0x6337b8630a3C641BEB0b7c26Fa542e31d6215c64",
+      token: "0x2aADC4ab6F8679C86f453a0FCc8B6B10d872335D",
+      sharesOnboarder: "0xAf504e6811F0785eb0da73E5B252885cDE301d3C",
+      governor: "0xc384cb3bc23CB99826405b91c2E285e92E293Db8",
+      distributor: "0x540d08e2061ba64bB32B53C3D591faD841105c20",
+    },
+    subgraphUrl: process.env.NEXT_PUBLIC_SUBGRAPH_URL_MAINNET || "",
+  },
   [sepolia.id]: {
     addresses: {
       executor: "0x0435C23ad382D767b9F85B5eE3150B9Cd442e501",
@@ -25,7 +47,7 @@ export const chainConfig: {
       governor: "0x029b600067080278c32F4643C1eB8f2b508A9255",
       distributor: "0xC5b8Fa3C998eBE375690A181f52B20b48B3C83eF",
     },
-    subgraphUrl: process.env.NEXT_PUBLIC_SUBGRAPH_URL || ""
+    subgraphUrl: process.env.NEXT_PUBLIC_SUBGRAPH_URL_SEPOLIA || ""
   },
   [foundry.id]: {
     addresses: {
@@ -38,3 +60,7 @@ export const chainConfig: {
     subgraphUrl: "http://localhost:8000/subgraphs/name/primordium-dao"
   },
 }
+
+const chainConfig: ChainConfig = chainConfigs[defaultChain.id];
+
+export default chainConfig;

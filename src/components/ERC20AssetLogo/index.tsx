@@ -6,13 +6,13 @@ import Image, { StaticImageData } from "next/image";
 import ethLogo from "public/img/asset-logos/ethLogo.png";
 import mushiLogo from "public/img/asset-logos/mushiLogo.png";
 import { ADDRESS_ZERO } from "@/utils/constants";
-import {chainConfig} from "@/config/chainConfig";
+import { chainConfigs } from "@/config/chainConfig";
 import { useChainId } from "wagmi";
 
 function getAssetLogoSrc(token: Address | undefined, chainId: number): StaticImageData | string {
   if (token === undefined || token === ADDRESS_ZERO) {
     return ethLogo;
-  } else if (token === chainConfig[chainId]?.addresses.token) {
+  } else if (token === chainConfigs[chainId]?.addresses.token) {
     return mushiLogo;
   } else {
     return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${token}/logo.png`;

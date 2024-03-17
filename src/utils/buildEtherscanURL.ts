@@ -1,4 +1,4 @@
-import { defaultChain } from "@/config/wagmi-config";
+import { defaultChain } from "@/config/chainConfig";
 import { sepolia } from "viem/chains";
 
 export default function buildEtherscanURL(path: string) {

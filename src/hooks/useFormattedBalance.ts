@@ -9,7 +9,7 @@ import {
 } from "wagmi";
 import { format } from "dnum";
 import abbreviateBalance from "@/utils/abbreviateBalance";
-import {chainConfig} from "@/config/chainConfig";
+import chainConfig from "@/config/chainConfig";
 import { ADDRESS_ZERO } from "@/utils/constants";
 
 type BalanceData = {
@@ -38,7 +38,7 @@ export default function useFormattedBalance<TokenAddress extends Address | undef
     value: BigInt(0),
     decimals: 18,
     formatted: "0",
-    symbol: isERC20Token ? token == chainConfig[chainId]?.addresses.token ? "MUSHI" : "(ERC20)" : "ETH",
+    symbol: isERC20Token ? token == chainConfig.addresses.token ? "MUSHI" : "(ERC20)" : "ETH",
   };
 
     const contractData = {

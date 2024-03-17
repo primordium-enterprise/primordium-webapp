@@ -1,6 +1,6 @@
 "use client";
 
-import { chainConfig } from "@/config/chainConfig";
+import chainConfig from "@/config/chainConfig";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import useTotalSupply from "@/hooks/useTotalSupply";
 import shortenAddress from "@/utils/shortenAddress";
@@ -19,7 +19,6 @@ import toast from "react-hot-toast";
 import { Address } from "viem";
 import { format } from "dnum";
 import ERC20AssetLogo from "@/components/ERC20AssetLogo";
-import { useChainId } from "wagmi";
 
 export default function WithdrawAsset({
   asset,
@@ -32,9 +31,8 @@ export default function WithdrawAsset({
   withdrawValue: bigint;
   refetchCount: number;
 }) {
-  const chainId = useChainId();
   const { totalSupply, refetch: refetchTotalSupply } = useTotalSupply(
-    chainConfig[chainId]?.addresses.token,
+    chainConfig.addresses.token,
   );
   const {
     value: assetBalance,
@@ -43,7 +41,7 @@ export default function WithdrawAsset({
     formatted,
     queryResult: { refetch: refetchAssetBalance },
   } = useFormattedBalance({
-    address: chainConfig[chainId]?.addresses.executor,
+    address: chainConfig.addresses.executor,
     token: asset,
   });
 

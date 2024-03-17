@@ -1,6 +1,5 @@
 import PrimordiumGovernorV1Abi from "@/abi/PrimordiumGovernorV1.abi";
-import { chainConfig } from "@/config/chainConfig";
-import { defaultChain } from "@/config/wagmi-config";
+import chainConfig from "@/config/chainConfig";
 import {
   GovernanceData,
   GovernanceDataQuery,
@@ -40,7 +39,7 @@ export default function useProposalState({
 
   // Query the state from the contract if the proposal is in the `VoteFinished` state.
   const { data: readState, ...readStateResult } = useReadContract({
-    address: chainConfig[defaultChain.id]?.addresses.governor,
+    address: chainConfig.addresses.governor,
     abi: PrimordiumGovernorV1Abi,
     functionName: "state",
     args: [BigInt(proposal?.id || 0)],

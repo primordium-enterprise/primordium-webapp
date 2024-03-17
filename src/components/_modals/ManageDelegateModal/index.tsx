@@ -25,11 +25,10 @@ import shortenAddress from "@/utils/shortenAddress";
 import { CopyIcon } from "@radix-ui/react-icons";
 import toast from "react-hot-toast";
 import { normalize } from "viem/ens";
-import { defaultChain } from "@/config/wagmi-config";
 import { foundry, mainnet } from "viem/chains";
 import DisplayAddress from "@/components/DisplayAddress";
 import abbreviateBalance from "@/utils/abbreviateBalance";
-import { chainConfig } from "@/config/chainConfig";
+import chainConfig, { defaultChain } from "@/config/chainConfig";
 import PrimordiumTokenV1Abi from "@/abi/PrimordiumTokenV1.abi";
 import { ADDRESS_ZERO } from "@/utils/constants";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
@@ -54,7 +53,7 @@ export default function ManageDelegateModal() {
     isError: currentDelegateAddressError,
     refetch: refetchCurrentDelegateAddress,
   } = useReadContract({
-    address: chainConfig[defaultChain.id]?.addresses.token,
+    address: chainConfig.addresses.token,
     abi: PrimordiumTokenV1Abi,
     functionName: "delegates",
     args: [accountAddress as Address],
@@ -190,7 +189,7 @@ export default function ManageDelegateModal() {
     const toastId = toast.loading("Creating transaction to update delegate...");
     let description = `Delegate votes to ${shortenAddress(newDelegateAddress)}${ensName ? ` (${ensName})` : newDelegateAddress === accountAddress ? `(Yourself)` : ""}.`;
     writeContractAsync({
-      address: chainConfig[chainId]?.addresses.token,
+      address: chainConfig.addresses.token,
       abi: PrimordiumTokenV1Abi,
       functionName: "delegate",
       args: [newDelegateAddress],

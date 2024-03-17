@@ -1,24 +1,19 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { Button, Checkbox, Input, Switch, Tab } from "@nextui-org/react";
 import AssetAmountInput from "@/components/AssetAmountInput";
-import { chainConfig } from "@/config/chainConfig";
+import chainConfig from "@/config/chainConfig";
 import { sharePrice } from "@/config/primordiumSettings";
 import parseDnumFromString from "@/utils/parseDnumFromString";
 import { Dnum, format as dnFormat } from "dnum";
-import { Address, BaseError, decodeErrorResult, isAddress, isAddressEqual } from "viem";
+import { Address, isAddress, isAddressEqual } from "viem";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import { useAccount, useChainId, useConfig, useWriteContract } from "wagmi";
 import toast from "react-hot-toast";
-import { waitForTransactionReceipt } from "wagmi/actions";
-import { Link } from "@nextui-org/react";
-import { sepolia } from "viem/chains";
 import { ADDRESS_ZERO } from "@/utils/constants";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import PrimordiumSharesOnboarderV1Abi from "@/abi/PrimordiumSharesOnboarderV1.abi";
-import { defaultChain } from "@/config/wagmi-config";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
 import shortenAddress from "@/utils/shortenAddress";
-import { toJSON } from "@/utils/JSONBigInt";
 import PrimordiumTokenV1Abi from "@/abi/PrimordiumTokenV1.abi";
 import combineAbiErrors from "@/utils/combineAbiErrors";
 import PrimordiumExecutorV1Abi from "@/abi/PrimordiumExecutorV1.abi";
@@ -47,7 +42,7 @@ export default function DepositTabContent() {
   } = useFormattedBalance({ address });
   const {
     queryResult: { refetch: refetchMushiBalance },
-  } = useFormattedBalance({ address, token: chainConfig[defaultChain.id]?.addresses.token });
+  } = useFormattedBalance({ address, token: chainConfig.addresses.token });
 
   const { open } = useWeb3Modal();
 
@@ -120,7 +115,7 @@ export default function DepositTabContent() {
     let description = `Deposit ${depositValue.slice()} ETH for ${mintValue.slice()} MUSHI tokens${isMintToSelected ? ` (minted to ${shortenAddress(mintTo as Address)})` : ""}.`;
 
     writeContractAsync({
-      address: chainConfig[chainId].addresses.sharesOnboarder,
+      address: chainConfig.addresses.sharesOnboarder,
       abi: [
         ...PrimordiumSharesOnboarderV1Abi,
         ...combineAbiErrors(PrimordiumExecutorV1Abi, PrimordiumTokenV1Abi),
@@ -150,7 +145,7 @@ export default function DepositTabContent() {
         value={mintValue}
         onValueChange={onMintChange}
         label="Mint amount"
-        token={chainConfig[chainId]?.addresses.token}
+        token={chainConfig.addresses.token}
       />
       <Switch
         isSelected={isMintToSelected}

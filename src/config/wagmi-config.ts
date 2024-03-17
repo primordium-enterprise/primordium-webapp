@@ -23,16 +23,6 @@ if (process.env.NODE_ENV === "development") {
   chains.unshift(foundry);
 }
 
-const envChain = process.env.NEXT_PUBLIC_CHAIN;
-export const defaultChain: Chain =
-  envChain === "mainnet"
-    ? mainnet
-    : envChain === "sepolia"
-      ? sepolia
-      : process.env.NODE_ENV === "development"
-        ? foundry
-        : mainnet;
-
 const transports = {
   [mainnet.id]: http(process.env.NEXT_PUBLIC_JSON_RPC_MAINNET),
   [sepolia.id]: http(process.env.NEXT_PUBLIC_JSON_RPC_SEPOLIA),

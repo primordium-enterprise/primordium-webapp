@@ -4,8 +4,7 @@ import PrimordiumGovernorV1Abi from "@/abi/PrimordiumGovernorV1.abi";
 import PrimordiumTokenV1Abi from "@/abi/PrimordiumTokenV1.abi";
 import ButtonExtended from "@/components/_nextui/ButtonExtended";
 import InputExtended from "@/components/_nextui/InputExtended";
-import { chainConfig } from "@/config/chainConfig";
-import { defaultChain } from "@/config/wagmi-config";
+import chainConfig from "@/config/chainConfig";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
 import { ProposalData } from "@/subgraph/subgraphQueries";
 import abbreviateBalance from "@/utils/abbreviateBalance";
@@ -25,7 +24,7 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useContext, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Address } from "viem";
-import { useAccount, useReadContract, useReadContracts, useWriteContract } from "wagmi";
+import { useAccount, useReadContracts, useWriteContract } from "wagmi";
 
 interface Props extends Omit<ModalProps, "children"> {
   proposal: ProposalData;
@@ -51,7 +50,7 @@ const voteOptions = [
 
 const governorContract = {
   abi: PrimordiumGovernorV1Abi,
-  address: chainConfig[defaultChain.id]?.addresses.governor,
+  address: chainConfig.addresses.governor,
 } as const;
 
 export default function SubmitVoteModal({ proposal, ...modalProps }: Props) {
@@ -67,13 +66,13 @@ export default function SubmitVoteModal({ proposal, ...modalProps }: Props) {
     contracts: [
       {
         abi: PrimordiumGovernorV1Abi,
-        address: chainConfig[defaultChain.id]?.addresses.governor,
+        address: chainConfig.addresses.governor,
         functionName: "hasVoted",
         args: [BigInt(proposal.id), address as Address],
       },
       {
         abi: PrimordiumTokenV1Abi,
-        address: chainConfig[defaultChain.id]?.addresses.token,
+        address: chainConfig.addresses.token,
         functionName: "getPastVotes",
         args: [address as Address, BigInt(proposal.voteStart)],
       },
@@ -106,7 +105,7 @@ export default function SubmitVoteModal({ proposal, ...modalProps }: Props) {
     const toastId = toast.loading("Casting your vote...");
     writeContractAsync({
       abi: PrimordiumGovernorV1Abi,
-      address: chainConfig[defaultChain.id]?.addresses.governor,
+      address: chainConfig.addresses.governor,
       functionName: useReason ? "castVoteWithReason" : "castVote",
       args: useReason
         ? [BigInt(proposal.id), supportNumber, reason]

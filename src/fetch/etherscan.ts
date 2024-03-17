@@ -1,4 +1,4 @@
-import { defaultChain } from "@/config/wagmi-config";
+import { defaultChain } from "@/config/chainConfig";
 import { Abi, Address } from "viem";
 import { sepolia } from "viem/chains";
 

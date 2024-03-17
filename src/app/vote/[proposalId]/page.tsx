@@ -18,15 +18,14 @@ import abbreviateBalance from "@/utils/abbreviateBalance";
 import { ProposalVotes } from "./types";
 import ProposalVoteCounts from "./_components/ProposalVoteCounts";
 import { useReadContracts } from "wagmi";
-import { chainConfig } from "@/config/chainConfig";
-import { defaultChain } from "@/config/wagmi-config";
+import chainConfig from "@/config/chainConfig";
 import PrimordiumGovernorV1Abi from "@/abi/PrimordiumGovernorV1.abi";
 import RenderMarkdown from "@/components/RenderMarkdown";
 import ProposalActionsDisplay from "./_components/ProposalActionsDisplay";
 import SubmitVoteModal from "./_components/SubmitVoteModal";
 
 const governorContract = {
-  address: chainConfig[defaultChain.id]?.addresses.governor,
+  address: chainConfig.addresses.governor,
   abi: PrimordiumGovernorV1Abi,
 } as const;
 

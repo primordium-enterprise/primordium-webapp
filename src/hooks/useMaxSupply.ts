@@ -1,4 +1,4 @@
-import {chainConfig} from "@/config/chainConfig";
+import chainConfig from "@/config/chainConfig";
 import { useReadContract } from "wagmi";
 import { Address } from "viem";
 

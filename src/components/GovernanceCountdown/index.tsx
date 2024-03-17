@@ -1,6 +1,6 @@
 "use client";
 
-import {chainConfig} from "@/config/chainConfig";
+import chainConfig from "@/config/chainConfig";
 import useGovernanceCanBeginAt from "@/hooks/useGovernanceCanBeginAt";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useBlock, useChainId } from "wagmi";
@@ -24,8 +24,7 @@ const padZero = (value: number, minDigits: number = 2) => {
 };
 
 export default function GovernanceCountdown() {
-  const chainId = useChainId();
-  const { governanceCanBeginAt } = useGovernanceCanBeginAt(chainConfig[chainId]?.addresses.governor);
+  const { governanceCanBeginAt } = useGovernanceCanBeginAt(chainConfig.addresses.governor);
   const { data, dataUpdatedAt } = useBlock({
     watch: false,
     query: { refetchOnWindowFocus: false },

@@ -1,5 +1,5 @@
 import AssetAmountInput from "@/components/AssetAmountInput";
-import { chainConfig } from "@/config/chainConfig";
+import chainConfig from "@/config/chainConfig";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import parseDnumFromString from "@/utils/parseDnumFromString";
 import {
@@ -35,10 +35,9 @@ const pruneCommas = (value: string) => {
 };
 
 export default function WithdrawTabContent() {
-  const config = useConfig();
   const chainId = useChainId();
 
-  const token = chainConfig[chainId]?.addresses.token;
+  const token = chainConfig.addresses.token;
 
   const { addTransaction } = useContext(LocalTransactionsContext);
 
@@ -148,7 +147,7 @@ export default function WithdrawTabContent() {
     let description = `Withdraw ${withdrawInputValue.slice()} MUSHI tokens${isWithdrawToSelected ? ` (send assets to ${shortenAddress(withdrawTo as Address)})` : ""}.`;
 
     writeContractAsync({
-      address: chainConfig[chainId].addresses.token,
+      address: chainConfig.addresses.token,
       abi: PrimordiumTokenV1Abi,
       functionName: isWithdrawToSelected ? "withdrawTo" : "withdraw",
       args: isWithdrawToSelected

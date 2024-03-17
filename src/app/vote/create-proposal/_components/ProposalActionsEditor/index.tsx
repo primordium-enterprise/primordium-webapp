@@ -1,7 +1,6 @@
 "use client";
 
 import { GovernanceData } from "@/subgraph/subgraphQueries";
-import { Button, Card, CardBody } from "@nextui-org/react";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { AbiFunctionInputParam, PROPOSAL_ACTIONS_STORAGE_KEY, ProposalAction } from "./types";
 import CreateProposalActionModal from "./components/CreateProposalActionModal";
@@ -12,8 +11,7 @@ import { useClient, useConfig } from "wagmi";
 import toast from "react-hot-toast";
 import { readContract } from "wagmi/actions";
 import PrimordiumGovernorV1Abi from "@/abi/PrimordiumGovernorV1.abi";
-import { chainConfig } from "@/config/chainConfig";
-import { defaultChain } from "@/config/wagmi-config";
+import chainConfig from "@/config/chainConfig";
 import { AbiFunction, encodeFunctionData, toFunctionSignature } from "viem";
 
 export default function ProposalActionsEditor({
@@ -46,7 +44,7 @@ export default function ProposalActionsEditor({
       actions.some(
         (action) =>
           action.signature === "foundGovernor(uint256)" &&
-          action.target === chainConfig[defaultChain.id]?.addresses.governor,
+          action.target === chainConfig.addresses.governor,
       )
     );
   }, [needsFounding, actions]);
@@ -57,7 +55,7 @@ export default function ProposalActionsEditor({
 
     try {
       const abi = PrimordiumGovernorV1Abi;
-      const address = chainConfig[defaultChain.id]?.addresses.governor;
+      const address = chainConfig.addresses.governor;
       if (!address) {
         throw { shortMessage: "Governor address not found on this chain." };
       }

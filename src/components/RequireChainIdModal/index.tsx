@@ -1,6 +1,6 @@
 "use client";
 
-import { defaultChain } from "@/config/wagmi-config";
+import { defaultChain } from "@/config/chainConfig";
 import { Button, Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useEffect, useMemo } from "react";
