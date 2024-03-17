@@ -18,7 +18,6 @@ import { useAccount, useChainId, useEnsAddress, useReadContract, useWriteContrac
 import { useQuery } from "urql";
 import { DelegateQuery } from "@/subgraph/subgraphQueries";
 import useFormattedMushiBalance from "@/hooks/useFormattedMushiBalance";
-import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { Address, isAddress, isAddressEqual } from "viem";
 import shortenAddress from "@/utils/shortenAddress";
@@ -33,13 +32,13 @@ import PrimordiumTokenV1Abi from "@/abi/PrimordiumTokenV1.abi";
 import { ADDRESS_ZERO } from "@/utils/constants";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
 import handleViemContractError from "@/utils/handleViemContractError";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export const MANAGE_DELEGATE_MODAL = "ManageDelegateModal";
 
 export default function ManageDelegateModal() {
   const { isOpen, onOpenChange, close } = useModalState(MANAGE_DELEGATE_MODAL);
-  const { open: openWeb3Modal } = useWeb3Modal();
-  const { open: isWeb3ModalOpen } = useWeb3ModalState();
+  const { openConnectModal } = useConnectModal();
 
   const chainId = useChainId();
   const { address: accountAddress } = useAccount();
@@ -210,7 +209,7 @@ export default function ManageDelegateModal() {
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       placement="center"
-      isDismissable={!isWeb3ModalOpen}
+      isDismissable={false}
     >
       <ModalContent>
         <ModalHeader className="font-londrina-solid text-xl xs:text-3xl">
@@ -373,7 +372,7 @@ export default function ManageDelegateModal() {
                 </div>
               </>
             ) : (
-              <Button onPress={() => openWeb3Modal()} color="primary">
+              <Button onPress={() => openConnectModal && openConnectModal()} color="primary">
                 Connect Wallet
               </Button>
             )}

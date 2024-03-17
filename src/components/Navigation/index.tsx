@@ -29,11 +29,11 @@ import {
 } from "@radix-ui/react-icons";
 import Link from "next/link";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
-import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { usePathname } from "next/navigation";
 import MushiIcon from "../MushiIcon";
 import TransactionsPopoverContent from "./components/TransactionsPopoverContent";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
+import { useAccountModal, useChainModal, useConnectModal } from "@rainbow-me/rainbowkit";
 
 const routes: {
   route: string;
@@ -59,8 +59,9 @@ if (process.env.NODE_ENV === "development") {
 
 export default function Navigation() {
   const pathname = usePathname();
-  const { open } = useWeb3Modal();
-  const { open: isWeb3ModalOpen } = useWeb3ModalState();
+  const { connectModalOpen, openConnectModal } = useConnectModal();
+  const { openChainModal } = useChainModal();
+  const { openAccountModal } = useAccountModal();
 
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
@@ -109,10 +110,12 @@ export default function Navigation() {
                   title: "text-xs sm:text-sm",
                 }}
               >
-                <DropdownItem onPress={() => open({ view: "Networks" })}>
+                <DropdownItem onPress={() => openChainModal && openChainModal()}>
                   Switch Network
                 </DropdownItem>
-                <DropdownItem onPress={() => open()}>View Account</DropdownItem>
+                <DropdownItem onPress={() => openAccountModal && openAccountModal()}>
+                  View Account
+                </DropdownItem>
                 <DropdownItem
                   key="disconnect"
                   className="text-danger"
@@ -153,16 +156,20 @@ export default function Navigation() {
             <Button
               variant="ghost"
               color="default"
-              className="text-xs xs:text-base h-full px-3 xs:px-4"
-              isLoading={isWeb3ModalOpen}
-              onPress={() => open()}
+              className="h-full px-3 text-xs xs:px-4 xs:text-base"
+              isLoading={connectModalOpen}
+              onPress={() => openConnectModal && openConnectModal()}
             >
               Connect Wallet
             </Button>
           </>
         )}
 
-        <Dropdown onOpenChange={(isOpen) => setMenuDropdownIsOpen(isOpen)} backdrop="blur">
+        <Dropdown
+          isOpen={menuDropdownIsOpen}
+          onOpenChange={(isOpen) => setMenuDropdownIsOpen(isOpen)}
+          backdrop="blur"
+        >
           <DropdownTrigger>
             <Button variant="solid" className="ml-2 h-full min-w-0 px-3 xs:px-4">
               <HamburgerMenuIcon className="h-[1em] w-[1em]" />

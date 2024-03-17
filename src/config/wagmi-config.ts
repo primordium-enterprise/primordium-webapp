@@ -1,6 +1,7 @@
 import { http, createStorage, cookieStorage } from "wagmi";
-import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
-import { Chain, mainnet, sepolia, foundry } from "wagmi/chains";
+import { mainnet, sepolia, foundry } from "wagmi/chains";
+import { getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { defaultChain } from "./chainConfig";
 
 export const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "";
 if (!projectId) {
@@ -9,29 +10,19 @@ if (!projectId) {
   );
 }
 
-const metadata = {
-  name: "PrimordiumDAO",
-  description: "Front-end app for PrimordiumDAO",
-  url: "https:/app.primordiumdao.xyz", // origin must match your domain & subdomain
-  icons: ["https://avatars.githubusercontent.com/u/128849842"],
-};
-
-const chains: [Chain, ...Chain[]] = [mainnet, sepolia];
-// local testing
-if (process.env.NODE_ENV === "development") {
-  chains.unshift(foundry);
-}
-
 const transports = {
   [mainnet.id]: http(process.env.NEXT_PUBLIC_JSON_RPC_MAINNET),
   [sepolia.id]: http(process.env.NEXT_PUBLIC_JSON_RPC_SEPOLIA),
   [foundry.id]: http(process.env.NEXT_PUBLIC_JSON_RPC_LOCAL),
 };
 
-const wagmiConfig = defaultWagmiConfig({
-  chains,
+const wagmiConfig = getDefaultConfig({
+  appName: "PrimordiumDAO",
+  appDescription: "The application interface for joining and governing PrimordiumDAO.",
+  appUrl: "https://app.primordiumdao.xyz",
+  appIcon: "https://avatars.githubusercontent.com/u/128849842",
+  chains: [defaultChain],
   projectId,
-  metadata,
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,

@@ -1,5 +1,5 @@
 import { useCallback, useContext, useMemo, useState } from "react";
-import { Button, Checkbox, Input, Switch, Tab } from "@nextui-org/react";
+import { Button, Input, Switch } from "@nextui-org/react";
 import AssetAmountInput from "@/components/AssetAmountInput";
 import chainConfig from "@/config/chainConfig";
 import { sharePrice } from "@/config/primordiumSettings";
@@ -10,7 +10,6 @@ import useFormattedBalance from "@/hooks/useFormattedBalance";
 import { useAccount, useChainId, useConfig, useWriteContract } from "wagmi";
 import toast from "react-hot-toast";
 import { ADDRESS_ZERO } from "@/utils/constants";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
 import PrimordiumSharesOnboarderV1Abi from "@/abi/PrimordiumSharesOnboarderV1.abi";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
 import shortenAddress from "@/utils/shortenAddress";
@@ -18,6 +17,7 @@ import PrimordiumTokenV1Abi from "@/abi/PrimordiumTokenV1.abi";
 import combineAbiErrors from "@/utils/combineAbiErrors";
 import PrimordiumExecutorV1Abi from "@/abi/PrimordiumExecutorV1.abi";
 import handleViemContractError from "@/utils/handleViemContractError";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 const pruneCommas = (value: string): string => {
   return value.replaceAll(",", "");
@@ -44,7 +44,7 @@ export default function DepositTabContent() {
     queryResult: { refetch: refetchMushiBalance },
   } = useFormattedBalance({ address, token: chainConfig.addresses.token });
 
-  const { open } = useWeb3Modal();
+  const { openConnectModal } = useConnectModal();
 
   const { addTransaction } = useContext(LocalTransactionsContext);
 
@@ -173,7 +173,7 @@ export default function DepositTabContent() {
           size="lg"
           color="primary"
           isDisabled={isConnected && !isReady}
-          onPress={isConnected ? mint : () => open()}
+          onPress={isConnected ? mint : () => openConnectModal && openConnectModal()}
           isLoading={isWriteContractPending}
         >
           {!isConnected

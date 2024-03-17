@@ -1,26 +1,19 @@
 "use client";
 
 import { NextUIProvider } from "@nextui-org/react";
-import { WagmiProvider, State } from "wagmi";
-import wagmiConfig, { projectId } from "@/config/wagmi-config";
+import { WagmiProvider, cookieToInitialState } from "wagmi";
+// import wagmiConfig, { projectId } from "@/config/wagmi-config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { createWeb3Modal } from "@web3modal/wagmi/react";
 import ModalManagerProvider from "@/components/_modals/ModalManagerProvider";
 import { Client, Provider as URQLProvider, cacheExchange, fetchExchange } from "urql";
-import chainConfig, { defaultChain } from "@/config/chainConfig";
+import chainConfig from "@/config/chainConfig";
 import LocalTransactionsProvider from "@/providers/LocalTransactionsProvider";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import wagmiConfig from "@/config/wagmi-config";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: Infinity } },
-});
-
-// Initialize the web3 modal
-createWeb3Modal({
-  wagmiConfig,
-  projectId,
-  enableAnalytics: process.env.NODE_ENV === "production",
-  defaultChain,
 });
 
 export const urqlClient = new Client({
@@ -30,23 +23,25 @@ export const urqlClient = new Client({
 
 export default function Providers({
   children,
-  initialState,
+  cookie,
 }: {
   children: React.ReactNode;
-  initialState: State | undefined;
+  cookie: string | null;
 }) {
   const router = useRouter();
 
   return (
-    <WagmiProvider config={wagmiConfig} initialState={initialState}>
+    <WagmiProvider config={wagmiConfig} initialState={cookieToInitialState(wagmiConfig, cookie)}>
       <QueryClientProvider client={queryClient}>
-        <URQLProvider value={urqlClient}>
-          <NextUIProvider navigate={router.push}>
-            <LocalTransactionsProvider>
-              <ModalManagerProvider>{children}</ModalManagerProvider>
-            </LocalTransactionsProvider>
-          </NextUIProvider>
-        </URQLProvider>
+        <RainbowKitProvider>
+          <URQLProvider value={urqlClient}>
+            <NextUIProvider navigate={router.push}>
+              <LocalTransactionsProvider>
+                <ModalManagerProvider>{children}</ModalManagerProvider>
+              </LocalTransactionsProvider>
+            </NextUIProvider>
+          </URQLProvider>
+        </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

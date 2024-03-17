@@ -2,17 +2,7 @@ import AssetAmountInput from "@/components/AssetAmountInput";
 import chainConfig from "@/config/chainConfig";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import parseDnumFromString from "@/utils/parseDnumFromString";
-import {
-  Button,
-  ButtonGroup,
-  Input,
-  Link,
-  Slider,
-  Spacer,
-  Switch,
-  input,
-  slider,
-} from "@nextui-org/react";
+import { Button, Input, Slider, Spacer, Switch } from "@nextui-org/react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useAccount, useBalance, useChainId, useConfig, useWriteContract } from "wagmi";
 import { format as dnFormat } from "dnum";
@@ -20,11 +10,11 @@ import { Address, isAddress, isAddressEqual, keccak256, toHex } from "viem";
 import { ADDRESS_ZERO } from "@/utils/constants";
 import WithdrawAsset from "./components/WithdrawAsset";
 import toast from "react-hot-toast";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
 import PrimordiumTokenV1Abi from "@/abi/PrimordiumTokenV1.abi";
 import shortenAddress from "@/utils/shortenAddress";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
 import handleViemContractError from "@/utils/handleViemContractError";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 const MULT = 1000;
 
@@ -35,8 +25,6 @@ const pruneCommas = (value: string) => {
 };
 
 export default function WithdrawTabContent() {
-  const chainId = useChainId();
-
   const token = chainConfig.addresses.token;
 
   const { addTransaction } = useContext(LocalTransactionsContext);
@@ -49,7 +37,7 @@ export default function WithdrawTabContent() {
     queryResult: { refetch: refetchMushiBalance },
   } = useFormattedBalance({ address, token });
 
-  const { open } = useWeb3Modal();
+  const { openConnectModal } = useConnectModal();
 
   const [withdrawInputValue, setWithdrawInputValue] = useState("");
   const [withdrawValue, setWithdrawValue] = useState(BigInt(0));
@@ -112,7 +100,7 @@ export default function WithdrawTabContent() {
 
   const [assets, setAssets] = useState<Address[]>([ADDRESS_ZERO]);
   useEffect(() => {
-    let sessionAssetsJSON =  window.sessionStorage.getItem(ASSETS_STORAGE_KEY);
+    let sessionAssetsJSON = window.sessionStorage.getItem(ASSETS_STORAGE_KEY);
     if (sessionAssetsJSON) {
       setAssets(JSON.parse(sessionAssetsJSON));
     }
@@ -283,7 +271,13 @@ export default function WithdrawTabContent() {
       <p className="text-sm text-default-400">
         Connect your wallet to view your membership shares:
       </p>
-      <Button className="my-2" fullWidth onPress={() => open()} size="lg" color="primary">
+      <Button
+        className="my-2"
+        fullWidth
+        onPress={() => openConnectModal && openConnectModal()}
+        size="lg"
+        color="primary"
+      >
         Connect Wallet
       </Button>
     </>

@@ -2,13 +2,13 @@
 
 import { defaultChain } from "@/config/chainConfig";
 import { Button, Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useChainModal } from "@rainbow-me/rainbowkit";
 import { useEffect, useMemo } from "react";
 import { useAccount, useSwitchChain } from "wagmi";
 
 export default function RequireChainIdModal() {
   const { isConnected, chainId } = useAccount();
-  const { open } = useWeb3Modal();
+  const { openChainModal } = useChainModal();
 
   const { switchChain, error, isError, isPending } = useSwitchChain();
 
@@ -64,7 +64,8 @@ export default function RequireChainIdModal() {
             <Button
               className="m-4"
               color="primary"
-              onPress={() => open({ view: "Networks" })}
+              onPress={() => openChainModal && openChainModal()}
+              isDisabled={!openChainModal}
             >
               Select Network
             </Button>

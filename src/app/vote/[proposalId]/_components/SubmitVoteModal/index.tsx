@@ -20,7 +20,7 @@ import {
   Select,
   SelectItem,
 } from "@nextui-org/react";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useContext, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Address } from "viem";
@@ -55,7 +55,7 @@ const governorContract = {
 
 export default function SubmitVoteModal({ proposal, ...modalProps }: Props) {
   const { address } = useAccount();
-  const { open: openWeb3Modal } = useWeb3Modal();
+  const { openConnectModal } = useConnectModal();
 
   const {
     data: [{ result: hasVoted = undefined }, { result: voteAmount = undefined }] = [{}, {}],
@@ -168,7 +168,7 @@ export default function SubmitVoteModal({ proposal, ...modalProps }: Props) {
             Cancel
           </ButtonExtended>
           {!address ? (
-            <ButtonExtended color="primary" onPress={() => openWeb3Modal()}>
+            <ButtonExtended color="primary" onPress={() => openConnectModal && openConnectModal()} isDisabled={!openConnectModal}>
               ConnectWallet
             </ButtonExtended>
           ) : (
