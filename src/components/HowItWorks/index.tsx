@@ -54,10 +54,7 @@ const generateAccordionItems = (
       content: (
         <ul className="list">
           <li>
-            <b className="text-foreground">
-              Governance cannot begin until{" "}
-              {timestampPopover}
-            </b>{" "}
+            <b className="text-foreground">Governance cannot begin until {timestampPopover}</b>{" "}
             allowing a minimum period of time for minting MUSHI tokens before any governance
             operations may begin.
           </li>
@@ -151,7 +148,7 @@ const generateAccordionItems = (
                 </Link>
               </li>
               <li>
-                Creator's{" "}
+                {"Creator's "}
                 <Link href="https://primordiumdao.xyz/primordium-network.pdf" target="_blank">
                   business plan.
                 </Link>

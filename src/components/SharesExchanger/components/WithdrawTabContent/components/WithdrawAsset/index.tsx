@@ -50,7 +50,7 @@ export default function WithdrawAsset({
   useEffect(() => {
     refetchAssetBalance({ cancelRefetch: false });
     refetchTotalSupply({ cancelRefetch: false });
-  }, [refetchCount]);
+  }, [refetchCount, refetchAssetBalance, refetchTotalSupply]);
 
   const estPayoutFormatted = useMemo(() => {
     if (!totalSupply) return "0";

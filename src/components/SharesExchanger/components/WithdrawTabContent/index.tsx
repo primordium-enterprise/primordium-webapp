@@ -54,7 +54,7 @@ export default function WithdrawTabContent() {
   useEffect(() => {
     refetchEthBalance({ cancelRefetch: false });
     refetchMushiBalance({ cancelRefetch: false });
-  }, [refetchCount]);
+  }, [refetchCount, refetchEthBalance, refetchMushiBalance]);
 
   const [sliderValue, setSliderValue] = useState(0);
   const onSliderValueUpdate = (sliderValue: number | number[]) => {

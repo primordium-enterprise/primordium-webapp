@@ -7,7 +7,7 @@ import { ProposalsQuery } from "@/subgraph/subgraphQueries";
 import { useEffect, useMemo } from "react";
 import ProposalListItem from "./_components/ProposalListItem";
 
-export default function VotePage({ children }: { children: React.ReactNode }) {
+export default function VotePage() {
   const [proposalsResult] = useQuery({
     query: ProposalsQuery,
     variables: { first: 1000, skip: 0 },

@@ -210,7 +210,7 @@ export default function CreateProposalActionModal({ addProposalAction, ...modalP
     } else {
       return isTargetValid && value && parseEther(value) > BigInt(0);
     }
-  }, [isTargetValid, value, isInputParamsValid]);
+  }, [isTargetValid, value, isInputParamsValid, actionType]);
 
   const createProposalAction = () => {
     const action: ProposalAction = {

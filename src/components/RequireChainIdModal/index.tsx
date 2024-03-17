@@ -17,13 +17,13 @@ export default function RequireChainIdModal() {
       switchChain({ chainId: defaultChain.id });
     }
     return isConnected && chainId !== defaultChain.id;
-  }, [chainId, isConnected]);
+  }, [chainId, isConnected, switchChain]);
 
   useEffect(() => {
     if (!isConnected && chainId !== defaultChain.id) {
       switchChain({ chainId: defaultChain.id });
     }
-  }, [chainId, isConnected]);
+  }, [chainId, isConnected, switchChain]);
 
   useEffect(() => {
     if (error) {

@@ -79,7 +79,7 @@ export default function ProposalVoteCounts({
       </div>
       <div className="flex flex-col gap-2">
         <p className={`text-foreground-600 text-xs ${percentMajorityDisplay === false ? "invisible" : ""}`}>
-          A {percentMajorityDisplay}% "for" majority is required to succeed.
+          A {percentMajorityDisplay}% {`"for"`} majority is required to succeed.
         </p>
         <div
           className={`relative h-6 w-full overflow-hidden rounded-full sm:h-8 ${isSuccessful === undefined || !showProgressBar ? "bg-foreground-100" : isSuccessful === true ? "bg-danger-50" : "bg-success-50"}`}

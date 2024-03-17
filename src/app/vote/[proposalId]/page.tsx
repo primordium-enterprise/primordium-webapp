@@ -60,7 +60,7 @@ export default function ProposalPage({
     if (!proposalFetching && !proposalError && proposal === null) {
       router.replace("/vote");
     }
-  }, [proposal, proposalFetching, proposalError]);
+  }, [proposal, proposalFetching, proposalError, router]);
 
   const proposalState = useProposalState({ proposal, block: _meta?.block });
   const { state, governanceData } = proposalState;

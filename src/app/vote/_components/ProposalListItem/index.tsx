@@ -51,7 +51,7 @@ export default function ProposalListItem({
     }
 
     return undefined;
-  }, [state, _meta, governanceData]);
+  }, [state, _meta, governanceData, proposal]);
 
   return (
     <Link href={`/vote/${proposalIdString}`}>

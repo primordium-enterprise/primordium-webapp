@@ -232,7 +232,7 @@ export default function ManageDelegateModal() {
                 <>
                   <p className="text-2xs xs:text-xs sm:text-sm">
                     Enter the address or ENS name of the account you want to delegate to. Enter
-                    "null" if you would like to un-delegate your votes.
+                    {`"null"`} if you would like to un-delegate your votes.
                   </p>
                   <Input
                     className="mt-4"

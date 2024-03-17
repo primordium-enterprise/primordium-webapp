@@ -76,13 +76,13 @@ export default function FunctionInputParams({
       }
     }
     setInputParams(newInputParams);
-  }, [functionOption]);
+  }, [functionOption, setInputParams]);
 
   return (
     <>
       {isUnsupported ? (
         <p className="text-red-300">
-          The selected function uses "tuple" types, which are not currently supported.
+          The selected function uses {`"tuple"`} types, which are not currently supported.
         </p>
       ) : (
         inputParams.map((inputParam, index) => {

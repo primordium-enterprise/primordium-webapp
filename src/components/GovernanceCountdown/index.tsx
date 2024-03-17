@@ -74,7 +74,7 @@ export default function GovernanceCountdown({
   const isReady = useMemo(() => {
     setTimeLeft(getTimeLeft());
     return governanceCanBeginAt && block;
-  }, [governanceCanBeginAt, block]);
+  }, [governanceCanBeginAt, block, getTimeLeft]);
 
   const isZero = useMemo(() => {
     return Object.values(timeLeft).every(v => v === 0);

@@ -228,7 +228,7 @@ export default function CreateProposalPage() {
         ) : (
           <>
             <p>
-              Unless you have the "proposer" role, you must have at least{" "}
+              Unless you have the {`"proposer"`} role, you must have at least{" "}
               <b>{proposalThresholdPercentageDisplay}</b> of the total supply of MUSHI tokens
               delegated to your address to submit a proposal
               {proposalThresholdDisplay
@@ -312,7 +312,7 @@ export default function CreateProposalPage() {
           onValueChange={updateDescription}
           description={
             <div>
-              <span>Proposal description's are formatted using </span>
+              <span>{"Proposal description's are formatted using "}</span>
               <Link
                 style={{ fontSize: "inherit", lineHeight: "inherit" }}
                 href="https://www.markdownguide.org/getting-started/"

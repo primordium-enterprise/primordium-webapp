@@ -154,7 +154,7 @@ export default function ProposalActionsEditor({
             isLoading={isProposalCountLoading}
             isDisabled={hasFoundGovernorAction}
           >
-            Add "Found Governor" Action
+            {`Add "Found Governor" Action`}
           </ButtonExtended>
         )}
       </div>
