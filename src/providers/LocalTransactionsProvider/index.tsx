@@ -9,8 +9,8 @@ import {
   useMemo,
   useState,
 } from "react";
-import { DBSchema, IDBPDatabase, openDB } from "idb";
-import { useAccount, useConfig } from "wagmi";
+import { DBSchema, IDBPDatabase, deleteDB, openDB } from "idb";
+import { useAccount, useChainId, useConfig } from "wagmi";
 import { Address, Hash, TransactionReceipt, WaitForTransactionReceiptReturnType } from "viem";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { SAFE_CONFIRMATIONS } from "@/utils/constants";
@@ -39,11 +39,13 @@ export const LocalTransactionsContext = createContext<{
 });
 
 type OnReceiptFn = (receipt: WaitForTransactionReceiptReturnType) => void;
+type AccountChainKey = `${Address}-${number}`;
 
 interface StoredTx {
   hash: Hash;
   description: string;
   account: Address;
+  accountChainKey: AccountChainKey;
   receipt: WaitForTransactionReceiptReturnType | null;
   createdAt: number;
 }
@@ -54,13 +56,14 @@ interface LocalTransactionsDB extends DBSchema {
     value: StoredTx;
     indexes: {
       account: Address;
+      accountChainKey: AccountChainKey;
     };
   };
 }
 
 interface StateTx extends StoredTx {
-  waitForReceipt?: Promise<WaitForTransactionReceiptReturnType>;
-  waitForReceiptConfirmation?: Promise<WaitForTransactionReceiptReturnType>;
+  waitForReceipt?: Promise<WaitForTransactionReceiptReturnType | void>;
+  waitForReceiptConfirmation?: Promise<WaitForTransactionReceiptReturnType | void>;
 }
 
 const txReceiptSetStateAction = (receipt: TransactionReceipt): SetStateAction<StateTx[]> => {
@@ -78,6 +81,8 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
   const { address } = useAccount();
   const config = useConfig();
 
+  const chainId = useChainId();
+
   const [transactions, setTransactions] = useState<StateTx[]>([]);
   const [isTransactionsListOpen, setIsTransactionsListOpen] = useState(false);
 
@@ -92,12 +97,13 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
   }, [transactions]);
 
   useEffect(() => {
-    openDB<LocalTransactionsDB>("LocalTransactions", 1, {
+    openDB<LocalTransactionsDB>(`LocalTransactions`, 1, {
       upgrade: (db) => {
         const transactionsStore = db.createObjectStore("transactions", {
           keyPath: "hash",
         });
         transactionsStore.createIndex("account", "account", { unique: false });
+        transactionsStore.createIndex("accountChainKey", "accountChainKey", { unique: false });
       },
     })
       .then(setDb)
@@ -128,15 +134,15 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
         pollingInterval: 24000,
       }).then((receipt) => {
         setTransactions(txReceiptSetStateAction(receipt));
-        let { hash, description, account, createdAt } = tx;
-        db.put("transactions", { hash, description, account, createdAt, receipt });
+        let { hash, description, account, accountChainKey, createdAt } = tx;
+        db.put("transactions", { hash, description, account, accountChainKey, createdAt, receipt });
       });
     }
   };
 
   useEffect(() => {
-    if (address && db) {
-      db.getAllFromIndex("transactions", "account", address).then((txs) => {
+    if (address && db && chainId) {
+      db.getAllFromIndex("transactions", "accountChainKey", `${address}-${chainId}`).then((txs) => {
         setTransactions(
           txs
             .sort((a, b) => b.createdAt - a.createdAt)
@@ -154,7 +160,7 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
       // Reset to empty array
       setTransactions([]);
     }
-  }, [address, db, config]);
+  }, [address, chainId, db, config]);
 
   const addTransaction = useCallback(
     (hash: Hash, description: string, toastId?: string, onReceipt?: OnReceiptFn) => {
@@ -163,6 +169,7 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
           hash,
           description,
           account: address,
+          accountChainKey: `${address}-${chainId}`,
           receipt: null,
           createdAt: Date.now(),
         };
@@ -185,7 +192,7 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
         { id: toastId },
       );
     },
-    [db, address],
+    [db, address, chainId],
   );
 
   const removeTransaction = useCallback(
