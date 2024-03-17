@@ -76,7 +76,7 @@ export default function FunctionInputParams({
       }
     }
     setInputParams(newInputParams);
-  }, [functionOption, setInputParams]);
+  }, [functionOption]);
 
   return (
     <>

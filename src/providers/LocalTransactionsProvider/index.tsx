@@ -160,7 +160,7 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
       // Reset to empty array
       setTransactions([]);
     }
-  }, [address, chainId, db, config, initWaitForTransactionReceipt]);
+  }, [address, chainId, db, config]);
 
   const addTransaction = useCallback(
     (hash: Hash, description: string, toastId?: string, onReceipt?: OnReceiptFn) => {
@@ -192,7 +192,7 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
         { id: toastId },
       );
     },
-    [db, address, chainId, initWaitForTransactionReceipt],
+    [db, address, chainId],
   );
 
   const removeTransaction = useCallback(
