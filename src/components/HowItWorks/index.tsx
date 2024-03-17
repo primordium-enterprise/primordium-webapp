@@ -1,5 +1,6 @@
 "use client";
 
+import { GovernanceData } from "@/subgraph/subgraphQueries";
 import {
   Accordion,
   AccordionItem,
@@ -8,11 +9,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@nextui-org/react";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
+import dayjs from "@/wrappers/dayjs";
 
 const generateAccordionItems = (
-  timestampPopoverContent: React.ReactNode,
+  timestampPopover: React.ReactNode,
 ): {
   title: string;
   content: React.ReactNode;
@@ -55,12 +56,7 @@ const generateAccordionItems = (
           <li>
             <b className="text-foreground">
               Governance cannot begin until{" "}
-              <Popover showArrow>
-                <PopoverTrigger>
-                  <span className="cursor-pointer text-primary-600">February 15th</span>
-                </PopoverTrigger>
-                <PopoverContent className="max-w-[360px]">{timestampPopoverContent}</PopoverContent>
-              </Popover>
+              {timestampPopover}
             </b>{" "}
             allowing a minimum period of time for minting MUSHI tokens before any governance
             operations may begin.
@@ -168,7 +164,10 @@ const generateAccordionItems = (
   ];
 };
 
-const generateTimestampPopoverContent = (isClient: boolean = false): React.ReactNode => {
+const generateTimestampPopoverContent = (
+  governanceData?: GovernanceData,
+  isClient: boolean = false,
+): React.ReactNode => {
   const dateFormatOptions: Intl.DateTimeFormatOptions = {
     month: "long",
     day: "numeric",
@@ -177,22 +176,38 @@ const generateTimestampPopoverContent = (isClient: boolean = false): React.React
     minute: "2-digit",
   };
 
-  return (
-    <p className="text-xs xs:text-sm sm:text-base">
-      Governance officially begins at 1708023600 UTC.
-      {isClient && ` Locally, that would be ${new Date(1708023600000).toLocaleString(undefined, dateFormatOptions)}`}
-    </p>
+  const beginDate = governanceData
+    ? dayjs.unix(Number(governanceData.governanceCanBeginAt)).format("MMMM Do")
+    : "March 25th";
+
+  return governanceData ? (
+    <Popover showArrow>
+      <PopoverTrigger>
+        <span className="cursor-pointer text-primary-600">{beginDate}</span>
+      </PopoverTrigger>
+      <PopoverContent className="max-w-[360px]">
+        <p className="text-xs xs:text-sm sm:text-base">
+          Governance can begin starting at {governanceData.governanceCanBeginAt} UTC.
+          {isClient &&
+            ` Locally, that would be ${new Date(Number(governanceData.governanceCanBeginAt) * 1000).toLocaleString(undefined, dateFormatOptions)}`}
+        </p>
+      </PopoverContent>
+    </Popover>
+  ) : (
+    <>{beginDate}</>
   );
 };
 
-export default function HowItWorks() {
+export default function HowItWorks({ governanceData }: { governanceData?: GovernanceData }) {
   const [accordionItems, setAccordionItems] = useState(
     generateAccordionItems(generateTimestampPopoverContent()),
   );
 
   useEffect(() => {
-    setAccordionItems(generateAccordionItems(generateTimestampPopoverContent(true)));
-  }, []);
+    setAccordionItems(
+      generateAccordionItems(generateTimestampPopoverContent(governanceData, true)),
+    );
+  }, [governanceData]);
 
   return (
     <Accordion

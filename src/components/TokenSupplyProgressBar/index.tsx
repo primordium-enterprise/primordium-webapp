@@ -1,14 +1,10 @@
 "use client";
 
-import useTotalSupply from "@/hooks/useTotalSupply";
 import { useEffect, useMemo, useState } from "react";
 import { format as dnFormat } from "dnum";
 import LabelWithPopover from "./components/LabelWithPopover";
-import { governanceThresholdBps, maxSupply } from "@/utils/constants";
-import { useChainId } from "wagmi";
-import chainConfig from "@/config/chainConfig";
-
-const governanceThresholdPercentage = Number(governanceThresholdBps) / 100;
+import { UseQueryState } from "urql";
+import { GovernanceData, MetaData } from "@/subgraph/subgraphQueries";
 
 const formatSupplyValue = (value: bigint | undefined): string =>
   value !== undefined ? dnFormat([value, 18], 0) : "";
@@ -24,23 +20,38 @@ const calculateBpsOfMaxSupply = (
   return Number((totalSupply * BigInt(10000)) / maxSupply);
 };
 
-export default function TokenSupplyProgressBar() {
-  const chainId = useChainId();
-  const { totalSupply, isLoading, isError } = useTotalSupply(
-    chainConfig.addresses.token,
-  );
+export default function TokenSupplyProgressBar({
+  governanceDataResult
+}: {
+  governanceDataResult: UseQueryState<{ governanceData: GovernanceData; _meta: MetaData; }>;
+}) {
+  const { data: { governanceData } = {}, fetching: isLoading, error } = governanceDataResult;
+  const isError = useMemo(() => !!error, [error]);
+
+  const { totalSupply, maxSupply, governanceThresholdBps } = useMemo(() => {
+    if (!governanceData) {
+      return {};
+    }
+    return {
+      totalSupply: BigInt(governanceData.totalSupply),
+      maxSupply: BigInt(governanceData.maxSupply),
+      governanceThresholdBps: governanceData.governanceThresholdBps,
+    }
+  }, [governanceData]);
+
+  const governanceThresholdPercentage = Number(governanceThresholdBps) / 100;
 
   const percentageOfMaxSupply = useMemo(
     () => calculateBpsOfMaxSupply(totalSupply, maxSupply) / 100,
-    [totalSupply],
+    [totalSupply, maxSupply],
   );
 
   const formattedTotalSupply = useMemo(() => formatSupplyValue(totalSupply), [totalSupply]);
-  const formattedMaxSupply = useMemo(() => formatSupplyValue(maxSupply), []);
+  const formattedMaxSupply = useMemo(() => formatSupplyValue(maxSupply), [maxSupply]);
 
   const governanceThresholdIsMet = useMemo(
     () => totalSupply && totalSupply > (maxSupply * BigInt(governanceThresholdBps)) / BigInt(10000),
-    [totalSupply],
+    [totalSupply, maxSupply, governanceThresholdBps],
   );
 
   return (

@@ -2,6 +2,7 @@
 
 import chainConfig from "@/config/chainConfig";
 import useGovernanceCanBeginAt from "@/hooks/useGovernanceCanBeginAt";
+import { GovernanceData } from "@/subgraph/subgraphQueries";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useBlock, useChainId } from "wagmi";
 
@@ -23,9 +24,16 @@ const padZero = (value: number, minDigits: number = 2) => {
   return value.toString().padStart(minDigits, "0");
 };
 
-export default function GovernanceCountdown() {
-  const { governanceCanBeginAt } = useGovernanceCanBeginAt(chainConfig.addresses.governor);
-  const { data, dataUpdatedAt } = useBlock({
+export default function GovernanceCountdown({
+  governanceData
+}: {
+  governanceData?: GovernanceData
+}) {
+  const governanceCanBeginAt = useMemo(() => {
+    return governanceData?.governanceCanBeginAt;
+  }, [governanceData]);
+
+  const { data: block, dataUpdatedAt: blockUpdatedAt } = useBlock({
     watch: false,
     query: { refetchOnWindowFocus: false },
   });
@@ -34,10 +42,10 @@ export default function GovernanceCountdown() {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(defaultTimeLeft);
 
   const getTimeLeft = (): TimeLeft => {
-    if (governanceCanBeginAt && data) {
-      let elapsedSeconds = Math.floor((Date.now() - dataUpdatedAt) / 1000);
+    if (governanceCanBeginAt && block) {
+      let elapsedSeconds = Math.floor((Date.now() - blockUpdatedAt) / 1000);
       let differenceSeconds =
-        Number(governanceCanBeginAt) - (Number(data.timestamp) + elapsedSeconds);
+        Number(governanceCanBeginAt) - (Number(block.timestamp) + elapsedSeconds);
       if (differenceSeconds > 0) {
         return {
           days: Math.floor(differenceSeconds / (60 * 60 * 24)),
@@ -65,8 +73,8 @@ export default function GovernanceCountdown() {
 
   const isReady = useMemo(() => {
     setTimeLeft(getTimeLeft());
-    return governanceCanBeginAt && data;
-  }, [governanceCanBeginAt, data]);
+    return governanceCanBeginAt && block;
+  }, [governanceCanBeginAt, block]);
 
   const isZero = useMemo(() => {
     return Object.values(timeLeft).every(v => v === 0);
