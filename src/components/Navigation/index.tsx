@@ -215,7 +215,7 @@ export default function Navigation() {
                 GitHub
               </DropdownItem>
               <DropdownItem
-                href="https://discord.gg/H9AyEuggyP"
+                href="https://discord.gg/bCrxhnAJRz"
                 target="_blank"
                 startContent={<DiscordLogoIcon />}
               >

@@ -40,6 +40,11 @@ export default function CreateProposalPage() {
     fetching: delegateFetching,
     error: delegateError,
   } = delegateResult;
+  useEffect(() => {
+    if (delegateError) {
+      console.error(delegateError);
+    }
+  }, [delegateError]);
 
   const [governanceDataResult] = useQuery({ query: GovernanceDataQuery });
   const {

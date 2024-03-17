@@ -19,7 +19,9 @@ export default function VotePage({ children }: { children: React.ReactNode }) {
     error: proposalsError,
   } = proposalsResult;
   useEffect(() => {
-    console.log(proposalsError);
+    if (proposalsError) {
+      console.log(proposalsError);
+    }
   }, [proposalsError]);
 
   return (

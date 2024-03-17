@@ -78,8 +78,6 @@ export default function FunctionInputParams({
     setInputParams(newInputParams);
   }, [functionOption]);
 
-  // useEffect(() => console.log("Input Params", inputParams), [inputParams]);
-
   return (
     <>
       {isUnsupported ? (

@@ -1,13 +1,8 @@
 "use client";
 
 import {
-  Button,
-  ButtonGroup,
   Card,
   CardBody,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
 } from "@nextui-org/react";
 import { AbiFunctionInputParam, ProposalAction, actionTypeDisplays } from "../../types";
 import { useMemo, useState } from "react";

@@ -2,7 +2,6 @@
 
 import { NextUIProvider } from "@nextui-org/react";
 import { WagmiProvider, cookieToInitialState } from "wagmi";
-// import wagmiConfig, { projectId } from "@/config/wagmi-config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import ModalManagerProvider from "@/components/_modals/ModalManagerProvider";

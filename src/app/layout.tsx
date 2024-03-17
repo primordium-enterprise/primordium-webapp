@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import ToastWrapper from "../components/ToastWrapper";
 import { inter, londrina_solid, londrina_shadow, roboto_mono } from "./fonts";
 import RequireChainIdModal from "@/components/RequireChainIdModal";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "PrimordiumDAO",
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="mx-auto sm:container !max-w-screen-md p-2">
               {children}
             </div>
+            <Footer />
           <ToastWrapper />
         </Providers>
       </body>

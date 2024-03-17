@@ -7,7 +7,7 @@ import CreateProposalActionModal from "./components/CreateProposalActionModal";
 import { toJSON } from "@/utils/JSONBigInt";
 import ActionItem from "./components/ActionItem";
 import ButtonExtended from "@/components/_nextui/ButtonExtended";
-import { useClient, useConfig } from "wagmi";
+import { useConfig } from "wagmi";
 import toast from "react-hot-toast";
 import { readContract } from "wagmi/actions";
 import PrimordiumGovernorV1Abi from "@/abi/PrimordiumGovernorV1.abi";

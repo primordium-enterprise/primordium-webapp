@@ -188,11 +188,8 @@ export default function CreateProposalActionModal({ addProposalAction, ...modalP
     return filtered;
   }, [needsAbi, abi]);
 
-  useEffect(() => console.log(functionOptions), [functionOptions]);
-
   // Value is disabled (and set to 0) if the selected function is nonpayable
   const isValueDisabled = useMemo(() => {
-    console.log(functionOption);
     if (functionOption?.stateMutability === "nonpayable") {
       setValue("0");
       return true;
@@ -251,8 +248,6 @@ export default function CreateProposalActionModal({ addProposalAction, ...modalP
     if (!isActionValid) {
       return toast.error("The action is not formatted correctly.");
     }
-
-    console.log("Action:", action);
 
     addProposalAction(action);
 
@@ -341,7 +336,6 @@ export default function CreateProposalActionModal({ addProposalAction, ...modalP
                     ref={uploadAbiInputRef}
                     key={uploadAbiInputKey}
                     onChange={(e) => {
-                      console.log(e.target.files);
                       const { files } = e.target;
                       uploadAbiDispatch({
                         ...defaultUploadAbiState,
