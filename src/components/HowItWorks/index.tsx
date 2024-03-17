@@ -25,7 +25,7 @@ const generateAccordionItems = (
         <ul className="list">
           <li>
             To become a founding member, mint MUSHI membership tokens by{" "}
-            <Link href="/exchange">depositing ETH.</Link>
+            <Link href="/exchange">depositing ETH</Link>.
           </li>
           <li>
             <b className="text-foreground">100% of ETH deposits</b>&nbsp;go to the DAO treasury.
@@ -41,10 +41,10 @@ const generateAccordionItems = (
             <b className="text-foreground">
               not even to the{" "}
               <Link href="https://bcjdevelopment.com" target="_blank">
-                DAO creators.
+                DAO creators
               </Link>
-            </b>{" "}
-            Everyone has equal access at the same equal share price.
+            </b>
+            . Everyone has equal access at the same equal share price.
           </li>
         </ul>
       ),
@@ -113,12 +113,13 @@ const generateAccordionItems = (
             <b className="text-foreground">Everything is on-chain.</b> All membership and governance
             functions are managed by{" "}
             <Link
-              href="https://github.com/PrimordiumDAO/primordium-contracts/blob/main/deployments.md"
+              href="https://github.com/PrimordiumDAO/primordium-contracts/blob/main/contracts.md"
               target="_blank"
             >
-              verified smart contracts.
-            </Link>{" "}
-            No middlemen. No closed doors. <b className="text-foreground">Radical transparency.</b>
+              verified smart contracts
+            </Link>
+            . No middlemen. No closed doors.{" "}
+            <b className="text-foreground">Radical transparency.</b>
           </li>
         </ul>
       ),
@@ -140,17 +141,19 @@ const generateAccordionItems = (
             Learn more:
             <ul className="list">
               <li>
-                <Link
-                  href="https://bcjdevelopment.substack.com/p/introduction-to-primordium?sd=pf"
-                  target="_blank"
-                >
-                  Introduction to Primordium
+                <Link href="https://primordiumdao.xyz/whitepaper.pdf" target="_blank">
+                  Whitepaper
+                </Link>
+              </li>
+              <li>
+                <Link href="https://primordiumdao.xyz" target="_blank">
+                  Primordium website
                 </Link>
               </li>
               <li>
                 {"Creator's "}
                 <Link href="https://primordiumdao.xyz/primordium-network.pdf" target="_blank">
-                  business plan.
+                  business plan
                 </Link>
               </li>
             </ul>
