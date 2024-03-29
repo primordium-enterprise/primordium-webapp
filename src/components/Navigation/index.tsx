@@ -45,7 +45,7 @@ const routes: {
   },
   {
     route: "/exchange",
-    title: "Exchange",
+    title: "Mint Shares",
   },
   {
     route: "/vote",

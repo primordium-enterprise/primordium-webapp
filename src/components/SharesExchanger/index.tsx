@@ -33,7 +33,7 @@ export default function SharesExchanger() {
           selectedKey={tab}
           onSelectionChange={(key) => changeTab(key as string)}
         >
-          <Tab key={DEPOSIT_KEY} title="Deposit">
+          <Tab key={DEPOSIT_KEY} title="Mint">
             <DepositTabContent />
           </Tab>
           <Tab key={WITHDRAW_KEY} title="Withdraw">

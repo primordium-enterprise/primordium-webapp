@@ -163,6 +163,7 @@ export default function DepositTabContent() {
           onValueChange={setMintTo}
           className="mt-2"
           label="Mint to:"
+          placeholder="0x..."
           isInvalid={!isMintToValid}
           variant="faded"
         />
