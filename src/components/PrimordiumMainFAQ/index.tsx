@@ -69,7 +69,7 @@ const accordionItems: AccordionItem[] = [
         <Link href={hrefs.discord} target="_blank">
           discord
         </Link>{" "}
-        to chat.
+        to chat with the community.
       </p>
     ),
   },
