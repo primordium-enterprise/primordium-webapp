@@ -25,9 +25,9 @@ export default function HomePage() {
           <Button
             color="primary"
             size="lg"
-            className="border border-foreground px-8 py-4 text-lg font-medium sm:px-16 sm:py-8 sm:text-2xl"
+            className="border border-foreground px-6 py-2 text-base xs:px-8 xs:py-4 xs:text-lg font-medium sm:px-16 sm:py-8 sm:text-2xl"
           >
-            Become a Member
+            Join Primordium Now
           </Button>
         </Link>
       </div>

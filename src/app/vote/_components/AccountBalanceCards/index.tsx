@@ -74,7 +74,7 @@ export default function AccountBalanceCards() {
   return (
     <div className="flex flex-col items-center justify-center sm:flex-row">
       <BalanceCard>
-        <BalanceCardHeader>Your MUSHI balance:</BalanceCardHeader>
+        <BalanceCardHeader>Your $MUSHI balance:</BalanceCardHeader>
         <BalanceCardBody isFetching={fetching}>{mushiBalanceFormatted}</BalanceCardBody>
         <CardFooter>
           <Button

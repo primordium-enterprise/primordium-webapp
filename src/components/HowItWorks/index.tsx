@@ -24,19 +24,19 @@ const generateAccordionItems = (
       content: (
         <ul className="list">
           <li>
-            To become a founding member, mint MUSHI membership tokens by{" "}
+            To become a founding member, mint $MUSHI membership tokens by{" "}
             <Link href="/exchange">depositing ETH</Link>.
           </li>
           <li>
             <b className="text-foreground">100% of ETH deposits</b>&nbsp;go to the DAO treasury.
           </li>
           <li>
-            MUSHI holders can <Link href="/exchange?tab=withdraw">withdraw</Link> (”rage-quit”){" "}
-            <b className="text-foreground">at any time,</b> burning their MUSHI tokens and receiving
+            $MUSHI holders can <Link href="/exchange?tab=withdraw">withdraw</Link> (”rage-quit”){" "}
+            <b className="text-foreground">at any time,</b> burning their $MUSHI tokens and receiving
             their pro-rata share of ETH and/or ERC20 assets from the treasury.
           </li>
           <li>
-            There is <b className="text-foreground">no other way to receive MUSHI tokens.</b> No
+            There is <b className="text-foreground">no other way to receive $MUSHI tokens.</b> No
             tokens are airdropped or minted for free,{" "}
             <b className="text-foreground">
               not even to the{" "}
@@ -55,16 +55,16 @@ const generateAccordionItems = (
         <ul className="list">
           <li>
             <b className="text-foreground">Governance cannot begin until {timestampPopover}</b>{" "}
-            allowing a minimum period of time for minting MUSHI tokens before any governance
+            allowing a minimum period of time for minting $MUSHI tokens before any governance
             operations may begin.
           </li>
           <li>
-            After this timestamp, MUSHI holders can create a proposal to{" "}
+            After this timestamp, $MUSHI holders can create a proposal to{" "}
             <b className="text-foreground">initialize governance.</b> The only requirement is that
-            at least PERCENTAGE of the initial max MUSHI supply is in circulation.
+            at least PERCENTAGE of the initial max $MUSHI supply is in circulation.
           </li>
           <li>
-            MUSHI holders <b className="text-foreground">vote on proposals via delegation</b>{" "}
+            $MUSHI holders <b className="text-foreground">vote on proposals via delegation</b>{" "}
             (originally implemented by{" "}
             <Link
               href="https://medium.com/compound-finance/compound-governance-5531f524cf68"
@@ -82,7 +82,7 @@ const generateAccordionItems = (
           <li>
             The DAO is in full control of all future actions, including:
             <ul className="list">
-              <li>Management of ongoing MUSHI token supply and share price</li>
+              <li>Management of ongoing $MUSHI token supply and share price</li>
               <li>Treasury operations</li>
               <li>Future business directions</li>
               <li>

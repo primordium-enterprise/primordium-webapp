@@ -5,10 +5,10 @@ export default function ExchangePage() {
     <div>
       <main className="px-4 py-8">
         <section className="text-center">
-          <h1 className="font-londrina-shadow my-2 text-5xl">Join PrimordiumDAO</h1>
+          <h1 className="my-2 font-londrina-shadow text-5xl">Join Primordium</h1>
           <p className="my-2 text-sm text-foreground-500">
-            Mint MUSHI membership shares by depositing ETH. 100% of the deposited funds go to the DAO treasury. You
-            can withdraw your share of the funds at any time.
+            Deposit ETH to mint $MUSHI membership tokens. 100% of the deposited funds go to
+            Primordium's treasury. Members can withdraw their share of treasury funds at any time.
           </p>
         </section>
         <SharesExchanger />

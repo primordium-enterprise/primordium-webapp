@@ -1,5 +1,7 @@
 const hrefs = {
-  whitepaper: "",
+  whitepaper: "/primordium_whitepaper.pdf",
+  deposit: "/exchange",
+  withdraw: "/exchange?tab=withdraw",
   bcjdev_business_plan: "https://bcj.dev/primordium_business_plan",
   github_contracts: 'https://github.com/primordium-enterprise/primordium-contracts',
   discord: '',

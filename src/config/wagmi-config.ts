@@ -17,9 +17,9 @@ const transports = {
 };
 
 const wagmiConfig = getDefaultConfig({
-  appName: "PrimordiumDAO",
-  appDescription: "The application interface for joining and governing PrimordiumDAO.",
-  appUrl: "https://app.primordiumdao.xyz",
+  appName: "Primordium",
+  appDescription: "The application interface for joining and governing Primordium.",
+  appUrl: "https://primordium.one",
   appIcon: "https://avatars.githubusercontent.com/u/128849842",
   chains: [defaultChain],
   projectId,

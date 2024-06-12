@@ -218,7 +218,7 @@ export default function ManageDelegateModal() {
         <ModalBody className="pb-4">
           {!isUpdatingDelegate && (
             <p className="text-2xs xs:text-xs sm:text-sm">
-              PrimordiumDAO votes are represented by delegated MUSHI tokens. MUSHI holders may
+              Primordium votes are represented by delegated $MUSHI tokens. $MUSHI holders may
               delegate their votes to themselves or any other address they choose.
             </p>
           )}
@@ -364,7 +364,7 @@ export default function ManageDelegateModal() {
               )
             ) : accountAddress ? (
               <>
-                <p className="italic text-foreground-500">
+                <p className="text-sm sm:text-base italic text-foreground-500 mb-2">
                   You currently have no votes to delegate.
                 </p>
                 <div className="mt-2 flex justify-end">

@@ -229,10 +229,10 @@ export default function CreateProposalPage() {
           <>
             <p>
               Unless you have the {`"proposer"`} role, you must have at least{" "}
-              <b>{proposalThresholdPercentageDisplay}</b> of the total supply of MUSHI tokens
+              <b>{proposalThresholdPercentageDisplay}</b> of the total supply of $MUSHI tokens
               delegated to your address to submit a proposal
               {proposalThresholdDisplay
-                ? ` (which is currently about ${proposalThresholdDisplay} votes)`
+                ? ` (which is currently about ${proposalThresholdDisplay} $MUSHI votes)`
                 : ""}
               .
             </p>
@@ -240,7 +240,7 @@ export default function CreateProposalPage() {
               (proposalThreshold as bigint) && (
               <WarningCard className="mt-2 sm:mt-3">
                 <p>
-                  You do not have enough delegated votes to submit a proposal. You must have at
+                  You do not have enough delegated $MUSHI votes to submit a proposal. You must have at
                   least {proposalThresholdDisplay} votes to submit a proposal.
                 </p>
               </WarningCard>
@@ -248,9 +248,9 @@ export default function CreateProposalPage() {
             {governanceData && !governanceData.isFounded && (
               <WarningCard className="mt-2 sm:mt-3" color="primary">
                 <p>
-                  The governance contract has not been founded yet. The foundGovernor(uint256)
-                  function on the Primordium Governor contract is the only allowable proposal action
-                  until a founding proposal has been passed and executed.
+                  The governance contract has not been founded yet. The <code className="text-primary-400">foundGovernor(uint256)</code>{" "}
+                  function on the Primordium Governor contract is the only proposal action allowed
+                  until a founding proposal has been executed.
                 </p>
               </WarningCard>
             )}
@@ -274,8 +274,8 @@ export default function CreateProposalPage() {
               <WarningCard className="mt-2 sm:mt-3">
                 <p>
                   The goverance contract cannot be founded until at least{" "}
-                  {abbreviateBalance(governanceThreshold || BigInt(0))} MUSHI tokens are in
-                  circulation. Currently, the total MUSHI supply is at{" "}
+                  {abbreviateBalance(governanceThreshold || BigInt(0))} $MUSHI tokens are in
+                  circulation. Currently, the total $MUSHI supply is {" "}
                   {abbreviateBalance(totalSupply)} tokens.
                 </p>
               </WarningCard>

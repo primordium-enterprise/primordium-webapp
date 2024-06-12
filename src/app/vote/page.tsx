@@ -31,12 +31,12 @@ export default function VotePage() {
           Governance
         </h1>
         <p className="">
-          PrimordiumDAO is owned and operated by MUSHI token holders. Tokens{" "}
+          Primordium is owned and operated by $MUSHI token holders. Tokens{" "}
           <b>
             <i>must</i>
           </b>{" "}
-          be delegated to become eligible for voting on proposals. Each token holder can delegate
-          their votes to themselves or to a third party.
+          be delegated to become eligible for voting on proposals. Token holders may delegate
+          their votes to themselves or to any other account address they choose.
         </p>
         <Divider className="xm:my-12 my-4 xs:my-8" />
         <AccountBalanceCards />

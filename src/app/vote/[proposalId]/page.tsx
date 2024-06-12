@@ -195,7 +195,7 @@ export default function ProposalPage({
                         <CircularProgress
                           value={quorumPercentage}
                           size="lg"
-                          label={`${quorumDisplay ? `Current quorum: ${quorumDisplay} MUSHI` : ""}`}
+                          label={`${quorumDisplay ? `Current quorum: ${quorumDisplay} $MUSHI` : ""}`}
                           classNames={{
                             label: "text-2xs sm:text-xs text-foreground-500",
                           }}

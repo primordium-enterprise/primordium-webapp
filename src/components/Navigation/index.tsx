@@ -46,7 +46,7 @@ const routes: {
   },
   {
     route: "/exchange",
-    title: "Mint Shares",
+    title: "Membership Tokens",
   },
   {
     route: "/vote",
@@ -195,7 +195,7 @@ export default function Navigation() {
             </DropdownSection>
             <DropdownSection title="Links">
               <DropdownItem
-                // href="https://primordiumdao.xyz/whitepaper.pdf"
+                href={hrefs.whitepaper}
                 target="_blank"
                 startContent={<ReaderIcon />}
               >

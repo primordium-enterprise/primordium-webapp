@@ -112,7 +112,7 @@ export default function DepositTabContent() {
   const mint = () => {
     const toastId = toast.loading("Sending deposit transaction...");
     let depositAmount = parseDnumFromString(depositValue)[0];
-    let description = `Deposit ${depositValue.slice()} ETH for ${mintValue.slice()} MUSHI tokens${isMintToSelected ? ` (minted to ${shortenAddress(mintTo as Address)})` : ""}.`;
+    let description = `Deposit ${depositValue.slice()} ETH for ${mintValue.slice()} $MUSHI tokens${isMintToSelected ? ` (minted to ${shortenAddress(mintTo as Address)})` : ""}.`;
 
     writeContractAsync({
       address: chainConfig.addresses.sharesOnboarder,
@@ -155,7 +155,7 @@ export default function DepositTabContent() {
           label: `text-sm ${isMintToSelected ? "text-foreground" : "text-default-400"}`,
         }}
       >
-        Mint shares to a different address
+        Mint tokens to a different address.
       </Switch>
       {isMintToSelected && (
         <Input
