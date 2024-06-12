@@ -46,7 +46,7 @@ export default function HomePage() {
           Support the Open-Source Development
         </h3>
         <p className="text-center">
-          Donate to{" "}
+          Donate ETH to{" "}
           <Link
             href="https://etherscan.io/address/0xD85C88E04b00253B92e7a94f2F7Abdd75A78b88f"
             target="_blank"
