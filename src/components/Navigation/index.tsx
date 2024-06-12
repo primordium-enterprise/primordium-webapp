@@ -34,6 +34,7 @@ import MushiIcon from "../MushiIcon";
 import TransactionsPopoverContent from "./components/TransactionsPopoverContent";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
 import { useAccountModal, useChainModal, useConnectModal } from "@rainbow-me/rainbowkit";
+import hrefs from "@/config/hrefs";
 
 const routes: {
   route: string;
@@ -194,28 +195,21 @@ export default function Navigation() {
             </DropdownSection>
             <DropdownSection title="Links">
               <DropdownItem
-                href="https://primordiumdao.xyz"
-                target="_blank"
-                startContent={<MushiIcon />}
-              >
-                Primordium Website
-              </DropdownItem>
-              <DropdownItem
-                href="https://primordiumdao.xyz/whitepaper.pdf"
+                // href="https://primordiumdao.xyz/whitepaper.pdf"
                 target="_blank"
                 startContent={<ReaderIcon />}
               >
                 Whitepaper
               </DropdownItem>
               <DropdownItem
-                href="https://github.com/PrimordiumDAO/primordium-contracts"
+                href={hrefs.github_contracts}
                 target="_blank"
                 startContent={<GitHubLogoIcon />}
               >
                 GitHub
               </DropdownItem>
               <DropdownItem
-                href="https://discord.gg/bCrxhnAJRz"
+                href={hrefs.discord}
                 target="_blank"
                 startContent={<DiscordLogoIcon />}
               >

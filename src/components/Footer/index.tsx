@@ -1,18 +1,19 @@
+import hrefs from "@/config/hrefs";
 import { DiscordLogoIcon, GitHubLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 
 const links = [
   {
     icon: (props: any) => <GitHubLogoIcon {...props} />,
-    href: "https://github.com/PrimordiumDAO/primordium-contracts",
+    href: hrefs.github_contracts,
   },
   {
     icon: (props: any) => <DiscordLogoIcon {...props} />,
-    href: "https://discord.gg/bCrxhnAJRz",
+    href: hrefs.discord,
   },
   {
     icon: (props: any) => <TwitterLogoIcon {...props} />,
-    href: "https://twitter.com/BCJdevelopment",
+    href: hrefs.x,
   },
 ];
 

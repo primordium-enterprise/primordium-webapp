@@ -10,8 +10,8 @@ import RequireChainIdModal from "@/components/RequireChainIdModal";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "PrimordiumDAO",
-  description: "Front-end app interface for the Primordium DAO",
+  title: "Primordium",
+  description: "Front-end app interface for the Primordium business enterprise.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

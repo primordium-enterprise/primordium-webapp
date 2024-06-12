@@ -65,7 +65,7 @@ export default function TokenSupplyProgressBar({
             }}
             label={
               <span className="flex items-center">
-                <span>MUSHI</span>
+                <span>$MUSHI</span>
                 <span className="text-xs text-foreground-500">&nbsp;{"(erc20)"}</span>
               </span>
             }
@@ -82,7 +82,7 @@ export default function TokenSupplyProgressBar({
               titleText="Total Supply"
               contentItems={
                 <span>
-                  The total supply of MUSHI tokens in circulation.
+                  The total supply of $MUSHI tokens in circulation.
                   {isError && (
                     <span className="text-danger-700">
                       {" "}
@@ -133,7 +133,7 @@ export default function TokenSupplyProgressBar({
             label={formattedMaxSupply}
             placement="bottom"
             titleText="Max Supply"
-            contentItems={`The maximum token supply available for minting.`}
+            contentItems={`The maximum $MUSHI token supply available for minting.`}
           />
         </div>
       </div>

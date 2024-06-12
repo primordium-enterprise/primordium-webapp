@@ -2,6 +2,7 @@
 
 import GovernanceCountdown from "@/components/GovernanceCountdown";
 import HowItWorks from "@/components/HowItWorks";
+import PrimordiumMainFAQ from "@/components/PrimordiumMainFAQ";
 import TokenSupplyProgressBar from "@/components/TokenSupplyProgressBar";
 import { GovernanceDataQuery } from "@/subgraph/subgraphQueries";
 import { Button } from "@nextui-org/react";
@@ -15,10 +16,9 @@ export default function HomePage() {
     <div data-section="home-page">
       <div className="my-6">
         <h1 className="text-center font-londrina-shadow text-4xl xs:text-5xl md:text-6xl">
-          PrimordiumDAO
+          Primordium
         </h1>
       </div>
-      <GovernanceCountdown governanceData={governanceDataResult.data?.governanceData} />
       <TokenSupplyProgressBar governanceDataResult={governanceDataResult} />
       <div className="my-8 flex justify-center xs:my-12 sm:my-16">
         <Link href="/exchange">
@@ -32,11 +32,17 @@ export default function HomePage() {
         </Link>
       </div>
       <div
+        data-section="main-faq"
+        className="mx-auto my-2 !max-w-screen-md md:container xs:my-4"
+      >
+        <PrimordiumMainFAQ />
+      </div>
+      {/* <div
         data-section="how-it-works"
         className="mx-auto my-2 !max-w-screen-md md:container xs:my-4"
       >
         <HowItWorks governanceData={governanceDataResult.data?.governanceData} />
-      </div>
+      </div> */}
       <div className="my-2 mb-4 flex justify-center xs:my-4 xs:mb-8">
         <Link href="/exchange">
           <Button
