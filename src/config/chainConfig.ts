@@ -57,7 +57,7 @@ export const chainConfigs: {
       governor: "0x02445fD52Cf3C6baAd9D616E89233DA9A819aa10",
       distributor: "0x217A246eac5FCDb09570Af269b40ba006dc11a24",
     },
-    subgraphUrl: "http://localhost:8000/subgraphs/name/primordium-dao"
+    subgraphUrl: "http://localhost:8000/subgraphs/name/primordium"
   },
 }
 
