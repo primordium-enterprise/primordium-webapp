@@ -1,7 +1,5 @@
 "use client";
 
-import GovernanceCountdown from "@/components/GovernanceCountdown";
-import HowItWorks from "@/components/HowItWorks";
 import PrimordiumMainFAQ from "@/components/PrimordiumMainFAQ";
 import TokenSupplyProgressBar from "@/components/TokenSupplyProgressBar";
 import { GovernanceDataQuery } from "@/subgraph/subgraphQueries";
@@ -35,12 +33,6 @@ export default function HomePage() {
       <div data-section="main-faq" className="mx-auto my-2 !max-w-screen-md md:container xs:my-4">
         <PrimordiumMainFAQ />
       </div>
-      {/* <div
-        data-section="how-it-works"
-        className="mx-auto my-2 !max-w-screen-md md:container xs:my-4"
-      >
-        <HowItWorks governanceData={governanceDataResult.data?.governanceData} />
-      </div> */}
       <div data-section="support" className="my-2 mb-8">
         <h3 className="my-4 text-center font-londrina-shadow text-2xl xs:my-6 xs:text-3xl sm:my-8 md:text-4xl">
           Support the Open-Source Development

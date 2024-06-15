@@ -25,8 +25,8 @@ const accordionItems: AccordionItem[] = [
     title: "How is Primordium decentralized?",
     content: (
       <p>
-        Primordium is owned and operated by a decentralized network of independent members. Anyone
-        can{" "}
+        Primordium is owned and operated by a decentralized network of independent members.{" "}
+        <b className="font-black">Anyone</b> can{" "}
         <Link href={hrefs.deposit} target="_blank">
           join
         </Link>{" "}
@@ -34,7 +34,7 @@ const accordionItems: AccordionItem[] = [
         <Link href={hrefs.withdraw} target="_blank">
           leave
         </Link>{" "}
-        at any time. Together, the members control all of Primordium's operations through
+        <b>at any time.</b> Together, the members control all of Primordium's operations through
         open-source{" "}
         <Link href={hrefs.github_contracts} target="_blank">
           smart contracts.

@@ -4,7 +4,7 @@ const hrefs = {
   withdraw: "/exchange?tab=withdraw",
   bcjdev_business_plan: "https://bcj.dev/primordium_business_plan",
   github_contracts: 'https://github.com/primordium-enterprise/primordium-contracts',
-  discord: '',
+  discord: 'https://discord.gg/CnJAPXDWBH',
   x: 'https://x.com/benbcjdev',
   bcjdev: "https://bcj.dev",
 
