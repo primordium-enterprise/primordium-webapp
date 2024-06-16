@@ -31,12 +31,12 @@ export default function VotePage() {
           Governance
         </h1>
         <p className="">
-          Primordium votes are represented by delegated $MUSHI tokens. Tokens{" "}
+          Primordium votes are represented by $MUSHI tokens. Tokens{" "}
           <b>
             <i>must</i>
           </b>{" "}
           be delegated to become eligible for voting on proposals. Token holders may delegate their
-          votes to themselves or to any other account address they choose.
+          votes to themselves or to any other address they choose.
         </p>
         <Divider className="xm:my-12 my-4 xs:my-8" />
         <AccountBalanceCards />

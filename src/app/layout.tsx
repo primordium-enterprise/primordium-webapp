@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import "@rainbow-me/rainbowkit/styles.css"
+import "@rainbow-me/rainbowkit/styles.css";
 import Providers from "./providers";
 import Navigation from "@/components/Navigation";
 import { headers } from "next/headers";
@@ -22,13 +22,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="min-h-screen bg-background font-roboto-mono text-foreground dark">
         <Providers cookie={headers().get("cookie")}>
+          <div className="flex min-h-screen flex-col justify-between">
             <RequireChainIdModal />
-            <Navigation />
-            <div className="mx-auto sm:container !max-w-screen-md p-2">
-              {children}
+            <div>
+              <Navigation />
+              <div className="mx-auto !max-w-screen-md p-2 sm:container">{children}</div>
             </div>
             <Footer />
-          <ToastWrapper />
+            <ToastWrapper />
+          </div>
         </Providers>
       </body>
     </html>
