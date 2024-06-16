@@ -36,8 +36,8 @@ const config: Config = {
   darkMode: "class",
   safelist: [
     {
-      pattern: /text-(success|danger|warning|default)-\d+/
-    }
+      pattern: /text-(primary|secondary|success|danger|warning|default)-\d+/
+    },
   ],
   plugins: [nextui()],
 };

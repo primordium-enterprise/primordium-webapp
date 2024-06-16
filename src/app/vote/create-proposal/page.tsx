@@ -247,7 +247,7 @@ export default function CreateProposalPage() {
             {governanceData && !governanceData.isFounded && (
               <WarningCard className="mt-2 sm:mt-3" color="primary">
                 <p>
-                  Primordium has not entered "governance" yet. The{" "}
+                  Primordium has not entered{` "governance" `}yet. The{" "}
                   <code className="text-primary-400">foundGovernor(uint256)</code> function on the
                   Primordium Governor smart contract is the only proposal action allowed.
                 </p>
@@ -272,7 +272,7 @@ export default function CreateProposalPage() {
             {governanceThreshold !== undefined && totalSupply < governanceThreshold && (
               <WarningCard className="mt-2 sm:mt-3">
                 <p>
-                  {`"Governance"`} cannot begin until at least{" "}
+                  {`"Governance" `}cannot begin until at least{" "}
                   {abbreviateBalance(governanceThreshold || BigInt(0))} $MUSHI tokens are in
                   circulation. Currently, the total $MUSHI supply is{" "}
                   {abbreviateBalance(totalSupply)} tokens.

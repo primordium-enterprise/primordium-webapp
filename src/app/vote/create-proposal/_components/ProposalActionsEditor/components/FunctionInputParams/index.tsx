@@ -87,7 +87,7 @@ export default function FunctionInputParams({
       ) : (
         inputParams.map((inputParam, index) => {
           return (
-            <AbiFunctionInputParam
+            <AbiFunctionInputParamComponent
               key={index}
               inputParam={inputParam}
               // index={index}
@@ -100,7 +100,7 @@ export default function FunctionInputParams({
   );
 }
 
-function AbiFunctionInputParam({
+function AbiFunctionInputParamComponent({
   inputParam,
   setInputParams,
 }: {
