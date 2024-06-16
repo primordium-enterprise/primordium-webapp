@@ -161,8 +161,8 @@ export default function WithdrawTabContent() {
       <p className="mb-4 text-sm text-default-400">
         <span className="mb-1 block text-warning-400 underline">NOTE:</span>
         <span className="block pl-2">
-          Withdrawing burns your $MUSHI tokens. Only proceed if you wish to dissolve some or
-          all of your membership.
+          Withdrawing will burn your $MUSHI tokens. Only proceed if you wish to dissolve some or all
+          of your membership equity.
         </span>
       </p>
 
@@ -268,7 +268,7 @@ export default function WithdrawTabContent() {
     </>
   ) : (
     <>
-      <p className="text-sm text-default-400 mb-2">
+      <p className="mb-2 text-sm text-default-400">
         Connect your wallet to view your membership tokens:
       </p>
       <Button

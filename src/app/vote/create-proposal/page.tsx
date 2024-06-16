@@ -64,9 +64,7 @@ export default function CreateProposalPage() {
       let proposalThresholdBps;
       let proposalThresholdPercentageDisplay: JSX.Element | string = (
         <Link
-          href={buildEtherscanURL(
-            `address/${chainConfig.addresses.governor}#readProxyContract`,
-          )}
+          href={buildEtherscanURL(`address/${chainConfig.addresses.governor}#readProxyContract`)}
           isExternal
         >
           proposalThresholdBps()
@@ -99,8 +97,7 @@ export default function CreateProposalPage() {
 
   const governanceThreshold = useMemo(() => {
     if (!governanceThresholdBps || !maxSupply) return undefined;
-    return ((BigInt(maxSupply) * BigInt(governanceThresholdBps)) / BigInt(MAX_BPS)
-    );
+    return (BigInt(maxSupply) * BigInt(governanceThresholdBps)) / BigInt(MAX_BPS);
   }, [governanceThresholdBps, maxSupply]);
 
   // Track the proposal actions in state
@@ -186,8 +183,8 @@ export default function CreateProposalPage() {
     })
       .then((hash) => {
         addTransaction(hash, txDescription, toastId);
-        updateTitle('');
-        updateDescription('');
+        updateTitle("");
+        updateDescription("");
         setActions([]);
         window.sessionStorage.removeItem(PROPOSAL_ACTIONS_STORAGE_KEY);
       })
@@ -227,30 +224,32 @@ export default function CreateProposalPage() {
           </p>
         ) : (
           <>
-            <p>
-              Unless you have the {`"proposer"`} role, you must have at least{" "}
-              <b>{proposalThresholdPercentageDisplay}</b> of the total supply of $MUSHI tokens
-              delegated to your address to submit a proposal
-              {proposalThresholdDisplay
-                ? ` (which is currently about ${proposalThresholdDisplay} $MUSHI votes)`
-                : ""}
-              .
-            </p>
+            {proposalThresholdPercentageDisplay != "0%" && (
+              <p>
+                Unless you are a trusted proposer, you must have at least{" "}
+                <b>{proposalThresholdPercentageDisplay}</b> of the total supply of $MUSHI tokens
+                delegated to your address to submit a proposal
+                {proposalThresholdDisplay && proposalThresholdDisplay != "0"
+                  ? ` (which is currently ${proposalThresholdDisplay} $MUSHI votes)`
+                  : ""}
+                .
+              </p>
+            )}
             {BigInt((delegate && delegate.delegatedVotesBalance) || 0) <
               (proposalThreshold as bigint) && (
               <WarningCard className="mt-2 sm:mt-3">
                 <p>
-                  You do not have enough delegated $MUSHI votes to submit a proposal. You must have at
-                  least {proposalThresholdDisplay} votes to submit a proposal.
+                  You do not have enough delegated $MUSHI votes to submit a proposal. You must have
+                  at least {proposalThresholdDisplay} votes to submit a proposal.
                 </p>
               </WarningCard>
             )}
             {governanceData && !governanceData.isFounded && (
               <WarningCard className="mt-2 sm:mt-3" color="primary">
                 <p>
-                  The governance contract has not been founded yet. The <code className="text-primary-400">foundGovernor(uint256)</code>{" "}
-                  function on the Primordium Governor contract is the only proposal action allowed
-                  until a founding proposal has been executed.
+                  Primordium has not entered "governance" yet. The{" "}
+                  <code className="text-primary-400">foundGovernor(uint256)</code> function on the
+                  Primordium Governor smart contract is the only proposal action allowed.
                 </p>
               </WarningCard>
             )}
@@ -273,9 +272,9 @@ export default function CreateProposalPage() {
             {governanceThreshold !== undefined && totalSupply < governanceThreshold && (
               <WarningCard className="mt-2 sm:mt-3">
                 <p>
-                  The goverance contract cannot be founded until at least{" "}
+                  {`"Governance"`} cannot begin until at least{" "}
                   {abbreviateBalance(governanceThreshold || BigInt(0))} $MUSHI tokens are in
-                  circulation. Currently, the total $MUSHI supply is {" "}
+                  circulation. Currently, the total $MUSHI supply is{" "}
                   {abbreviateBalance(totalSupply)} tokens.
                 </p>
               </WarningCard>
@@ -318,11 +317,12 @@ export default function CreateProposalPage() {
                 href="https://www.markdownguide.org/getting-started/"
                 isExternal
               >
-                markdown
+                Markdown.
               </Link>
+              &nbsp;
               <span>
-                . It is recommended to use only heading 2 (##) and 3 (###) in the description, as
-                heading 1 (#) is used in the title.
+                Heading 1 (#) is used in the title, so it is recommended to use only heading 2 (##)
+                and 3 (###) in the description.
               </span>
             </div>
           }
@@ -338,16 +338,18 @@ export default function CreateProposalPage() {
       >
         Submit Proposal
       </ButtonExtended>
-      <ButtonExtended
-        className="mt-4 sm:mt-6"
-        size="lg"
-        fullWidth
-        isDisabled={!isProposalValid}
-        onPress={copyProposalCalldata}
-      >
-        Copy Transaction Calldata
-      </ButtonExtended>
-      <div className="text-foreground-500 text-2xs xs:text-xs mt-1">Copy the calldata to use in a different transaction builder.</div>
+      <div className="flex justify-end">
+        <ButtonExtended
+          className="mt-4 sm:mt-6"
+          size="sm"
+          // fullWidth
+
+          isDisabled={!isProposalValid}
+          onPress={copyProposalCalldata}
+        >
+          Copy Transaction Calldata
+        </ButtonExtended>
+      </div>
     </div>
   );
 }

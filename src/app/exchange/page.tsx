@@ -8,7 +8,7 @@ export default function ExchangePage() {
           <h1 className="my-2 font-londrina-shadow text-5xl">Join Primordium</h1>
           <p className="my-2 text-sm text-foreground-500">
             Deposit ETH to mint $MUSHI membership tokens. 100% of the deposited funds go to
-            Primordium's treasury. Members can withdraw their share of treasury funds at any time.
+            Primordium's treasury. Members can withdraw their full share of treasury funds at any time.
           </p>
         </section>
         <SharesExchanger />

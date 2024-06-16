@@ -46,7 +46,7 @@ const routes: {
   },
   {
     route: "/exchange",
-    title: "Membership Tokens",
+    title: "Tokens",
   },
   {
     route: "/vote",

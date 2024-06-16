@@ -205,12 +205,7 @@ export default function ManageDelegateModal() {
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      placement="center"
-      isDismissable={false}
-    >
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center" isDismissable={false}>
       <ModalContent>
         <ModalHeader className="font-londrina-solid text-xl xs:text-3xl">
           {isUpdatingDelegate ? "Update Delegate" : "Delegate Your Votes"}
@@ -218,8 +213,8 @@ export default function ManageDelegateModal() {
         <ModalBody className="pb-4">
           {!isUpdatingDelegate && (
             <p className="text-2xs xs:text-xs sm:text-sm">
-              Primordium votes are represented by delegated $MUSHI tokens. $MUSHI holders may
-              delegate their votes to themselves or any other address they choose.
+              $MUSHI holders may delegate their votes to themselves or any other address they
+              choose.
             </p>
           )}
           <div>
@@ -364,7 +359,7 @@ export default function ManageDelegateModal() {
               )
             ) : accountAddress ? (
               <>
-                <p className="text-sm sm:text-base italic text-foreground-500 mb-2">
+                <p className="mb-2 text-sm italic text-foreground-500 sm:text-base">
                   You currently have no votes to delegate.
                 </p>
                 <div className="mt-2 flex justify-end">

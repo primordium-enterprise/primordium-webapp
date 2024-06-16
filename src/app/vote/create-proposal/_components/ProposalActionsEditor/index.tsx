@@ -161,7 +161,7 @@ export default function ProposalActionsEditor({
       {hasFoundGovernorAction && (
         <div className="mt-2 flex items-center justify-center">
           <p className="text-center text-2xs text-primary-300 xs:text-xs">
-            When founding the governor, only a single foundGovernor(uint256) function call is
+            When beginning {`"governance,"`} only the <code>foundGovernor(uint256)</code> function call is
             allowed in the proposal actions.
           </p>
         </div>

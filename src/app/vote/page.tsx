@@ -31,12 +31,12 @@ export default function VotePage() {
           Governance
         </h1>
         <p className="">
-          Primordium is owned and operated by $MUSHI token holders. Tokens{" "}
+          Primordium votes are represented by delegated $MUSHI tokens. Tokens{" "}
           <b>
             <i>must</i>
           </b>{" "}
-          be delegated to become eligible for voting on proposals. Token holders may delegate
-          their votes to themselves or to any other account address they choose.
+          be delegated to become eligible for voting on proposals. Token holders may delegate their
+          votes to themselves or to any other account address they choose.
         </p>
         <Divider className="xm:my-12 my-4 xs:my-8" />
         <AccountBalanceCards />
@@ -67,7 +67,9 @@ export default function VotePage() {
             ) : (
               <Card>
                 <CardBody>
-                  <h3 className="mb-2 font-londrina-solid text-xl xs:text-2xl">No Proposals Yet!</h3>
+                  <h3 className="mb-2 font-londrina-solid text-xl xs:text-2xl">
+                    No Proposals Yet!
+                  </h3>
                   <p className="text-foreground-600">
                     Proposals by Primordium members will appear here for delegates to vote on.
                   </p>

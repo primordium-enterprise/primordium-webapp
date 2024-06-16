@@ -89,7 +89,7 @@ export default function AccountBalanceCards() {
         </CardFooter>
       </BalanceCard>
       <BalanceCard className="mt-4 sm:ml-12 sm:mt-0">
-        <BalanceCardHeader>Your votes:</BalanceCardHeader>
+        <BalanceCardHeader>Your delegated votes:</BalanceCardHeader>
         <BalanceCardBody isFetching={fetching}>{votesBalanceFormatted}</BalanceCardBody>
         <CardFooter>
           <Link href="/vote/create-proposal" className="w-full">

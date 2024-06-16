@@ -25,7 +25,7 @@ const accordionItems: AccordionItem[] = [
     title: "How is Primordium decentralized?",
     content: (
       <p>
-        Primordium is owned and operated by a decentralized network of independent members.{" "}
+        Primordium is owned and operated by a self-governing network of independent members.{" "}
         <b className="font-black">Anyone</b> can{" "}
         <Link href={hrefs.deposit} target="_blank">
           join
@@ -43,10 +43,10 @@ const accordionItems: AccordionItem[] = [
     ),
   },
   {
-    title: "How does Primordium make money?",
+    title: "How will Primordium make money?",
     content: (
       <p>
-        Any way the members want. It's completely up to them. But,{" "}
+        Any way the members choose. But,{" "}
         <Link href={hrefs.bcjdev} target="_blank">
           bcj.dev
         </Link>{" "}
@@ -65,7 +65,7 @@ const accordionItems: AccordionItem[] = [
         <Link href={hrefs.deposit} target="_blank">
           minting $MUSHI tokens.
         </Link>{" "}
-        Or drop in{" "}
+        Or, drop by{" "}
         <Link href={hrefs.discord} target="_blank">
           discord
         </Link>{" "}
