@@ -199,7 +199,7 @@ export default function Navigation() {
                 target="_blank"
                 startContent={<ReaderIcon />}
               >
-                Whitepaper
+                White paper
               </DropdownItem>
               <DropdownItem
                 href={hrefs.github_contracts}

@@ -14,7 +14,7 @@ const accordionItems: AccordionItem[] = [
     title: "What is Primordium?",
     content: (
       <p>
-        A decentralized business enterprise. Read the whitepaper{" "}
+        A decentralized business enterprise. Read the white paper{" "}
         <Link target="_blank" href={hrefs.whitepaper}>
           here.
         </Link>
