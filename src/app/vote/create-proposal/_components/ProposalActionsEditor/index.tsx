@@ -158,14 +158,6 @@ export default function ProposalActionsEditor({
           </ButtonExtended>
         )}
       </div>
-      {hasFoundGovernorAction && (
-        <div className="mt-2 flex items-center justify-center">
-          <p className="text-center text-2xs text-primary-300 xs:text-xs">
-            When beginning {`"governance,"`} only the <code>foundGovernor(uint256)</code> function call is
-            allowed in the proposal actions.
-          </p>
-        </div>
-      )}
       <CreateProposalActionModal
         addProposalAction={addProposalAction}
         isOpen={isCreateActionModalOpen}
