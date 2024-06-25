@@ -1,6 +1,7 @@
 import hrefs from "@/config/hrefs";
 import { DiscordLogoIcon, GitHubLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import FarcasterLogoIcon from "../_icons/FarcasterLogoIcon";
 
 const links = [
   {
@@ -13,8 +14,12 @@ const links = [
   },
   {
     icon: (props: any) => <TwitterLogoIcon {...props} />,
-    href: hrefs.x,
+    href: hrefs.twitter,
   },
+  {
+    icon: (props: any) => <FarcasterLogoIcon {...props} />,
+    href: hrefs.warpcast,
+  }
 ];
 
 export default function Footer() {
