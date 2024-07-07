@@ -6,9 +6,8 @@ const hrefs = {
   github_contracts: 'https://github.com/primordium-enterprise/primordium-contracts',
   discord: 'https://discord.gg/CnJAPXDWBH',
   twitter: 'https://x.com/benbcjdev',
-  warpcast: 'https://warpcast.com/benbcjdev',
+  warpcast: 'https://warpcast.com/~/channel/primordium',
   bcjdev: "https://bcj.dev",
-
 }
 
 export default hrefs;
