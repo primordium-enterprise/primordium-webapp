@@ -46,14 +46,15 @@ const accordionItems: AccordionItem[] = [
     title: "How will Primordium make money?",
     content: (
       <p>
-        Any way the members choose. But,{" "}
+        Any way the members choose.
+        {/* But,{" "}
         <Link href={hrefs.bcjdev} target="_blank">
           bcj.dev
         </Link>{" "}
         does have a{" "}
         <Link href={hrefs.bcjdev_business_plan} target="_blank">
           proposed business model.
-        </Link>
+        </Link> */}
       </p>
     ),
   },
