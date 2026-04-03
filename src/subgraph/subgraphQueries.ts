@@ -234,7 +234,7 @@ export interface GovernanceData {
 }
 
 export const GovernanceDataQuery = gql`
-  query GovernanceDataQuery() {
+  query {
     ${MetaFragment}
     _meta { ...MetaFragment }
     governanceData(id: "GOVERNANCE_DATA") {

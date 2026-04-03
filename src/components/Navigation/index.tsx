@@ -111,10 +111,16 @@ export default function Navigation() {
                   title: "text-xs sm:text-sm",
                 }}
               >
-                <DropdownItem onPress={() => openChainModal && openChainModal()}>
+                <DropdownItem
+                  onPress={() => openChainModal && openChainModal()}
+                  key="switch-network"
+                >
                   Switch Network
                 </DropdownItem>
-                <DropdownItem onPress={() => openAccountModal && openAccountModal()}>
+                <DropdownItem
+                  onPress={() => openAccountModal && openAccountModal()}
+                  key="view-account"
+                >
                   View Account
                 </DropdownItem>
                 <DropdownItem
@@ -195,6 +201,7 @@ export default function Navigation() {
             </DropdownSection>
             <DropdownSection title="Links">
               <DropdownItem
+                key="whitepaper"
                 href={hrefs.whitepaper}
                 target="_blank"
                 startContent={<ReaderIcon />}
@@ -202,6 +209,7 @@ export default function Navigation() {
                 White paper
               </DropdownItem>
               <DropdownItem
+                key="github"
                 href={hrefs.github_contracts}
                 target="_blank"
                 startContent={<GitHubLogoIcon />}
@@ -209,6 +217,7 @@ export default function Navigation() {
                 GitHub
               </DropdownItem>
               <DropdownItem
+                key="discord"
                 href={hrefs.discord}
                 target="_blank"
                 startContent={<DiscordLogoIcon />}

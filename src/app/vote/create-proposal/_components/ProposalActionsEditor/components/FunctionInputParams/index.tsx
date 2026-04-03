@@ -118,7 +118,7 @@ function AbiFunctionInputParamComponent({
   const BaseComponent = useMemo(
     () =>
       inputParam.type.startsWith("string")
-        ? (props: TextAreaProps) => (
+        ? ({ ref, ...props }: TextAreaProps) => (
             <TextareaExtended
               minRows={1}
               maxRows={6}

@@ -16,12 +16,15 @@ export default function SharesExchanger() {
 
   // Tab is synced with the "tab" URL search parameter
   const [tab, setTab] = useState(query.get("tab") || DEPOSIT_KEY);
-  const changeTab = useCallback((key: string) => {
-    setTab(key);
-    const params = new URLSearchParams(query);
-    params.set('tab', key);
-    router.replace(`${pathname}?${params.toString()}`)
-  }, [setTab, query, router, pathname]);
+  const changeTab = useCallback(
+    (key: string) => {
+      setTab(key);
+      const params = new URLSearchParams(query.toString());
+      params.set("tab", key);
+      router.replace(`${pathname}?${params.toString()}`);
+    },
+    [setTab, query, router, pathname],
+  );
 
   return (
     <Card className="mx-auto my-8 w-full max-w-[380px]">
