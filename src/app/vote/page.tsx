@@ -4,7 +4,7 @@ import { Card, CardBody, Divider, Spinner } from "@nextui-org/react";
 import AccountBalanceCards from "./_components/AccountBalanceCards";
 import { useQuery } from "urql";
 import { ProposalsQuery } from "@/subgraph/subgraphQueries";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import ProposalListItem from "./_components/ProposalListItem";
 
 export default function VotePage() {

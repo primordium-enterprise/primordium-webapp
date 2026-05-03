@@ -7,7 +7,7 @@ import {
   ProposalPartialData,
 } from "@/subgraph/subgraphQueries";
 import { ProposalState, getProposalState } from "@/utils/proposalUtils";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { UseQueryState, useQuery } from "urql";
 import { useReadContract } from "wagmi";
 

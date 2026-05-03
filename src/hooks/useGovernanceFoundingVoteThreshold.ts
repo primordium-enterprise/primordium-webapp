@@ -1,7 +1,3 @@
-import chainConfig from "@/config/chainConfig";
-import { Address } from "viem";
-import { useReadContract } from "wagmi";
-
 // export default function useGovernanceFoundingVoteThreshold(
 //   governor: Address = chainConfig.governor.address,
 // ) {

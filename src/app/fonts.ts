@@ -26,5 +26,5 @@ export const roboto_mono = Roboto_Mono({
   variable: "--font-roboto-mono",
   preload: true,
   display: "block",
-  style: ['normal', 'italic'],
+  style: ["normal", "italic"],
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import shortenAddress from "@/utils/shortenAddress";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import toast from "react-hot-toast";
 import { Address } from "viem";
 import { useEnsName } from "wagmi";

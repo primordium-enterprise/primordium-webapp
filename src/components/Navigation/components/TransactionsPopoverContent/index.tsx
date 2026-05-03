@@ -3,7 +3,7 @@
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
 import { Button, Card, CardBody, Link } from "@nextui-org/react";
 import { Cross1Icon, TrashIcon } from "@radix-ui/react-icons";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useState } from "react";
 import { Hash } from "viem";
 import { sepolia } from "viem/chains";
 import { useChainId } from "wagmi";
@@ -30,14 +30,14 @@ export default function TransactionsPopoverContent() {
                     >
                       {tx.receipt ? "Completed" : "Pending"}
                     </h6>
-                    <div className="2xs:text-2xs ml-4 text-xs xs:text-xs">
+                    <div className="ml-4 text-xs 2xs:text-2xs xs:text-xs">
                       <Link
                         isExternal
                         showAnchorIcon
                         className=""
                         href={`https://${chainId == sepolia.id ? "sepolia." : ""}etherscan.io/tx/${tx.hash}`}
                       >
-                        <span className="2xs:inline hidden">View on etherscan</span>
+                        <span className="hidden 2xs:inline">View on etherscan</span>
                       </Link>
                     </div>
                   </div>
@@ -48,7 +48,7 @@ export default function TransactionsPopoverContent() {
                     {isDeleting && (
                       <>
                         <Button
-                          className="text-2xs mr-2 h-auto min-h-0 w-auto min-w-0 p-1"
+                          className="mr-2 h-auto min-h-0 w-auto min-w-0 p-1 text-2xs"
                           size="sm"
                           color="danger"
                           isIconOnly
@@ -59,17 +59,13 @@ export default function TransactionsPopoverContent() {
                       </>
                     )}
                     <Button
-                      className="text-2xs h-auto min-h-0 w-auto min-w-0 p-1"
+                      className="h-auto min-h-0 w-auto min-w-0 p-1 text-2xs"
                       size="sm"
                       isIconOnly
                       variant="bordered"
                       onPress={() => setConfirmDelete(isDeleting ? undefined : tx.hash)}
                     >
-                      {isDeleting ? (
-                        <Cross1Icon />
-                      ) : (
-                        <TrashIcon className="text-foreground-500" />
-                      )}
+                      {isDeleting ? <Cross1Icon /> : <TrashIcon className="text-foreground-500" />}
                     </Button>
                   </div>
                 </CardBody>

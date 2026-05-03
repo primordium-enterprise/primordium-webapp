@@ -1,10 +1,8 @@
 "use client";
 
-import chainConfig from "@/config/chainConfig";
-import useGovernanceCanBeginAt from "@/hooks/useGovernanceCanBeginAt";
 import { GovernanceData } from "@/subgraph/subgraphQueries";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useBlock, useChainId } from "wagmi";
+import { useEffect, useMemo, useState } from "react";
+import { useBlock } from "wagmi";
 
 type TimeLeft = {
   days: number;
@@ -25,9 +23,9 @@ const padZero = (value: number, minDigits: number = 2) => {
 };
 
 export default function GovernanceCountdown({
-  governanceData
+  governanceData,
 }: {
-  governanceData?: GovernanceData
+  governanceData?: GovernanceData;
 }) {
   const governanceCanBeginAt = useMemo(() => {
     return governanceData?.governanceCanBeginAt;
@@ -77,7 +75,7 @@ export default function GovernanceCountdown({
   }, [governanceCanBeginAt, block]);
 
   const isZero = useMemo(() => {
-    return Object.values(timeLeft).every(v => v === 0);
+    return Object.values(timeLeft).every((v) => v === 0);
   }, [timeLeft]);
 
   return (

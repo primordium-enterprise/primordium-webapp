@@ -4,7 +4,7 @@ import { inputSizeVariants } from "../nextUIExtensions";
 const InputExtended = extendVariants(Input, {
   variants: {
     size: {
-      ...inputSizeVariants
+      ...inputSizeVariants,
     },
   },
   defaultVariants: {

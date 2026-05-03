@@ -4,7 +4,7 @@ import { inputSizeVariants } from "../nextUIExtensions";
 const TextareaExtended = extendVariants(Textarea, {
   variants: {
     size: {
-      ...inputSizeVariants
+      ...inputSizeVariants,
     },
   },
   defaultVariants: {

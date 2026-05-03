@@ -1,7 +1,3 @@
-import chainConfig from "@/config/chainConfig";
-import { useReadContract } from "wagmi";
-import { Address } from "viem";
-
 /**
  * Reads the max supply of the provided ERC20 token (uses MUSHI token address by default)
  */

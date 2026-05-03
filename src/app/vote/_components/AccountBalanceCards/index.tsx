@@ -80,7 +80,7 @@ export default function AccountBalanceCards() {
           <Button
             color="primary"
             fullWidth
-            className="h-unit-8 text-sm sm:h-unit-10 sm:text-base"
+            className="h-unit-8 sm:h-unit-10 text-sm sm:text-base"
             onPress={openDelegateModal}
             variant={!address || mushiBalance === BigInt(0) ? "flat" : "solid"}
           >
@@ -96,7 +96,7 @@ export default function AccountBalanceCards() {
             <Button
               color="primary"
               fullWidth
-              className="h-unit-8 text-sm sm:h-unit-10 sm:text-base"
+              className="h-unit-8 sm:h-unit-10 text-sm sm:text-base"
             >
               Create Proposal
             </Button>

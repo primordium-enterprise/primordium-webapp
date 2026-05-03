@@ -6,7 +6,7 @@ import toast, { Toaster, ToastBar } from "react-hot-toast";
 
 const ToastContent = ({ children }: { children: React.ReactNode }) => (
   <div className="whitespace-nowrap text-xs xs:text-sm">{children}</div>
-)
+);
 
 export default function ToastWrapper() {
   return (
@@ -16,30 +16,32 @@ export default function ToastWrapper() {
       toastOptions={{ duration: Infinity, style: { maxWidth: "380px" } }}
     >
       {(t) => (
-        <ToastBar toast={t} style={{
-          ...t.style,
-          pointerEvents: t.visible ? "auto" : "none"
-        }}>
+        <ToastBar
+          toast={t}
+          style={{
+            ...t.style,
+            pointerEvents: t.visible ? "auto" : "none",
+          }}
+        >
           {({ icon, message }) => {
             return (
-            <>
-              {icon}
-              <ToastContent>
-                {message}
-              </ToastContent>
-              {t.type !== "loading" && (
-                <Button
-                  className="h-full min-w-0 px-4 light"
-                  size="lg"
-                  variant="light"
-                  onPress={() => toast.dismiss(t.id)}
-                  isIconOnly
-                >
-                  <Cross2Icon className="flex-1rem" width="24" height="24" />
-                </Button>
-              )}
-            </>
-          )}}
+              <>
+                {icon}
+                <ToastContent>{message}</ToastContent>
+                {t.type !== "loading" && (
+                  <Button
+                    className="h-full min-w-0 px-4 light"
+                    size="lg"
+                    variant="light"
+                    onPress={() => toast.dismiss(t.id)}
+                    isIconOnly
+                  >
+                    <Cross2Icon className="flex-1rem" width="24" height="24" />
+                  </Button>
+                )}
+              </>
+            );
+          }}
         </ToastBar>
       )}
     </Toaster>

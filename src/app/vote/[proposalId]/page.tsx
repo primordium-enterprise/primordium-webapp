@@ -142,7 +142,7 @@ export default function ProposalPage({
     >
       <BackButton href="/vote" />
       <div className="flex items-center gap-4 sm:gap-5">
-        <h3 className=" text-sm text-foreground-400 xs:text-md sm:text-lg">
+        <h3 className=" xs:text-md text-sm text-foreground-400 sm:text-lg">
           Proposal {proposalIdString}
         </h3>
         {proposal && <ProposalStateSticker proposalState={proposalState} />}
@@ -165,7 +165,9 @@ export default function ProposalPage({
         ) : (
           proposal && (
             <>
-              <h1 className="font-londrina-shadow text-3xl xs:text-4xl font-bold sm:text-5xl">{proposal.title}</h1>
+              <h1 className="font-londrina-shadow text-3xl font-bold xs:text-4xl sm:text-5xl">
+                {proposal.title}
+              </h1>
               <div className="flex flex-col justify-between text-2xs sm:flex-row sm:text-xs">
                 <p className="text-foreground-500">
                   Proposed by <DisplayAddress address={proposal.proposer.id} enableClickToCopy />

@@ -26,8 +26,6 @@ import {
   Abi,
   AbiFunction,
   Address,
-  Hex,
-  decodeFunctionData,
   encodeFunctionData,
   isAddress,
   parseEther,
@@ -37,7 +35,6 @@ import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getEtherscanContract } from "@/fetch/etherscan";
 import { getArrayComponents } from "@/utils/abi";
-import { UnionPartialBy } from "node_modules/viem/_types/types/utils";
 import toast from "react-hot-toast";
 
 const actionTypes: ProposalActionType[] = ["value", "function"];

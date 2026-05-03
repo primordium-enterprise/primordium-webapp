@@ -1,9 +1,7 @@
 import { Address } from "viem";
-import { useChainId, useReadContract } from "wagmi";
+import { useReadContract } from "wagmi";
 
-export default function useGovernanceCanBeginAt(
-  governor: Address
-) {
+export default function useGovernanceCanBeginAt(governor: Address) {
   const result = useReadContract({
     address: governor,
     abi: [

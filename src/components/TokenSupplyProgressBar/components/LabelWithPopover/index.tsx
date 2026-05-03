@@ -25,22 +25,25 @@ export default function LabelWithPopover({
   ...popoverProps
 }: Props) {
   return (
-    <div className={`${className} absolute flex items-center text-sm md:text-base font-roboto-mono`} style={style}>
+    <div
+      className={`${className} absolute flex items-center font-roboto-mono text-sm md:text-base`}
+      style={style}
+    >
       {!hide && label !== "" && (
         <>
           {label}
           {contentItems && (
-          <Popover offset={10} {...popoverProps} showArrow>
-            <PopoverTrigger>
-              <InfoCircledIcon
-                className={`inline size-5 p-0.5 hover:cursor-pointer md:size-6 md:p-1 text-primary-700`}
-              />
-            </PopoverTrigger>
-            <PopoverContent className="max-w-[220px] items-start">
-              {titleText && <h6 className="text-small font-bold">{titleText}</h6>}
-              <p className="text-tiny">{contentItems}</p>
-            </PopoverContent>
-          </Popover>
+            <Popover offset={10} {...popoverProps} showArrow>
+              <PopoverTrigger>
+                <InfoCircledIcon
+                  className={`inline size-5 p-0.5 text-primary-700 hover:cursor-pointer md:size-6 md:p-1`}
+                />
+              </PopoverTrigger>
+              <PopoverContent className="max-w-[220px] items-start">
+                {titleText && <h6 className="text-small font-bold">{titleText}</h6>}
+                <p className="text-tiny">{contentItems}</p>
+              </PopoverContent>
+            </Popover>
           )}
         </>
       )}

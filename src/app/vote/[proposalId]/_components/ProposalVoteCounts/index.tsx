@@ -78,7 +78,9 @@ export default function ProposalVoteCounts({
         <VoteCount label="Abstain:" display={votes.abstainDisplay} color="default" />
       </div>
       <div className="flex flex-col gap-2">
-        <p className={`text-foreground-600 text-xs ${percentMajorityDisplay === false ? "invisible" : ""}`}>
+        <p
+          className={`text-xs text-foreground-600 ${percentMajorityDisplay === false ? "invisible" : ""}`}
+        >
           A {percentMajorityDisplay}% {`"for"`} majority is required to succeed.
         </p>
         <div

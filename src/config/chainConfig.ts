@@ -2,12 +2,12 @@ import { Address, Chain } from "viem";
 import { foundry, mainnet, sepolia } from "viem/chains";
 
 type PrimordiumContractNames = {
-  readonly "token": string;
-  readonly "sharesOnboarder": string;
-  readonly "executor": string;
-  readonly "governor": string;
-  readonly "distributor": string;
-}
+  readonly token: string;
+  readonly sharesOnboarder: string;
+  readonly executor: string;
+  readonly governor: string;
+  readonly distributor: string;
+};
 
 const envChain = process.env.NEXT_PUBLIC_CHAIN;
 export const defaultChain: Chain =
@@ -21,13 +21,13 @@ export const defaultChain: Chain =
 
 interface ChainConfig {
   addresses: {
-    [ContractName in keyof PrimordiumContractNames]: Address
-  },
-  subgraphUrl: string
+    [ContractName in keyof PrimordiumContractNames]: Address;
+  };
+  subgraphUrl: string;
 }
 
 export const chainConfigs: {
-  [chainId: number]: ChainConfig
+  [chainId: number]: ChainConfig;
 } = {
   [mainnet.id]: {
     addresses: {
@@ -47,7 +47,7 @@ export const chainConfigs: {
       governor: "0x029b600067080278c32F4643C1eB8f2b508A9255",
       distributor: "0xC5b8Fa3C998eBE375690A181f52B20b48B3C83eF",
     },
-    subgraphUrl: process.env.NEXT_PUBLIC_SUBGRAPH_URL_SEPOLIA || ""
+    subgraphUrl: process.env.NEXT_PUBLIC_SUBGRAPH_URL_SEPOLIA || "",
   },
   [foundry.id]: {
     addresses: {
@@ -57,9 +57,9 @@ export const chainConfigs: {
       governor: "0x02445fD52Cf3C6baAd9D616E89233DA9A819aa10",
       distributor: "0x217A246eac5FCDb09570Af269b40ba006dc11a24",
     },
-    subgraphUrl: "http://localhost:8000/subgraphs/name/primordium"
+    subgraphUrl: "http://localhost:8000/subgraphs/name/primordium",
   },
-}
+};
 
 const chainConfig: ChainConfig = chainConfigs[defaultChain.id];
 

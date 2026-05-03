@@ -4,7 +4,7 @@ import useFormattedBalance from "@/hooks/useFormattedBalance";
 import parseDnumFromString from "@/utils/parseDnumFromString";
 import { Button, Input, Slider, Spacer, Switch } from "@nextui-org/react";
 import { useContext, useEffect, useMemo, useState } from "react";
-import { useAccount, useBalance, useChainId, useConfig, useWriteContract } from "wagmi";
+import { useAccount, useBalance, useWriteContract } from "wagmi";
 import { format as dnFormat } from "dnum";
 import { Address, isAddress, isAddressEqual, keccak256, toHex } from "viem";
 import { ADDRESS_ZERO } from "@/utils/constants";

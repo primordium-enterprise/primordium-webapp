@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { DBSchema, IDBPDatabase, deleteDB, openDB } from "idb";
+import { DBSchema, IDBPDatabase, openDB } from "idb";
 import { useAccount, useChainId, useConfig } from "wagmi";
 import { Address, Hash, TransactionReceipt, WaitForTransactionReceiptReturnType } from "viem";
 import { waitForTransactionReceipt } from "wagmi/actions";

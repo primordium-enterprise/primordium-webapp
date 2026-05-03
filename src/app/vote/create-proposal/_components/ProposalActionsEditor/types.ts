@@ -1,5 +1,5 @@
 import { getArrayComponents, parseAbiInputValue } from "@/utils/abi";
-import { Abi, AbiFunction, AbiParameter, Address, Hex } from "viem";
+import { AbiFunction, AbiParameter, Address, Hex } from "viem";
 
 export type ProposalActionType = "function" | "value";
 
@@ -26,7 +26,7 @@ export interface AbiFunctionOption extends AbiFunction {
   signature: string;
   arrayComponentsByInputIndex: {
     [index: number]: ReturnType<typeof getArrayComponents>;
-  }
+  };
 }
 
 export type AbiFunctionInputParam = {

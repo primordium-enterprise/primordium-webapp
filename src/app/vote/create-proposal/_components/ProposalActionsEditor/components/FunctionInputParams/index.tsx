@@ -7,8 +7,8 @@ import {
   AbiFunctionInputParamValueItem,
   AbiFunctionOption,
 } from "../../types";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import { encodeAbiParameters, isHex } from "viem";
+import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
+import { encodeAbiParameters } from "viem";
 import { Button, TextAreaProps } from "@nextui-org/react";
 import { getArrayComponents, parseAbiInputValue } from "@/utils/abi";
 
