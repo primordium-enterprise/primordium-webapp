@@ -1,7 +1,7 @@
 "use client";
 
 import { GovernanceData } from "@/subgraph/subgraphQueries";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useBlock } from "wagmi";
 
 type TimeLeft = {
@@ -39,7 +39,7 @@ export default function GovernanceCountdown({
   const [isMounted, setIsMounted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(defaultTimeLeft);
 
-  const getTimeLeft = (): TimeLeft => {
+  const getTimeLeft = useCallback((): TimeLeft => {
     if (governanceCanBeginAt && block) {
       let elapsedSeconds = Math.floor((Date.now() - blockUpdatedAt) / 1000);
       let differenceSeconds =
@@ -54,7 +54,7 @@ export default function GovernanceCountdown({
       }
     }
     return defaultTimeLeft;
-  };
+  }, [block, blockUpdatedAt, governanceCanBeginAt]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -62,16 +62,16 @@ export default function GovernanceCountdown({
 
   useEffect(() => {
     if (isMounted) {
-      const timer = window.setTimeout(() => {
+      setTimeLeft(getTimeLeft());
+      const timer = window.setInterval(() => {
         setTimeLeft(getTimeLeft());
       }, 1000);
-      return () => window.clearTimeout(timer);
+      return () => window.clearInterval(timer);
     }
-  });
+  }, [getTimeLeft, isMounted]);
 
   const isReady = useMemo(() => {
-    setTimeLeft(getTimeLeft());
-    return governanceCanBeginAt && block;
+    return Boolean(governanceCanBeginAt && block);
   }, [governanceCanBeginAt, block]);
 
   const isZero = useMemo(() => {

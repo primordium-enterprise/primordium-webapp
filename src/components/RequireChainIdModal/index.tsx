@@ -13,17 +13,14 @@ export default function RequireChainIdModal() {
   const { switchChain, error, isError, isPending } = useSwitchChain();
 
   const wrongNetworkDetected = useMemo(() => {
-    if (!isConnected && chainId !== defaultChain.id) {
-      switchChain({ chainId: defaultChain.id });
-    }
     return isConnected && chainId !== defaultChain.id;
   }, [chainId, isConnected]);
 
   useEffect(() => {
-    if (!isConnected && chainId !== defaultChain.id) {
+    if (wrongNetworkDetected) {
       switchChain({ chainId: defaultChain.id });
     }
-  }, [chainId, isConnected]);
+  }, [switchChain, wrongNetworkDetected]);
 
   useEffect(() => {
     if (error) {
