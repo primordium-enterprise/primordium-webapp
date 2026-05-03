@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { format as dnFormat } from "dnum";
 import LabelWithPopover from "./components/LabelWithPopover";
 import { UseQueryState } from "urql";
@@ -21,9 +21,9 @@ const calculateBpsOfMaxSupply = (
 };
 
 export default function TokenSupplyProgressBar({
-  governanceDataResult
+  governanceDataResult,
 }: {
-  governanceDataResult: UseQueryState<{ governanceData: GovernanceData; _meta: MetaData; }>;
+  governanceDataResult: UseQueryState<{ governanceData: GovernanceData; _meta: MetaData }>;
 }) {
   const { data: { governanceData } = {}, fetching: isLoading, error } = governanceDataResult;
   const isError = useMemo(() => !!error, [error]);
@@ -36,7 +36,7 @@ export default function TokenSupplyProgressBar({
       totalSupply: BigInt(governanceData.totalSupply),
       maxSupply: BigInt(governanceData.maxSupply),
       governanceThresholdBps: governanceData.governanceThresholdBps,
-    }
+    };
   }, [governanceData]);
 
   const governanceThresholdPercentage = Number(governanceThresholdBps) / 100;

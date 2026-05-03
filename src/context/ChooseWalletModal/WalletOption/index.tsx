@@ -1,23 +1,13 @@
 "use client";
 
-import {
-  Config,
-  Connector,
-  CreateConnectorFn,
-  UseAccountReturnType,
-  UseConnectReturnType,
-  useAccount,
-} from "wagmi";
+import { Config, Connector, CreateConnectorFn, UseConnectReturnType, useAccount } from "wagmi";
 import { Button } from "@nextui-org/react";
 import Image from "next/image";
 import walletConnectLogo from "public/img/wallet-brand-assets/walletconnect-logo.svg";
 import braveLogo from "public/img/wallet-brand-assets/brave.svg";
 import safeLogo from "public/img/wallet-brand-assets/safe-logo.svg";
 import coinbaseWalletLogo from "public/img/wallet-brand-assets/coinbase-wallet-logo.svg";
-import { ConnectErrorType } from "wagmi/actions";
-import classNames from "classnames";
 import DisplayAddress from "@/components/DisplayAddress";
-import { ArrowRightIcon } from "@radix-ui/react-icons";
 
 const logo = (connectorId: string) => {
   switch (connectorId) {
@@ -59,7 +49,7 @@ export default function WalletOption({
   return (
     <>
       <Button
-        className="flex justify-start items-center data-[disabled=true]:opacity-75"
+        className="flex items-center justify-start data-[disabled=true]:opacity-75"
         variant={isConnected ? "bordered" : "flat"}
         color={isConnected ? "success" : "default"}
         isLoading={isConnecting}
@@ -84,14 +74,14 @@ export default function WalletOption({
       >
         {connector.name}
       </Button>
-      {isConnected && addresses && (
-        addresses.map(addr => (
-          <div key={addr} className="text-sm pl-8 flex items-center">
+      {isConnected &&
+        addresses &&
+        addresses.map((addr) => (
+          <div key={addr} className="flex items-center pl-8 text-sm">
             <span className="opacity-50">Account:&nbsp;</span>
             <DisplayAddress address={addr} />
           </div>
-        ))
-      )}
+        ))}
     </>
   );
 }

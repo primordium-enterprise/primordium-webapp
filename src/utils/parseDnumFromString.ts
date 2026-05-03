@@ -2,7 +2,7 @@ import { Dnum, from } from "dnum";
 
 export default function parseDnumFromString(value: string, decimals: number = 18): Dnum {
   if (!value) {
-    value = "0"
+    value = "0";
   } else {
     let end = value.length - 1;
     if (value[end] == ".") {
@@ -15,4 +15,4 @@ export default function parseDnumFromString(value: string, decimals: number = 18
   }
 
   return from(value, decimals);
-};
+}

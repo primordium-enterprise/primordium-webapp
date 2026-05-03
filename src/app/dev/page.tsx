@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { Address, createTestClient, http, parseEther, publicActions } from "viem";
 import { foundry } from "viem/chains";
 import styles from "./dev.module.css";
-import { useBlock, useBlockNumber } from "wagmi";
+import { useBlock } from "wagmi";
 import { CheckIcon, CopyIcon, Cross2Icon, TrashIcon } from "@radix-ui/react-icons";
 
 const handleTestClientError = (handler: string) => (error: any) => {
@@ -45,7 +45,7 @@ export default function DevPage() {
     if (client) {
       client.getBlock().then(console.log);
     }
-  }, [client])
+  }, [client]);
 
   const {
     data: block,

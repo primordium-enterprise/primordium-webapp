@@ -31,9 +31,7 @@ export default function WithdrawAsset({
   withdrawValue: bigint;
   refetchCount: number;
 }) {
-  const { totalSupply, refetch: refetchTotalSupply } = useTotalSupply(
-    chainConfig.addresses.token,
-  );
+  const { totalSupply, refetch: refetchTotalSupply } = useTotalSupply(chainConfig.addresses.token);
   const {
     value: assetBalance,
     symbol,
@@ -50,7 +48,7 @@ export default function WithdrawAsset({
   useEffect(() => {
     refetchAssetBalance({ cancelRefetch: false });
     refetchTotalSupply({ cancelRefetch: false });
-  }, [refetchCount]);
+  }, [refetchAssetBalance, refetchCount, refetchTotalSupply]);
 
   const estPayoutFormatted = useMemo(() => {
     if (!totalSupply) return "0";
@@ -71,7 +69,7 @@ export default function WithdrawAsset({
                 <Spacer />
                 <Button
                   size="sm"
-                  className="m-0 px-unit-2 font-roboto-mono text-xs text-default-500"
+                  className="px-unit-2 m-0 font-roboto-mono text-xs text-default-500"
                   variant="faded"
                   endContent={<CopyIcon />}
                   onPress={() => {

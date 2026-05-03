@@ -19,7 +19,7 @@ const links = [
   {
     icon: (props: any) => <FarcasterLogoIcon {...props} />,
     href: hrefs.warpcast,
-  }
+  },
 ];
 
 export default function Footer() {

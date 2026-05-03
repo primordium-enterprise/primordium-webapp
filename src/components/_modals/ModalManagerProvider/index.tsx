@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, createContext, useContext, useReducer, useState } from "react";
+import { Dispatch, createContext, useContext, useReducer } from "react";
 import ManageDelegateModal from "../ManageDelegateModal";
 
 interface ModalUpdateAction {

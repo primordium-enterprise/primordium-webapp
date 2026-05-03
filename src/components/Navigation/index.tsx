@@ -8,14 +8,13 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-  Card,
   DropdownSection,
   Popover,
   PopoverTrigger,
   PopoverContent,
   Badge,
 } from "@nextui-org/react";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 import DisplayAddress from "../DisplayAddress";
 import {
@@ -30,7 +29,6 @@ import {
 import Link from "next/link";
 import useFormattedBalance from "@/hooks/useFormattedBalance";
 import { usePathname } from "next/navigation";
-import MushiIcon from "../MushiIcon";
 import TransactionsPopoverContent from "./components/TransactionsPopoverContent";
 import { LocalTransactionsContext } from "@/providers/LocalTransactionsProvider";
 import { useAccountModal, useChainModal, useConnectModal } from "@rainbow-me/rainbowkit";

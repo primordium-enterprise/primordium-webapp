@@ -168,7 +168,11 @@ export default function SubmitVoteModal({ proposal, ...modalProps }: Props) {
             Cancel
           </ButtonExtended>
           {!address ? (
-            <ButtonExtended color="primary" onPress={() => openConnectModal && openConnectModal()} isDisabled={!openConnectModal}>
+            <ButtonExtended
+              color="primary"
+              onPress={() => openConnectModal && openConnectModal()}
+              isDisabled={!openConnectModal}
+            >
               ConnectWallet
             </ButtonExtended>
           ) : (

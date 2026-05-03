@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   webpack: (config) => {
-    config.externals.push('pino-pretty', 'lokijs', 'encoding');
+    config.externals.push("pino-pretty", "lokijs", "encoding");
     if (!config.resolve.fallback) {
       config.resolve.fallback = {};
     }
@@ -11,12 +11,12 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'raw.githubusercontent.com',
-        port: '',
-      }
-    ]
-  }
-}
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+        port: "",
+      },
+    ],
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

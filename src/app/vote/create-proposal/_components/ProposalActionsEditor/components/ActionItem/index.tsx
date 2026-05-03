@@ -1,10 +1,7 @@
 "use client";
 
-import {
-  Card,
-  CardBody,
-} from "@nextui-org/react";
-import { AbiFunctionInputParam, ProposalAction, actionTypeDisplays } from "../../types";
+import { Card, CardBody } from "@nextui-org/react";
+import { ProposalAction, actionTypeDisplays } from "../../types";
 import { useMemo, useState } from "react";
 import { formatEther } from "viem";
 import DisplayAddress from "@/components/DisplayAddress";

@@ -1,10 +1,8 @@
 "use client";
 
-import chainConfig from "@/config/chainConfig";
-import useGovernanceCanBeginAt from "@/hooks/useGovernanceCanBeginAt";
 import { GovernanceData } from "@/subgraph/subgraphQueries";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useBlock, useChainId } from "wagmi";
+import { useBlock } from "wagmi";
 
 type TimeLeft = {
   days: number;
@@ -25,9 +23,9 @@ const padZero = (value: number, minDigits: number = 2) => {
 };
 
 export default function GovernanceCountdown({
-  governanceData
+  governanceData,
 }: {
-  governanceData?: GovernanceData
+  governanceData?: GovernanceData;
 }) {
   const governanceCanBeginAt = useMemo(() => {
     return governanceData?.governanceCanBeginAt;
@@ -41,7 +39,7 @@ export default function GovernanceCountdown({
   const [isMounted, setIsMounted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(defaultTimeLeft);
 
-  const getTimeLeft = (): TimeLeft => {
+  const getTimeLeft = useCallback((): TimeLeft => {
     if (governanceCanBeginAt && block) {
       let elapsedSeconds = Math.floor((Date.now() - blockUpdatedAt) / 1000);
       let differenceSeconds =
@@ -56,7 +54,7 @@ export default function GovernanceCountdown({
       }
     }
     return defaultTimeLeft;
-  };
+  }, [block, blockUpdatedAt, governanceCanBeginAt]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -64,20 +62,20 @@ export default function GovernanceCountdown({
 
   useEffect(() => {
     if (isMounted) {
-      const timer = window.setTimeout(() => {
+      setTimeLeft(getTimeLeft());
+      const timer = window.setInterval(() => {
         setTimeLeft(getTimeLeft());
       }, 1000);
-      return () => window.clearTimeout(timer);
+      return () => window.clearInterval(timer);
     }
-  });
+  }, [getTimeLeft, isMounted]);
 
   const isReady = useMemo(() => {
-    setTimeLeft(getTimeLeft());
-    return governanceCanBeginAt && block;
+    return Boolean(governanceCanBeginAt && block);
   }, [governanceCanBeginAt, block]);
 
   const isZero = useMemo(() => {
-    return Object.values(timeLeft).every(v => v === 0);
+    return Object.values(timeLeft).every((v) => v === 0);
   }, [timeLeft]);
 
   return (

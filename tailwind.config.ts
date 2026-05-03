@@ -29,14 +29,14 @@ const config: Config = {
         "1rem": "0 0 1rem",
       },
       translate: {
-        "center": ""
-      }
+        center: "",
+      },
     },
   },
   darkMode: "class",
   safelist: [
     {
-      pattern: /text-(primary|secondary|success|danger|warning|default)-\d+/
+      pattern: /text-(primary|secondary|success|danger|warning|default)-\d+/,
     },
   ],
   plugins: [nextui()],

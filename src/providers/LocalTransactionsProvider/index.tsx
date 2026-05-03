@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { DBSchema, IDBPDatabase, deleteDB, openDB } from "idb";
+import { DBSchema, IDBPDatabase, openDB } from "idb";
 import { useAccount, useChainId, useConfig } from "wagmi";
 import { Address, Hash, TransactionReceipt, WaitForTransactionReceiptReturnType } from "viem";
 import { waitForTransactionReceipt } from "wagmi/actions";
@@ -111,34 +111,40 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
   }, []);
 
   // Initializes promises on StateTx to watch for transaction receipt
-  const initWaitForTransactionReceipt = (
-    tx: StateTx,
-    db?: IDBPDatabase<LocalTransactionsDB>,
-    onReceipt?: OnReceiptFn,
-  ) => {
-    // On receipt, update in state
-    tx.waitForReceipt = waitForTransactionReceipt(config, {
-      hash: tx.hash,
-      // confirmations: process.env.NODE_ENV === "development" ? 3 : 1,
-    }).then((receipt) => {
-      if (onReceipt) {
-        onReceipt(receipt);
-      }
-      setTransactions(txReceiptSetStateAction(receipt));
-    });
-    // After more confirmations, update in state and storage as well (considered finalized)
-    if (db) {
-      tx.waitForReceiptConfirmation = waitForTransactionReceipt(config, {
+  const initWaitForTransactionReceipt = useCallback(
+    (tx: StateTx, db?: IDBPDatabase<LocalTransactionsDB>, onReceipt?: OnReceiptFn) => {
+      // On receipt, update in state
+      tx.waitForReceipt = waitForTransactionReceipt(config, {
         hash: tx.hash,
-        confirmations: SAFE_CONFIRMATIONS,
-        pollingInterval: 24000,
+        // confirmations: process.env.NODE_ENV === "development" ? 3 : 1,
       }).then((receipt) => {
+        if (onReceipt) {
+          onReceipt(receipt);
+        }
         setTransactions(txReceiptSetStateAction(receipt));
-        let { hash, description, account, accountChainKey, createdAt } = tx;
-        db.put("transactions", { hash, description, account, accountChainKey, createdAt, receipt });
       });
-    }
-  };
+      // After more confirmations, update in state and storage as well (considered finalized)
+      if (db) {
+        tx.waitForReceiptConfirmation = waitForTransactionReceipt(config, {
+          hash: tx.hash,
+          confirmations: SAFE_CONFIRMATIONS,
+          pollingInterval: 24000,
+        }).then((receipt) => {
+          setTransactions(txReceiptSetStateAction(receipt));
+          let { hash, description, account, accountChainKey, createdAt } = tx;
+          db.put("transactions", {
+            hash,
+            description,
+            account,
+            accountChainKey,
+            createdAt,
+            receipt,
+          });
+        });
+      }
+    },
+    [config],
+  );
 
   useEffect(() => {
     if (address && db && chainId) {
@@ -160,7 +166,7 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
       // Reset to empty array
       setTransactions([]);
     }
-  }, [address, chainId, db, config]);
+  }, [address, chainId, db, initWaitForTransactionReceipt]);
 
   const addTransaction = useCallback(
     (hash: Hash, description: string, toastId?: string, onReceipt?: OnReceiptFn) => {
@@ -192,7 +198,7 @@ export default function LocalTransactionsProvider({ children }: { children: Reac
         { id: toastId },
       );
     },
-    [db, address, chainId],
+    [db, address, chainId, initWaitForTransactionReceipt],
   );
 
   const removeTransaction = useCallback(

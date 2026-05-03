@@ -13,17 +13,14 @@ export default function RequireChainIdModal() {
   const { switchChain, error, isError, isPending } = useSwitchChain();
 
   const wrongNetworkDetected = useMemo(() => {
-    if (!isConnected && chainId !== defaultChain.id) {
-      switchChain({ chainId: defaultChain.id });
-    }
     return isConnected && chainId !== defaultChain.id;
   }, [chainId, isConnected]);
 
   useEffect(() => {
-    if (!isConnected && chainId !== defaultChain.id) {
+    if (wrongNetworkDetected) {
       switchChain({ chainId: defaultChain.id });
     }
-  }, [chainId, isConnected]);
+  }, [switchChain, wrongNetworkDetected]);
 
   useEffect(() => {
     if (error) {
@@ -56,20 +53,22 @@ export default function RequireChainIdModal() {
           >
             Switch to {defaultChain.name}
           </Button>
-          {isError && (<>
-            <p className="m-4 text-warning text-base">
-              Failed to switch networks. To proceed, please manually open your wallet and switch to
-              the {defaultChain.name} network. Or, select a network from below:
-            </p>
-            <Button
-              className="m-4"
-              color="primary"
-              onPress={() => openChainModal && openChainModal()}
-              isDisabled={!openChainModal}
-            >
-              Select Network
-            </Button>
-          </>)}
+          {isError && (
+            <>
+              <p className="m-4 text-base text-warning">
+                Failed to switch networks. To proceed, please manually open your wallet and switch
+                to the {defaultChain.name} network. Or, select a network from below:
+              </p>
+              <Button
+                className="m-4"
+                color="primary"
+                onPress={() => openChainModal && openChainModal()}
+                isDisabled={!openChainModal}
+              >
+                Select Network
+              </Button>
+            </>
+          )}
         </ModalBody>
       </ModalContent>
     </Modal>

@@ -2,21 +2,11 @@
 
 import DisplayAddress from "@/components/DisplayAddress";
 import { ProposalData } from "@/subgraph/subgraphQueries";
-import { toJSONNoRevive } from "@/utils/JSONBigInt";
 import shortenAddress from "@/utils/shortenAddress";
 import { copyText } from "@/utils/toasts";
 import { CopyIcon } from "@radix-ui/react-icons";
 import { useMemo } from "react";
-import {
-  Address,
-  Hex,
-  decodeAbiParameters,
-  decodeFunctionData,
-  formatEther,
-  parseAbiParameters,
-  parseEther,
-  size,
-} from "viem";
+import { Address, Hex, decodeFunctionData, formatEther, parseAbiParameters, size } from "viem";
 
 interface Action {
   target: Address;
@@ -62,9 +52,12 @@ export default function ProposalActionsDisplay({ proposal }: { proposal?: Propos
             data: action.calldata,
           });
 
-          action.args = decoded.args?.map((a) => JSON.stringify(a, (key, value) => {
-            if (typeof value === "bigint") return Number(value);
-          })) || [];
+          action.args =
+            decoded.args?.map((a) =>
+              JSON.stringify(a, (key, value) => {
+                if (typeof value === "bigint") return Number(value);
+              }),
+            ) || [];
         } else {
           if (action.calldataSize === 0) {
             action.functionName = "transfer";

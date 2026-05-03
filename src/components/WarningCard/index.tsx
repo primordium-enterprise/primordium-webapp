@@ -10,13 +10,10 @@ export default function WarningCard({
   className?: string;
   color?: "primary" | "warning" | "danger";
 }) {
-
   return (
     <Card className={`bg-${color}-50 ${className || ""}`}>
       <CardBody className="p-2 sm:p-3">
-        <div
-          className={`flex items-center text-${color}-600`}
-        >
+        <div className={`flex items-center text-${color}-600`}>
           <div className="pr-2 sm:pr-3">
             {color === "primary" ? <InfoCircledIcon /> : <ExclamationTriangleIcon />}
           </div>

@@ -12,7 +12,7 @@ export default function AssetAmountInput({
   onValueChange,
   label = "",
   token,
-  isDisabled
+  isDisabled,
 }: {
   value: string;
   onValueChange: (value: string) => void;
@@ -39,7 +39,7 @@ export default function AssetAmountInput({
       }}
       value={value}
       onValueChange={(v) => {
-        let decimalIndex = v.indexOf('.');
+        let decimalIndex = v.indexOf(".");
         if (decimalIndex == -1 || v.length - 1 - decimalIndex <= decimals) {
           if (validateStringIsNumber(v)) {
             onValueChange(v);

@@ -1,4 +1,4 @@
-import { isHex, padHex, size } from "viem";
+import { isHex } from "viem";
 
 /**
  * Returns the length and inner type of an ABI input parameter (or undefined if the input is not an array).
@@ -49,7 +49,7 @@ export const parseAbiInputValue = (value: string, abiType: string): string | boo
       throw new Error("The provided value is not a valid hex string.");
     }
     // Pad the beginning byte with a zero if it's an odd length
-    return value.length % 2 === 0 ? value : `0x0${value.split('0x')[1]}`;
+    return value.length % 2 === 0 ? value : `0x0${value.split("0x")[1]}`;
   }
 
   // If the input matches a numeric (no decimals), return a BigInt
